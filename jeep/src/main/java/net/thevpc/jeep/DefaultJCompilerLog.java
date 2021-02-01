@@ -6,7 +6,7 @@ import net.thevpc.common.textsource.log.impl.DefaultJTextSourceLog;
 public class DefaultJCompilerLog extends DefaultJTextSourceLog implements JCompilerLog {
 
     public DefaultJCompilerLog() {
-        super("Compilation");
+        super("compilation");
     }
 
     @Override
