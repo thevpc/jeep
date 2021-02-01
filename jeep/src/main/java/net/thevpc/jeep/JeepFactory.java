@@ -1,7 +1,10 @@
 package net.thevpc.jeep;
 
 public interface JeepFactory {
-        JVars createVars(JContext context);
+
+    JCompilerLog createLog(JContext context);
+
+    JVars createVars(JContext context);
 
     JFunctions createFunctions(JContext context);
 

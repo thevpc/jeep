@@ -55,64 +55,64 @@ public class DefaultJTokens implements JTokens {
     }
 
     @Override
-    public JTokenizer of(URL url, boolean skipComments, boolean skipSpaces) {
+    public JTokenizer of(URL url) {
         if (url == null) {
-            throw new UncheckedIOException(new IOException("Null URL to tokenize"));
+            throw new UncheckedIOException(new IOException("null URL to tokenize"));
         }
         try {
             InputStream in = url.openStream();
             if (in == null) {
                 throw new IOException("Invalid URL " + url);
             }
-            return of(new InputStreamReader(in),skipComments,skipSpaces);
+            return of(new InputStreamReader(in));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     @Override
-    public JTokenizer of(Path file, boolean skipComments, boolean skipSpaces) {
+    public JTokenizer of(Path file) {
         try {
-            return of(new FileReader(file.toFile()),skipComments,skipSpaces);
+            return of(new FileReader(file.toFile()));
         } catch (FileNotFoundException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     @Override
-    public JTokenizer of(File file, boolean skipComments, boolean skipSpaces) {
+    public JTokenizer of(File file) {
         if (file == null) {
-            throw new UncheckedIOException(new IOException("Null File to tokenize"));
+            throw new UncheckedIOException(new IOException("null File to tokenize"));
         }
         try {
-            return of(new FileReader(file),skipComments,skipSpaces);
+            return of(new FileReader(file));
         } catch (FileNotFoundException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     @Override
-    public JTokenizer of(String text, boolean skipComments, boolean skipSpaces) {
-        return of(new StringReader(text == null ? "" : text),skipComments,skipSpaces);
+    public JTokenizer of(String text) {
+        return of(new StringReader(text == null ? "" : text));
     }
 
     @Override
-    public JTokenizer of(Reader reader, boolean skipComments, boolean skipSpaces) {
-        return of(reader, skipComments, skipSpaces, null);
+    public JTokenizer of(Reader reader) {
+        return of(reader, null);
     }
     
     @Override
-    public JTokenizer of(JTokenizerReader reader, boolean skipComments, boolean skipSpaces) {
-        return of(reader, skipComments, skipSpaces, null);
+    public JTokenizer of(JTokenizerReader reader) {
+        return of(reader, null);
     }
 
     @Override
-    public JTokenizer of(Reader reader, boolean skipComments, boolean skipSpaces, JTokenConfig config) {
-        return of(new DefaultJTokenizerReader(reader), skipComments, skipSpaces, config);
+    public JTokenizer of(Reader reader, JTokenConfig config) {
+        return of(new DefaultJTokenizerReader(reader), config);
     }
 
     @Override
-    public JTokenizer of(JTokenizerReader reader, boolean skipComments, boolean skipSpaces, JTokenConfig config) {
+    public JTokenizer of(JTokenizerReader reader, JTokenConfig config) {
         if (reader == null) {
             throw new UncheckedIOException(new IOException("Null Reader to tokenize"));
         }
@@ -121,22 +121,22 @@ public class DefaultJTokens implements JTokens {
         }
         JTokenFactory f = getFactory();
         if (f != null) {
-            JTokenizer t = f.create(reader, config, skipComments, skipSpaces, context);
+            JTokenizer t = f.create(reader, config, context);
             if (t != null) {
                 return t;
             }
         }
         if (parent != null) {
-            JTokenizer t = parent.of(reader, skipComments, skipSpaces, config);
+            JTokenizer t = parent.of(reader, config);
             if (t != null) {
                 return t;
             }
         }
-        return new JTokenizerImpl(reader,skipComments,skipSpaces, config);
+        return new JTokenizerImpl(reader, config);
     }
 
     @Override
     public JTokenDef[] tokenDefinitions() {
-        return of("",false,false).getTokenDefinitions();
+        return of("").getTokenDefinitions();
     }
 }

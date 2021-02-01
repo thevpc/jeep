@@ -32,30 +32,22 @@ public class JTokenizerImpl extends AbstractJTokenizer {
     private final Stack<JTokenizerState> stateStack = new Stack<>();
     private final Map<Integer, JTokenizerState> states = new HashMap<>();
     private JToken lastToken;
-    private boolean skipComments;
-    private boolean skipSpaces;
 
-    public JTokenizerImpl(JTokenizerReader reader, boolean skipComments, boolean skipSpaces, JTokenConfig config) {
+    public JTokenizerImpl(JTokenizerReader reader, JTokenConfig config) {
         this(
                 reader,
-                skipComments,
-                skipSpaces,
                 toPatterns(config)
         );
     }
 
-    public JTokenizerImpl(JTokenizerReader reader, boolean skipComments, boolean skipSpaces, JTokenPattern[] matchers) {
+    public JTokenizerImpl(JTokenizerReader reader, JTokenPattern[] matchers) {
         this.reader = reader;
-        this.skipComments = skipComments;
-        this.skipSpaces = skipSpaces;
         addState(1, "DEFAULT", matchers, '\0');
         pushState(1);
     }
 
-    public JTokenizerImpl(JTokenizerReader reader, boolean skipComments, boolean skipSpaces) {
+    public JTokenizerImpl(JTokenizerReader reader) {
         this.reader = reader;
-        this.skipComments = skipComments;
-        this.skipSpaces = skipSpaces;
     }
 
     public static JTokenPattern[] toPatterns(JTokenConfig config0) {
@@ -68,13 +60,13 @@ public class JTokenizerImpl extends AbstractJTokenizer {
                 && config.getBlockCommentEnd() != null && config.getBlockCommentEnd().length() > 0) {
             matchers.add(new BlocCommentsPattern(config.getBlockCommentStart(), config.getBlockCommentEnd()));
         }
-        if (config.isSimpleQuote()) {
+        if (config.isParseSimpleQuotesString()) {
             matchers.add(StringPattern.SIMPLE_QUOTES());
         }
-        if (config.isDoubleQuote()) {
+        if (config.isParseDoubleQuotesString()) {
             matchers.add(StringPattern.DOUBLE_QUOTES());
         }
-        if (config.isAntiQuote()) {
+        if (config.isParseAntiQuotesString()) {
             matchers.add(StringPattern.ANTI_QUOTES());
         }
         Set<String> operators = config.getOperators();
@@ -85,11 +77,11 @@ public class JTokenizerImpl extends AbstractJTokenizer {
         if (keywords.size() > 0) {
             matchers.add(new KeywordsPattern(keywords.toArray(new String[0])));
         }
-        if (config.isAcceptIntNumber() || config.isAcceptInfinity() || config.isAcceptFloatNumber()) {
+        if (config.isParsetIntNumber() || config.isParsetInfinity() || config.isParseFloatNumber()) {
             matchers.add(new NumberPattern(null,
-                    config.isAcceptIntNumber(),
-                    config.isAcceptFloatNumber(),
-                    config.isAcceptInfinity(),
+                    config.isParsetIntNumber(),
+                    config.isParseFloatNumber(),
+                    config.isParsetInfinity(),
                     config.getNumberSuffixes(),
                     config.getNumberEvaluator()
             ));
@@ -125,6 +117,7 @@ public class JTokenizerImpl extends AbstractJTokenizer {
     public void addState(int stateId, String stateName, JTokenConfig config) {
         addState(stateId, stateName, config, '\0');
     }
+
     public void addState(JTokenState state, JTokenConfig config) {
         addState(state.getValue(), state.getName(), config, '\0');
     }
@@ -168,24 +161,6 @@ public class JTokenizerImpl extends AbstractJTokenizer {
         states.put(s.getId(), s);
     }
 
-//    public void setState(int stateId) {
-//        this.state = (JTokenizerStateImpl) getState(stateId);
-//    }
-    public void pushBackAll(Collection<JToken> t) {
-        List<JToken> list;
-        if (t instanceof List) {
-            list = (List<JToken>) t;
-        } else {
-            list = new ArrayList<>();
-            for (JToken jToken : t) {
-                list.add(0, jToken);
-            }
-        }
-        for (int i = list.size() - 1; i >= 0; i--) {
-            pushBack(list.get(i));
-        }
-    }
-
     @Override
     public JToken peek() {
         //i have a problem when back holds spaces
@@ -193,7 +168,9 @@ public class JTokenizerImpl extends AbstractJTokenizer {
 //            return back.getFirst();
 //        }
         JToken t = next();
-        pushBack(t);
+        if (t != null) {
+            pushBack(t);
+        }
         return t;
     }
 
@@ -213,28 +190,47 @@ public class JTokenizerImpl extends AbstractJTokenizer {
     @Override
     public void pushBack(JToken token) {
         //        System.out.println("PUSH "+token);
-        if (!back.isEmpty()
-                && back.getFirst().tokenNumber>=0 // not a synthetic token
-                && token.tokenNumber > back.getFirst().tokenNumber) {
-            throw new JParseException("Invalid Order Detected near : "+peek());
+        if (token != null) {
+            if (!back.isEmpty()
+                    && back.getFirst().tokenNumber >= 0 // not a synthetic token
+                    && token.tokenNumber > back.getFirst().tokenNumber) {
+                throw new JParseException("Invalid Order Detected near : " + peek());
+            }
+            back.addFirst(token.copy());
         }
-        back.addFirst(token.copy());
     }
 
     @Override
     public JToken next() {
+        final boolean skipEof = isSkipEof();
+        final boolean skipComments = isSkipComments();
+        final boolean skipSpaces = isSkipSpaces();
         while (true) {
             JToken t = read();
-            if (t.isComments() && skipComments) {
-                continue;
-            }
-            if (t.isWhiteSpace() && skipSpaces) {
-                continue;
-            }
-            if (t.def.id != JTokenId.EOF) {
+            if (t.isComments()) {
+                if (skipComments) {
+                    continue;
+                } else {
+                    lastToken = t;
+                    return t;
+                }
+            } else if (t.isWhiteSpace()) {
+                if (skipSpaces) {
+                    continue;
+                } else {
+                    lastToken = t;
+                    return t;
+                }
+            } else if (t.def.id == JTokenId.EOF) {
+                if (skipEof) {
+                    return null;
+                } else {
+                    return t;
+                }
+            } else {
                 lastToken = t;
+                return t;
             }
-            return t;
         }
     }
 
@@ -308,7 +304,7 @@ public class JTokenizerImpl extends AbstractJTokenizer {
         List<JTokenDef> tokens = new ArrayList<>();
         for (JTokenizerState value : states.values()) {
             for (JTokenDef jTokenDef : value.tokenDefinitions()) {
-                if(filter==null|| filter.test(jTokenDef)){
+                if (filter == null || filter.test(jTokenDef)) {
                     tokens.add(jTokenDef);
                 }
             }
@@ -320,12 +316,12 @@ public class JTokenizerImpl extends AbstractJTokenizer {
     public JTokenDef getFirstTokenDefinition(Predicate<JTokenDef> filter) {
         for (JTokenizerState value : states.values()) {
             for (JTokenDef jTokenDef : value.tokenDefinitions()) {
-                if(filter==null|| filter.test(jTokenDef)){
+                if (filter == null || filter.test(jTokenDef)) {
                     return jTokenDef;
                 }
             }
         }
-        throw new NoSuchElementException("No Matching Token Definition for "+filter);
+        throw new NoSuchElementException("No Matching Token Definition for " + filter);
     }
 
     protected JTokenizerStateImpl peekState0() {

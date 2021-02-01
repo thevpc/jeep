@@ -12,7 +12,7 @@ public class TestJTokenizer {
     @Test
     public void test1() {
         String str="1+2*3**6***7";
-        JTokenizer tokenizer=new JTokenizerImpl(new DefaultJTokenizerReader(new StringReader(str)),false,false,new JTokenConfigBuilder()
+        JTokenizer tokenizer=new JTokenizerImpl(new DefaultJTokenizerReader(new StringReader(str)),new JTokenConfigBuilder()
                 .addOperator("*")
                 .addOperator("**")
         );
@@ -28,7 +28,6 @@ public class TestJTokenizer {
     public void test2() {
         String str=" a const constructor with constraints";
         JTokenizer tokenizer=new JTokenizerImpl(new DefaultJTokenizerReader(new StringReader(str)),
-                false,false,
                 new JTokenConfigBuilder()
                 .addKeywords("const","constraints")
         );
@@ -45,14 +44,14 @@ public class TestJTokenizer {
         String str="1 2 3 4 5 6 7 8 9 10";
         JTokenConfig config = new JTokenConfigBuilder()
                 .addKeywords("const", "constraints");
-        JTokenizer tokenizer=new JTokenizerImpl(new DefaultJTokenizerReader(new StringReader(str)), false,false,config);
+        JTokenizer tokenizer=new JTokenizerImpl(new DefaultJTokenizerReader(new StringReader(str)),config);
         int tokCount0=0;
         for (JToken jToken : tokenizer) {
             System.out.println(jToken);
             tokCount0++;
         }
 
-        tokenizer=new JTokenizerImpl(new DefaultJTokenizerReader(new StringReader(str)), false,false, config);
+        tokenizer=new JTokenizerImpl(new DefaultJTokenizerReader(new StringReader(str)), config);
         int tokCount1=0;
         printNext("skip 1",tokenizer);
         printNext("skip 2",tokenizer);

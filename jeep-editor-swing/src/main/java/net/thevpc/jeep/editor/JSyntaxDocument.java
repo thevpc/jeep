@@ -71,7 +71,7 @@ public class JSyntaxDocument extends PlainDocument {
             Segment seg = new Segment();
             getText(0, getLength(), seg);
             CharArrayReader reader = new CharArrayReader(seg.array, seg.offset, seg.count);
-            for (JToken token : jcontext.newContext().tokens().of(reader,false,false)) {
+            for (JToken token : jcontext.newContext().tokens().of(reader)) {
                 toks.add(token);
             }
         } catch (Exception ex) {

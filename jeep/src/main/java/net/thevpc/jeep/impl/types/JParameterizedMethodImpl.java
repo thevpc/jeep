@@ -75,7 +75,7 @@ public class JParameterizedMethodImpl extends AbstractJMethod implements JParame
 
     @Override
     public JDeclaration getDeclaration() {
-        return rawMethod.getDeclaration();
+        return declaringType;//rawMethod.getDeclaration();
     }
 
     @Override

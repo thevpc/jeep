@@ -14,7 +14,12 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public abstract class AbstractJTokenizer implements JTokenizer {
-    private List<JTokenizerSnapshot> snapshots=new ArrayList<>();
+
+    private List<JTokenizerSnapshot> snapshots = new ArrayList<>();
+    private boolean skipComments;
+    private boolean skipSpaces;
+    private boolean skipEof;
+
     @Override
     public Stream<JToken> stream() {
         return StreamSupport.stream(spliterator(), false);
@@ -23,16 +28,15 @@ public abstract class AbstractJTokenizer implements JTokenizer {
     @Override
     public void pushBackAll(Collection<JToken> t) {
         List<JToken> list;
-        if(t instanceof List){
-            list=(List<JToken>) t;
-        }else{
-            list=new ArrayList<>();
-            for (JToken jToken : t) {
-                list.add(0,jToken);
+        if (t != null) {
+            if (t instanceof List) {
+                list = (List<JToken>) t;
+            } else {
+                list = new ArrayList<>(t);
             }
-        }
-        for (int i = list.size()-1; i >=0 ; i--) {
-            pushBack(list.get(i));
+            for (int i = list.size() - 1; i >= 0; i--) {
+                pushBack(list.get(i));
+            }
         }
     }
 
@@ -45,15 +49,15 @@ public abstract class AbstractJTokenizer implements JTokenizer {
 
     @Override
     public JToken[] peek(int count) {
-        List<JToken> found=new ArrayList<>();
+        List<JToken> found = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             JToken n = next();
-            if(n.isEOF()){
+            if (n == null || n.isEOF()) {
                 break;
             }
             found.add(n);
         }
-        for (int i = found.size()-1; i >=0 ; i--) {
+        for (int i = found.size() - 1; i >= 0; i--) {
             pushBack(found.get(i));
         }
         return found.toArray(new JToken[0]);
@@ -71,8 +75,15 @@ public abstract class AbstractJTokenizer implements JTokenizer {
                     return false;
                 }
                 t = AbstractJTokenizer.this.next();
-                ended = t == null || t.def.id == JTokenId.EOF;
-                return t != null;
+                if (t == null) {
+                    ended = true;
+                    return false;
+                } else if (t.def.id == JTokenId.EOF) {
+                    ended = true;
+                    return true;
+                } else {
+                    return true;
+                }
             }
 
             @Override
@@ -84,12 +95,12 @@ public abstract class AbstractJTokenizer implements JTokenizer {
 
     @Override
     public void skipUntil(Predicate<JToken> t) {
-        while(true){
+        while (true) {
             JToken p = peek();
-            if(p.isEOF()){
+            if (p == null || p.isEOF()) {
                 break;
             }
-            if(t.test(p)){
+            if (t.test(p)) {
                 break;
             }
             skip();
@@ -98,12 +109,12 @@ public abstract class AbstractJTokenizer implements JTokenizer {
 
     @Override
     public void skipWhile(Predicate<JToken> t) {
-        while(true){
+        while (true) {
             JToken p = peek();
-            if(p.isEOF()){
+            if (p == null || p.isEOF()) {
                 break;
             }
-            if(!t.test(p)){
+            if (!t.test(p)) {
                 break;
             }
             skip();
@@ -111,14 +122,47 @@ public abstract class AbstractJTokenizer implements JTokenizer {
     }
 
     @Override
-    public void skip(){
+    public void skip() {
         next();
     }
 
     @Override
-    public void skip(int count){
+    public void skip(int count) {
         for (int i = 0; i < count; i++) {
             skip();
         }
+    }
+
+    @Override
+    public boolean isSkipComments() {
+        return skipComments;
+    }
+
+    @Override
+    public boolean isSkipEof() {
+        return skipEof;
+    }
+
+    @Override
+    public boolean isSkipSpaces() {
+        return skipSpaces;
+    }
+
+    @Override
+    public JTokenizer setSkipComments(boolean skipComments) {
+        this.skipComments = skipComments;
+        return this;
+    }
+
+    @Override
+    public JTokenizer setSkipEof(boolean skipEof) {
+        this.skipEof = skipEof;
+        return this;
+    }
+
+    @Override
+    public JTokenizer setSkipSpaces(boolean skipSpaces) {
+        this.skipSpaces = skipSpaces;
+        return this;
     }
 }

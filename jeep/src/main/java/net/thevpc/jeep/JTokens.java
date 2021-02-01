@@ -16,21 +16,21 @@ public interface JTokens {
 
     JTokens setConfig(JTokenConfig definition);
 
-    JTokenizer of(URL file, boolean skipComments, boolean skipSpaces);
+    JTokenizer of(URL file);
 
-    JTokenizer of(Path file, boolean skipComments, boolean skipSpaces);
+    JTokenizer of(Path file);
 
-    JTokenizer of(File file, boolean skipComments, boolean skipSpaces);
+    JTokenizer of(File file);
 
-    JTokenizer of(String text, boolean skipComments, boolean skipSpaces);
+    JTokenizer of(String text);
 
-    JTokenizer of(Reader reader, boolean skipComments, boolean skipSpaces);
+    JTokenizer of(Reader reader);
 
-    JTokenizer of(Reader reader, boolean skipComments, boolean skipSpaces, JTokenConfig config);
+    JTokenizer of(Reader reade, JTokenConfig config);
     
-    JTokenizer of(JTokenizerReader reader, boolean skipComments, boolean skipSpaces, JTokenConfig config);
+    JTokenizer of(JTokenizerReader reader, JTokenConfig config);
     
-    JTokenizer of(JTokenizerReader reader, boolean skipComments, boolean skipSpaces);
+    JTokenizer of(JTokenizerReader reader);
 
     JTokenDef[] tokenDefinitions();
 

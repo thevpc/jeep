@@ -12,11 +12,11 @@ public class LogJTextSourceReport implements JTextSourceReport {
 
     @Override
     public void reportError(String id, String group, String message) {
-        clog.error(id,group,message,null);
+        clog.error(id,group,null, message);
     }
 
     @Override
     public void reportWarning(String id, String group, String message) {
-        clog.warn(id,group,message,null);
+        clog.warn(id,group,null, message);
     }
 }

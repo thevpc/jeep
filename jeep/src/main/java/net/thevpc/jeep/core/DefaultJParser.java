@@ -111,7 +111,7 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
             T o = parseExpressionBinary(prefixOpPrecedence, options);
             if (o == null) {
                 //this was an expression not a prefix
-                log().error("X001", null, "expected expression", peek());
+                log().jerror("X001", null, peek(), "expected expression");
             } else {
                 return getNodeFactory().createPrefixUnaryOperatorNode(token, o
                         , new JNodeTokens()
@@ -381,9 +381,9 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
         T o2 = parseExpressionBinary(opPrecedence, options);
         if (o2 == null) {
             if (peek().isEOF()) {
-                log().error("X002", null, "missing right operand for " + op.image, peek());
+                log().jerror("X002", null, peek(), "missing right operand for " + op.image);
             } else {
-                log().error("X003", null, "invalid right operand for " + op.image, peek());
+                log().jerror("X003", null, peek(), "invalid right operand for " + op.image);
             }
         }
         JToken s = o1.getStartToken();
@@ -422,7 +422,7 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
 //                JToken closing = next();
 //                if (closing.ttype != ']') {
 //                    //pushBack(token);
-//                    log().error("X056", "expected ']'", closing);
+//                    log().jerror("X056", "expected ']'", closing);
 //                }
 //                o1 = getNodeFactory().createBracketsPostfixNode(o1, jNode, s);
 //            } else if (token.ttype == '(') {
@@ -431,7 +431,7 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
 //                JToken closing = next();
 //                if (closing.ttype != ')') {
 //                    //pushBack(token);
-//                    log().error("X057", "expected ')'", closing);
+//                    log().jerror("X057", "expected ')'", closing);
 //                }
 //                o1 = getNodeFactory().createParsPostfixNode(o1, jNode, s);
 //            } else if (context.operators().isPostfixUnaryOperator(token.image)) {
@@ -468,7 +468,7 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
                     JToken s = o1 != null && o1.getStartToken() != null ? o1.getStartToken() : token;
                     T o2 = parseExpressionBinary(binaryOpPrecedence, options);
                     if (o2 == null) {
-                        log().error("S004", null, "missing second operand for implicit operator", s);
+                        log().jerror("S004", null, s, "missing second operand for implicit operator");
                     }
                     o1 = getNodeFactory().createImplicitOperatorNode(o1, o2,
                             new JNodeTokens().setStart(s).setEnd(o2 == null ? s : o2.getEndToken())
@@ -570,7 +570,7 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
 //            return token;
 //        }
 //        pushBack(token);
-//        log().error("X043", "Expected " + sval, token);
+//        log().jerror("X043", "Expected " + sval, token);
 //        JToken t2 = token.copy();
 //        t2.ttype = ttype;
 //        t2.sval = sval;
@@ -664,18 +664,18 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
                 if (n1.isEOF()) {
                     if (end != null) {
                         if (silencedMessages != null) {
-                            silencedMessages.add(JSourceMessage.error("X005", groupName, "expected '" + end + "'", n1));
+                            silencedMessages.add(JSourceMessage.error("X005", groupName, n1, "expected '" + end + "'"));
                         } else {
-                            log().error("X005", groupName, "expected '" + end + "'", n1);
+                            log().jerror("X005", groupName, n1, "expected '" + end + "'");
                         }
                     }
                     break;
                 } else if (n1.image.equals(separator)) {
                     if (wasComma) {
                         if (silencedMessages != null) {
-                            silencedMessages.add(JSourceMessage.error("X005", groupName, "expected " + elementName, n1));
+                            silencedMessages.add(JSourceMessage.error("X005", groupName, n1, "expected " + elementName));
                         } else {
-                            log().error("X005", groupName, "expected " + elementName, n1);
+                            log().jerror("X005", groupName, n1, "expected " + elementName);
                         }
                     } else {
                         wasComma = true;
@@ -694,9 +694,9 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
                             break;
                         }
                         if (silencedMessages != null) {
-                            silencedMessages.add(JSourceMessage.error("X005", groupName, "expected '" + separator + "'", n1));
+                            silencedMessages.add(JSourceMessage.error("X005", groupName, n1, "expected '" + separator + "'"));
                         } else {
-                            log().error("X005", groupName, "expected '" + separator + "'", n1);
+                            log().jerror("X005", groupName, n1, "expected '" + separator + "'");
                         }
                     }
                     wasComma = false;
@@ -712,9 +712,9 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
                         JToken toSkip = next();
                         if (!errorReported) {
                             if (silencedMessages != null) {
-                                silencedMessages.add(JSourceMessage.error("X005", groupName, "expected " + elementName, toSkip));
+                                silencedMessages.add(JSourceMessage.error("X005", groupName, toSkip, "expected " + elementName));
                             } else {
-                                log().error("X005", groupName, "expected " + elementName, toSkip);
+                                log().jerror("X005", groupName, toSkip, "expected " + elementName);
                             }
                             errorReported = true;
                         }
@@ -738,9 +738,9 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
                 if (n1.isEOF()) {
                     if (end != null) {
                         if (silencedMessages != null) {
-                            silencedMessages.add(JSourceMessage.error("X005", groupName, "expected '" + end + "'", n1));
+                            silencedMessages.add(JSourceMessage.error("X005", groupName, n1, "expected '" + end + "'"));
                         } else {
-                            log().error("X005", groupName, "expected '" + end + "'", n1);
+                            log().jerror("X005", groupName, n1, "expected '" + end + "'");
                         }
                     }
                     break;
@@ -758,9 +758,9 @@ public class DefaultJParser<T extends JNode,O extends JExpressionOptions<?>> imp
                         t = elementParser.get();
                         JToken toSkip = next();
                         if (silencedMessages != null) {
-                            silencedMessages.add(JSourceMessage.error("X005", groupName, "expected " + elementName, toSkip));
+                            silencedMessages.add(JSourceMessage.error("X005", groupName, toSkip, "expected " + elementName));
                         } else {
-                            log().error("X005", groupName, "expected " + elementName, toSkip);
+                            log().jerror("X005", groupName, toSkip, "expected " + elementName);
                         }
                         if (toSkip.isEOF()) {
                             break;

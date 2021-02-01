@@ -6,7 +6,6 @@
 package net.thevpc.jeep.impl;
 
 import net.thevpc.jeep.*;
-import net.thevpc.jeep.*;
 
 /**
  * @author thevpc
@@ -22,18 +21,31 @@ public class JContextImpl extends AbstractJContext {
     private final JParsers parsers;
     private final JTokens tokens;
     private final JEvaluators evaluators;
+    private JCompilerLog log;
 
     public JContextImpl(JContext context) {
         this.parentContext = context;
         JeepFactory factory = context.manager().factory();
+        this.log = factory.createLog(this);
         this.vars = factory.createVars(this);
         this.functions = factory.createFunctions(this);
         this.operators = factory.createOperators(this);
         this.resolvers = factory.createResolvers(this);
-        this.types = factory.createTypes(this,parentContext.types().hostClassLoader());
-        this.parsers=factory.createParsers(this);
-        this.tokens=factory.createTokens(this,null);
+        this.types = factory.createTypes(this, parentContext.types().hostClassLoader());
+        this.parsers = factory.createParsers(this);
+        this.tokens = factory.createTokens(this, null);
         this.evaluators = factory.createEvaluators(this);
+    }
+
+    @Override
+    public JCompilerLog log() {
+        return log;
+    }
+
+    @Override
+    public JContext log(JCompilerLog log) {
+        this.log = log == null ? parentContext.manager().factory().createLog(this) : log;
+        return this;
     }
 
     @Override
@@ -91,9 +103,10 @@ public class JContextImpl extends AbstractJContext {
         return parentContext.manager();
     }
 
-    public JContext parent(){
+    public JContext parent() {
         return parentContext;
     }
+
     @Override
     public JTokens tokens() {
         return tokens;

@@ -36,14 +36,14 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
 
     public JTokenConfigDefinition(JTokenConfigBuilder other) {
         if (other != null) {
-            this.acceptIntNumber = other.isAcceptIntNumber();
-            this.acceptFloatNumber = other.isAcceptFloatNumber();
+            this.acceptIntNumber = other.isParsetIntNumber();
+            this.acceptFloatNumber = other.isParseFloatNumber();
             this.numberSuffixes = other.getNumberSuffixes() == null ? new char[0] : Arrays.copyOf(other.getNumberSuffixes(), other.getNumberSuffixes().length);
             this.numberEvaluator = other.getNumberEvaluator();
-            this.acceptInfinity = other.isAcceptInfinity();
-            this.quoteDbl = other.isDoubleQuote();
-            this.quoteSmp = other.isSimpleQuote();
-            this.quoteAnti = other.isAntiQuote();
+            this.acceptInfinity = other.isParsetInfinity();
+            this.quoteDbl = other.isParseDoubleQuotesString();
+            this.quoteSmp = other.isParseSimpleQuotesString();
+            this.quoteAnti = other.isParseAntiQuotesString();
             this.lineComment = other.getLineComment();
             this.blockCommentStart = other.getBlockCommentStart();
             this.blockCommentEnd = other.getBlockCommentEnd();
@@ -127,27 +127,27 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
         return idPattern;
     }
 
-    public boolean isAcceptIntNumber() {
+    public boolean isParsetIntNumber() {
         return acceptIntNumber;
     }
 
-    public boolean isAcceptFloatNumber() {
+    public boolean isParseFloatNumber() {
         return acceptFloatNumber;
     }
 
-    public boolean isAcceptInfinity() {
+    public boolean isParsetInfinity() {
         return acceptInfinity;
     }
 
-    public boolean isDoubleQuote() {
+    public boolean isParseDoubleQuotesString() {
         return quoteDbl;
     }
 
-    public boolean isSimpleQuote() {
+    public boolean isParseSimpleQuotesString() {
         return quoteSmp;
     }
 
-    public boolean isAntiQuote() {
+    public boolean isParseAntiQuotesString() {
         return quoteAnti;
     }
 
@@ -195,7 +195,7 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setAntiQuote(boolean quoteAnti) {
+    public JTokenConfig setParseAntiQuotesString(boolean quoteAnti) {
         return throwReadOnly();
     }
 
@@ -205,7 +205,7 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setAcceptIntNumber(boolean acceptIntNumber) {
+    public JTokenConfig setParsetIntNumber(boolean acceptIntNumber) {
         return throwReadOnly();
     }
 
@@ -215,7 +215,7 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setAcceptFloatNumber(boolean acceptFloatNumber) {
+    public JTokenConfig setParseFloatNumber(boolean acceptFloatNumber) {
         return throwReadOnly();
     }
 
@@ -225,12 +225,12 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setCStyleBlockComments() {
+    public JTokenConfig setParseCStyleBlockComments() {
         return throwReadOnly();
     }
 
     @Override
-    public JTokenConfig setCStyleComments() {
+    public JTokenConfig setParseCStyleLineComments() {
         return throwReadOnly();
     }
 
@@ -261,17 +261,17 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setAcceptInfinity(boolean acceptInfinity) {
+    public JTokenConfig setParsetInfinity(boolean acceptInfinity) {
         return throwReadOnly();
     }
 
     @Override
-    public JTokenConfig setDoubleQuote(boolean quoteDbl) {
+    public JTokenConfig setParseDoubleQuotesString(boolean quoteDbl) {
         return throwReadOnly();
     }
 
     @Override
-    public JTokenConfig setSimpleQuote(boolean quoteSmp) {
+    public JTokenConfig setParseSimpleQuotesString(boolean quoteSmp) {
         return throwReadOnly();
     }
 

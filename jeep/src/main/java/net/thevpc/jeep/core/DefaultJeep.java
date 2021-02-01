@@ -19,8 +19,6 @@ import net.thevpc.jeep.core.tokens.JTokenDef;
 import net.thevpc.jeep.impl.AbstractJContext;
 import net.thevpc.jeep.impl.DefaultJeepFactory;
 import net.thevpc.jeep.impl.JContextImpl;
-import net.thevpc.jeep.*;
-import net.thevpc.jeep.impl.*;
 
 /**
  * <i>Mathematic expression evaluator.</i> Supports the following functions: +,
@@ -34,8 +32,7 @@ import net.thevpc.jeep.impl.*;
  * </pre>
  *
  * @author Taha BEN SALAH
- * @version 1.0
- * %date April 2008
+ * @version 1.0 %date April 2008
  */
 public class DefaultJeep extends AbstractJContext implements Jeep {
 
@@ -48,6 +45,8 @@ public class DefaultJeep extends AbstractJContext implements Jeep {
     private JParsers parsers;
     private JEvaluators evaluators;
     private JeepFactory factory;
+    private JCompilerLog log;
+    private ClassLoader classLoader;
 
     public DefaultJeep() {
         this(null, null);
@@ -59,13 +58,15 @@ public class DefaultJeep extends AbstractJContext implements Jeep {
      * to assign a math expression string to it.
      */
     public DefaultJeep(JeepFactory factory, ClassLoader classLoader) {
-        if (classLoader == null) {
-            classLoader = Thread.currentThread().getContextClassLoader();
-        }
         if (factory == null) {
             factory = new DefaultJeepFactory();
         }
+        if (classLoader == null) {
+            classLoader = Thread.currentThread().getContextClassLoader();
+        }
         this.factory = factory;
+        this.classLoader = classLoader;
+        this.log = factory.createLog(this);
         this.vars = factory.createVars(this);
         this.functions = factory.createFunctions(this);
         this.operators = factory.createOperators(this);
@@ -74,6 +75,18 @@ public class DefaultJeep extends AbstractJContext implements Jeep {
         this.tokens = factory.createTokens(this, new JTokenConfigDefinition(null));
         this.parsers = factory.createParsers(this);
         this.evaluators = factory.createEvaluators(this);
+    }
+
+
+    @Override
+    public JCompilerLog log() {
+        return log;
+    }
+
+    @Override
+    public JContext log(JCompilerLog log) {
+        this.log = log == null ? manager().factory().createLog(this) : log;
+        return this;
     }
 
     @Override
@@ -235,25 +248,25 @@ public class DefaultJeep extends AbstractJContext implements Jeep {
             out = System.out;
         }
         String prefix = "    ";
-        String simpleClassName=null;
-        String simplePackage=null;
-        if(className!=null){
+        String simpleClassName = null;
+        String simplePackage = null;
+        if (className != null) {
             int i = className.lastIndexOf('.');
-            if(i>0){
-                simplePackage=className.substring(0,i);
-                simpleClassName=className.substring(i+1);
-            }else{
-                simpleClassName=className;
+            if (i > 0) {
+                simplePackage = className.substring(0, i);
+                simpleClassName = className.substring(i + 1);
+            } else {
+                simpleClassName = className;
             }
         }
-        if(simplePackage!=null){
-            out.println("package "+simplePackage+";");
+        if (simplePackage != null) {
+            out.println("package " + simplePackage + ";");
             out.println();
         }
-        if(simpleClassName!=null) {
+        if (simpleClassName != null) {
             out.println("public final class " + simpleClassName + " {");
-            out.println(prefix+"private " + simpleClassName + "() {");
-            out.println(prefix+"}");
+            out.println(prefix + "private " + simpleClassName + "() {");
+            out.println(prefix + "}");
             out.println();
         }
         Map<String, List<JTokenDef>> visited = new LinkedHashMap<>();
@@ -261,7 +274,7 @@ public class DefaultJeep extends AbstractJContext implements Jeep {
         out.println(prefix + "/**");
         out.println(prefix + " * End of File (no token to read)");
         out.println(prefix + " * <pre>");
-        out.println(prefix + " * ID         : EOF" );
+        out.println(prefix + " * ID         : EOF");
         out.println(prefix + " * ID_NAME    : EOF");
         out.println(prefix + " * TYPE_ID    : EOF");
         out.println(prefix + " * TYPE_NAME  : EOF");
@@ -298,19 +311,19 @@ public class DefaultJeep extends AbstractJContext implements Jeep {
             out.println(prefix + " * </pre>");
             out.println(prefix + " */");
             out.println(prefix + "public static final int " + elemStr(idNames) + " = " + elemStr(ids) + ";");
-            if(ids.size()>1) {
+            if (ids.size() > 1) {
                 out.println("/// ***************************** ");
                 out.println("/// ERROR DETECTED :: ");
                 for (JTokenDef tokenDefinition : tokens().tokenDefinitions()) {
-                    if(ids.contains(tokenDefinition.id)){
-                        out.println("/// "+tokenDefinition);
+                    if (ids.contains(tokenDefinition.id)) {
+                        out.println("/// " + tokenDefinition);
                     }
                 }
                 out.println("/// ***************************** ");
 //                throw new IllegalArgumentException("ERROR IDS");
             }
         }
-        if(simpleClassName!=null) {
+        if (simpleClassName != null) {
             out.println("}");
         }
     }

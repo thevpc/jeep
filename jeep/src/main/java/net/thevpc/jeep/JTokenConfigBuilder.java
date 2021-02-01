@@ -15,15 +15,15 @@ import java.util.*;
 public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
 //    public static final JTokenPattern DEFAULT_ID_PATTERN = new JavaIdPattern();
     //            Pattern.compile("[^\\s0-9\\[\\]{}()*+/~&=$£%'\"-]([^\\s\\[\\]{}()*+/~&=$£%'\"-])*");
-    private boolean acceptIntNumber = false;
+    private boolean parsetIntNumber = false;
     private boolean parseWhitespaces = false;
-    private boolean acceptFloatNumber = false;
-    private boolean acceptInfinity = false;
+    private boolean parseFloatNumber = false;
+    private boolean parsetInfinity = false;
     private char[] numberSuffixes = null;
     private JTokenEvaluator numberEvaluator = null;
-    private boolean doubleQuote = false;
-    private boolean simpleQuote = false;
-    private boolean antiQuote = false;
+    private boolean parseDoubleQuotesString = false;
+    private boolean parseSimpleQuotesString = false;
+    private boolean parseAntiQuotesString = false;
     private String lineComment = null;
     private String blockCommentStart = null;
     private String blockCommentEnd = null;
@@ -53,14 +53,14 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     }
 
     public JTokenConfigBuilder unsetAll(){
-        acceptIntNumber = false;
-        acceptFloatNumber = false;
-        acceptInfinity = false;
+        parsetIntNumber = false;
+        parseFloatNumber = false;
+        parsetInfinity = false;
         numberSuffixes = null;
         numberEvaluator = null;
-        doubleQuote = false;
-        simpleQuote = false;
-        antiQuote = false;
+        parseDoubleQuotesString = false;
+        parseSimpleQuotesString = false;
+        parseAntiQuotesString = false;
         lineComment = null;
         blockCommentStart = null;
         blockCommentEnd = null;
@@ -106,33 +106,33 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public boolean isAcceptIntNumber() {
-        return acceptIntNumber;
+    public boolean isParsetIntNumber() {
+        return parsetIntNumber;
     }
 
     @Override
-    public boolean isAcceptFloatNumber() {
-        return acceptFloatNumber;
+    public boolean isParseFloatNumber() {
+        return parseFloatNumber;
     }
 
     @Override
-    public boolean isDoubleQuote() {
-        return doubleQuote;
+    public boolean isParseDoubleQuotesString() {
+        return parseDoubleQuotesString;
     }
 
     @Override
-    public boolean isAcceptInfinity() {
-        return acceptInfinity;
+    public boolean isParsetInfinity() {
+        return parsetInfinity;
     }
 
     @Override
-    public boolean isSimpleQuote() {
-        return simpleQuote;
+    public boolean isParseSimpleQuotesString() {
+        return parseSimpleQuotesString;
     }
 
     @Override
-    public boolean isAntiQuote() {
-        return antiQuote;
+    public boolean isParseAntiQuotesString() {
+        return parseAntiQuotesString;
     }
 
     @Override
@@ -176,14 +176,14 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     @Override
     public JTokenConfig setAll(JTokenConfig other) {
         if (other != null) {
-            this.acceptIntNumber = other.isAcceptIntNumber();
-            this.acceptFloatNumber = other.isAcceptFloatNumber();
+            this.parsetIntNumber = other.isParsetIntNumber();
+            this.parseFloatNumber = other.isParseFloatNumber();
             this.numberSuffixes = other.getNumberSuffixes()==null?null:Arrays.copyOf(other.getNumberSuffixes(),other.getNumberSuffixes().length);
             this.numberEvaluator = other.getNumberEvaluator();
-            this.acceptInfinity = other.isAcceptInfinity();
-            this.doubleQuote = other.isDoubleQuote();
-            this.simpleQuote = other.isSimpleQuote();
-            this.antiQuote = other.isAntiQuote();
+            this.parsetInfinity = other.isParsetInfinity();
+            this.parseDoubleQuotesString = other.isParseDoubleQuotesString();
+            this.parseSimpleQuotesString = other.isParseSimpleQuotesString();
+            this.parseAntiQuotesString = other.isParseAntiQuotesString();
             this.lineComment = other.getLineComment();
             this.blockCommentStart = other.getBlockCommentStart();
             this.blockCommentEnd = other.getBlockCommentEnd();
@@ -286,15 +286,15 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setAcceptIntNumber(boolean acceptIntNumber) {
-        this.acceptIntNumber = acceptIntNumber;
+    public JTokenConfig setParsetIntNumber(boolean parseIntNumber) {
+        this.parsetIntNumber = parseIntNumber;
         readOnlyCopy = null;
         return this;
     }
 
     @Override
-    public JTokenConfig setAcceptFloatNumber(boolean acceptFloatNumber) {
-        this.acceptFloatNumber = acceptFloatNumber;
+    public JTokenConfig setParseFloatNumber(boolean parseFloatNumber) {
+        this.parseFloatNumber = parseFloatNumber;
         readOnlyCopy = null;
         return this;
     }
@@ -307,13 +307,12 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setCStyleBlockComments() {
+    public JTokenConfig setParseCStyleBlockComments() {
         return setBlockComments("/*", "*/");
     }
 
     @Override
-    public JTokenConfig setCStyleComments() {
-        setBlockComments("/*", "*/");
+    public JTokenConfig setParseCStyleLineComments() {
         return setLineComment("//");
     }
 
@@ -326,7 +325,7 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
             blockCommentEnd = null;
         }
         if ((blockCommentStart == null) != (blockCommentEnd == null)) {
-            throw new IllegalArgumentException("Invalid Block comment separators " + blockCommentStart + " " + blockCommentEnd);
+            throw new IllegalArgumentException("invalid Block comment separators " + blockCommentStart + " " + blockCommentEnd);
         }
         this.blockCommentStart = blockCommentStart;
         this.blockCommentEnd = blockCommentEnd;
@@ -367,29 +366,29 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setAcceptInfinity(boolean acceptInfinity) {
-        this.acceptInfinity = acceptInfinity;
+    public JTokenConfig setParsetInfinity(boolean parsetInfinity) {
+        this.parsetInfinity = parsetInfinity;
         readOnlyCopy = null;
         return this;
     }
 
     @Override
-    public JTokenConfig setDoubleQuote(boolean doubleQuote) {
-        this.doubleQuote = doubleQuote;
+    public JTokenConfig setParseDoubleQuotesString(boolean doubleQuote) {
+        this.parseDoubleQuotesString = doubleQuote;
         readOnlyCopy = null;
         return this;
     }
 
     @Override
-    public JTokenConfig setSimpleQuote(boolean quoteSmp) {
-        this.simpleQuote = quoteSmp;
+    public JTokenConfig setParseSimpleQuotesString(boolean quoteSmp) {
+        this.parseSimpleQuotesString = quoteSmp;
         readOnlyCopy = null;
         return this;
     }
 
     @Override
-    public JTokenConfig setAntiQuote(boolean antiQuote) {
-        this.antiQuote = antiQuote;
+    public JTokenConfig setParseAntiQuotesString(boolean antiQuote) {
+        this.parseAntiQuotesString = antiQuote;
         readOnlyCopy = null;
         return this;
     }

@@ -1,9 +1,7 @@
 package net.thevpc.jeep;
 
-
 import net.thevpc.common.textsource.log.impl.DefaultJTextSourceLog;
 
-import java.io.PrintStream;
 
 public class DefaultJCompilerLog extends DefaultJTextSourceLog implements JCompilerLog {
 
@@ -11,8 +9,9 @@ public class DefaultJCompilerLog extends DefaultJTextSourceLog implements JCompi
         super("Compilation");
     }
 
-    public DefaultJCompilerLog(PrintStream out) {
-        super("Compilation", out);
+    @Override
+    public String getErrorMssage() {
+        return isSuccessful() ? null : getFooterMessage();
     }
 
 }

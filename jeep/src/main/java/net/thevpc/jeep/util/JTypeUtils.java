@@ -894,7 +894,7 @@ public class JTypeUtils {
                 }
                 sb.append(getFullClassName(t[i]));
             }
-            sb.append(")");
+            sb.append(")->...");
             return sb.toString();
         }
     }
@@ -1119,14 +1119,14 @@ public class JTypeUtils {
                 if (jMethod.getSignature().isVarArgs()) {
                     if (jTypes.length - 1 <= expectedArgCount) {
                         if (log != null) {
-                            log.error("X000", null, "lambda expression arguments count mismatch " + jTypes.length + "!=" + expectedArgCount, location);
+                            log.jerror("X000", null, location, "lambda expression arguments count mismatch " + jTypes.length + "!=" + expectedArgCount);
                         }
                         return null;
                     }
                 } else {
                     if (expectedArgCount != jTypes.length) {
                         if (log != null) {
-                            log.error("X000", null, "lambda expression arguments count mismatch " + jTypes.length + "!=" + expectedArgCount, location);
+                            log.jerror("X000", null, location, "lambda expression arguments count mismatch " + jTypes.length + "!=" + expectedArgCount);
                         }
                         return null;
                     }
@@ -1135,7 +1135,7 @@ public class JTypeUtils {
             return jMethod.getSignature();
         } else {
             if (log != null) {
-                log.error("X000", null, "expected functional type as Lambda expression.", location);
+                log.jerror("X000", null, location, "expected functional type as Lambda expression.");
             }
             return null;
         }

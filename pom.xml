@@ -5,7 +5,7 @@
     <artifactId>jeep-build</artifactId>
     <version>1.0.0</version><!--updated-->
     <packaging>pom</packaging>
-    <name>net.thevpc.jeep-builder</name>
+    <name>net.thevpc.jeep</name>
     <modules>
         <module>jeep</module>
         <module>jeep-nodes</module>

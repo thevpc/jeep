@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface JTokenConfig {
+
     Set<String> getOperators();
 
     JTokenConfig setOperators(Set<String> operators);
@@ -23,33 +24,33 @@ public interface JTokenConfig {
     JTokenConfig setIdPattern(JTokenPattern pattern);
 
     boolean isParseWhitespaces();
-    boolean isAcceptIntNumber();
 
-    JTokenConfig setAcceptIntNumber(boolean acceptIntNumber);
+    boolean isParsetIntNumber();
+
+    JTokenConfig setParsetIntNumber(boolean acceptIntNumber);
 
     JTokenConfig setParseWhitespaces(boolean parseWhitespaces);
 
-    boolean isAcceptFloatNumber();
+    boolean isParseFloatNumber();
 
-    JTokenConfig setAcceptFloatNumber(boolean acceptFloatNumber);
+    JTokenConfig setParseFloatNumber(boolean acceptFloatNumber);
 
-    boolean isDoubleQuote();
+    boolean isParseDoubleQuotesString();
 
-    JTokenConfig setDoubleQuote(boolean quoteDbl);
+    JTokenConfig setParseDoubleQuotesString(boolean quoteDbl);
 
     // writes
+    boolean isParsetInfinity();
 
-    boolean isAcceptInfinity();
+    JTokenConfig setParsetInfinity(boolean acceptInfinity);
 
-    JTokenConfig setAcceptInfinity(boolean acceptInfinity);
+    boolean isParseSimpleQuotesString();
 
-    boolean isSimpleQuote();
+    JTokenConfig setParseSimpleQuotesString(boolean quoteSmp);
 
-    JTokenConfig setSimpleQuote(boolean quoteSmp);
+    boolean isParseAntiQuotesString();
 
-    boolean isAntiQuote();
-
-    JTokenConfig setAntiQuote(boolean quoteAnti);
+    JTokenConfig setParseAntiQuotesString(boolean quoteAnti);
 
     String getLineComment();
 
@@ -87,9 +88,9 @@ public interface JTokenConfig {
 
     JTokenConfig addOperators(String... operators);
 
-    JTokenConfig setCStyleBlockComments();
+    JTokenConfig setParseCStyleBlockComments();
 
-    JTokenConfig setCStyleComments();
+    JTokenConfig setParseCStyleLineComments();
 
     JTokenConfig setBlockComments(String blockCommentStart, String blockCommentEnd);
 

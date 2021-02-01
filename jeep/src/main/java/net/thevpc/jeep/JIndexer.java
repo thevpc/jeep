@@ -4,14 +4,14 @@ import java.io.File;
 import java.net.URL;
 
 public interface JIndexer {
-    int indexSDK(String sdkHome, boolean force);
+    int indexSDK(String sdkHome, boolean force, JCompilerLog clog);
 
     /**
      *
      * @param compilationUnit compilationUnit
      * @return number of indexed types
      */
-    int indexSource(JCompilationUnit compilationUnit);
+    int indexSource(JCompilationUnit compilationUnit, JCompilerLog clog);
 
     /**
      *
@@ -19,7 +19,7 @@ public interface JIndexer {
      * @param force force
      * @return number of indexed types
      */
-    int indexLibrary(File file,boolean force);
+    int indexLibrary(File file, boolean force, JCompilerLog clog);
 
     /**
      *
@@ -27,5 +27,5 @@ public interface JIndexer {
      * @param force force
      * @return number of indexed types
      */
-    int indexLibrary(URL file, boolean force);
+    int indexLibrary(URL file, boolean force, JCompilerLog clog);
 }

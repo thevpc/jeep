@@ -1,7 +1,6 @@
 package net.thevpc.jeep.impl;
 
 import net.thevpc.jeep.*;
-import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.SimpleJParser;
 import net.thevpc.common.textsource.JTextSourceFactory;
 
@@ -103,7 +102,11 @@ public class DefaultJParsers implements JParsers {
         }
         JParserFactory f = getFactory();
         if (f != null) {
-            JParser p = f.create(context.tokens().of(reader,true,true), compilationUnit, context);
+            JParser p = f.create(context.tokens().of(reader)
+                    .setSkipComments(true)
+                    .setSkipSpaces(true)
+                    .setSkipEof(false)
+                    , compilationUnit, context);
             if (p != null) {
                 return p;
             }
@@ -114,7 +117,11 @@ public class DefaultJParsers implements JParsers {
                 return s;
             }
         }
-        return new SimpleJParser(context.tokens().of(reader,true,true),compilationUnit,context);
+        return new SimpleJParser(context.tokens().of(reader)
+                .setSkipComments(true)
+                    .setSkipSpaces(true)
+                    .setSkipEof(false)
+                ,compilationUnit,context);
 //        return new DefaultJParser(context.tokens().of(reader), compilationUnit, context);
     }
 

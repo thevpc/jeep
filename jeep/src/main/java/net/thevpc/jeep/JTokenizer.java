@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 public interface JTokenizer extends Iterable<JToken> {
 
     JTokenizerState getState();
+
     JTokenizerState getState(int id);
 
     void pushBack(JToken token);
@@ -23,11 +24,11 @@ public interface JTokenizer extends Iterable<JToken> {
     /**
      * Read next acceptable token and return it. When this Tokenizer is
      * configured to return comments and white spaces, this methods is strictly
-     * equivalent to {{@link #next()}} ; In all other cases, this method will
+     * equivalent to {{@link #read()}} ; In all other cases, this method will
      * return the first 'acceptable' (aka non comments and/or not white space)
      * token.
      *
-     * @return next tocken
+     * @return next token
      */
     JToken next();
 
@@ -35,7 +36,7 @@ public interface JTokenizer extends Iterable<JToken> {
      * read next token and return it whether or not it is a comment or a white
      * space
      *
-     * @return next tocken
+     * @return next token
      */
     JToken read();
 
@@ -78,13 +79,27 @@ public interface JTokenizer extends Iterable<JToken> {
     JTokenizerState[] getStates();
 
     JTokenDef[] getTokenDefinitions();
+
     JTokenDef[] getTokenDefinitions(Predicate<JTokenDef> filter);
 
     /**
-     * return first Token Definition matching the predicate
-     * or throw Exception if not found
+     * return first Token Definition matching the predicate or throw Exception
+     * if not found
+     *
      * @param filter filter
      * @return first Token Definition matching the predicate or throws exception
      */
     JTokenDef getFirstTokenDefinition(Predicate<JTokenDef> filter);
+
+    boolean isSkipComments();
+
+    boolean isSkipEof();
+
+    boolean isSkipSpaces();
+
+    JTokenizer setSkipComments(boolean skipComments);
+
+    JTokenizer setSkipEof(boolean skipEof);
+
+    JTokenizer setSkipSpaces(boolean skipSpaces);
 }
