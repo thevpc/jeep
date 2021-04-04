@@ -8,26 +8,30 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.text.Element;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.Segment;
 
 public class JSyntaxUtils {
-    public static final String SOURCE_NAME="JSyntax.SourceName";
 
-    public static String getSourceName(JTextComponent component){
+    public static final String SOURCE_NAME = "JSyntax.SourceName";
+
+    public static String getSourceName(JTextComponent component) {
         return (String) component.getClientProperty(SOURCE_NAME);
     }
 
-    public static void setSourceName(JTextComponent component,String sourceName){
-        component.putClientProperty(SOURCE_NAME,sourceName);
+    public static void setSourceName(JTextComponent component, String sourceName) {
+        component.putClientProperty(SOURCE_NAME, sourceName);
     }
 
-    public static void setText(JTextComponent component, JTextSource source){
-        component.putClientProperty(SOURCE_NAME,source.name());
+    public static void setText(JTextComponent component, JTextSource source) {
+        component.putClientProperty(SOURCE_NAME, source.name());
         component.setText(source.text());
     }
 
     /**
      * A helper function that will return the SyntaxDocument attached to the
-     * given text component.  Return null if the document is not a
+     * given text component. Return null if the document is not a
      * SyntaxDocument, or if the text component is null
      */
     public static JSyntaxDocument getSyntaxDocument(JTextComponent component) {
@@ -49,7 +53,18 @@ public class JSyntaxUtils {
         }
         int count = 0;
         try {
-            int p = pane.getDocument().getLength() - 1;
+            Document doc = pane.getDocument();
+            if (doc instanceof PlainDocument) {
+                int lineNumber = 1;
+                String ss = pane.getText();
+                for (char c : ss.toCharArray()) {
+                    if (c == '\n') {
+                        lineNumber++;
+                    }
+                }
+                return lineNumber;
+            }
+            int p = doc.getLength() - 1;
             if (p > 0) {
                 count = getLineNumber(pane, p);
             }
@@ -60,30 +75,96 @@ public class JSyntaxUtils {
     }
 
     /**
-     * Gets the Line Number at the give position of the editor component.
-     * The first line number is ZERO
+     * Gets the Line Number at the give position of the editor component. The
+     * first line number is ZERO
      *
      * @return line number
      */
-    public static int getLineNumber(JTextComponent editor, int pos){
+    public static int getLineNumber(JTextComponent editor, int pos) {
         if (getSyntaxDocument(editor) != null) {
             JSyntaxDocument sdoc = getSyntaxDocument(editor);
             return sdoc.getLineNumberAt(pos);
         } else {
             Document doc = editor.getDocument();
+            if (doc instanceof PlainDocument) {
+                class Counter implements DocElementVisitor {
+
+                    Segment segment = new Segment();
+                    int lineNumber = 1;
+
+                    @Override
+                    public DocElementVisitorRet visit(Element elem) {
+                        int s = elem.getStartOffset();
+                        int e = elem.getEndOffset();
+                        if (s > pos) {
+                            return DocElementVisitorRet.EXIT;
+                        }
+                        if (elem.isLeaf()) {
+                            try {
+                                String ss = doc.getText(s, e);
+                                for (char c : ss.toCharArray()) {
+                                    if (c == '\n') {
+                                        lineNumber++;
+                                    }
+                                }
+                            } catch (BadLocationException ex) {
+                                //ignore
+                            }
+                        }
+                        return DocElementVisitorRet.CONTINUE;
+                    }
+                }
+                Counter counter = new Counter();
+                PlainDocument pd = (PlainDocument) doc;
+                visitDocElement(pd.getDefaultRootElement(), counter);
+                return counter.lineNumber;
+            }
             return doc.getDefaultRootElement().getElementIndex(pos);
         }
     }
 
+    public enum DocElementVisitorRet {
+        EXIT,
+        CONTINUE,
+        SKIP_CHILDREN
+    }
+
+    public interface DocElementVisitor {
+
+        /**
+         * return true to continue
+         *
+         * @param e e
+         * @return return true to continue
+         */
+        DocElementVisitorRet visit(Element e);
+    }
+
+    private static boolean visitDocElement(Element e, DocElementVisitor v) {
+        DocElementVisitorRet r = v.visit(e);
+        if (r == DocElementVisitorRet.EXIT) {
+            return false;
+        }
+        if (r == DocElementVisitorRet.CONTINUE) {
+            int c = e.getElementCount();
+            for (int i = 0; i < c; i++) {
+                if (!visitDocElement(e.getElement(i), v)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /**
-     * Gets the column number at given position of editor.  The first column is
+     * Gets the column number at given position of editor. The first column is
      * ZERO
      *
      * @return the 0 based column number
      */
-    public static int getColumnNumber(JTextComponent editor, int pos){
+    public static int getColumnNumber(JTextComponent editor, int pos) {
         // speedup if the pos is 0
-        if(pos == 0) {
+        if (pos == 0) {
             return 0;
         }
         Rectangle r = null;

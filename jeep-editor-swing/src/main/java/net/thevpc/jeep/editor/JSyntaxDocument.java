@@ -22,13 +22,14 @@ import javax.swing.text.Segment;
 import javax.swing.undo.UndoManager;
 
 /**
- * A document that supports being highlighted.  The document maintains an
- * internal List of all the Tokens.  The Tokens are updated using
- * a Lexer, passed to it during construction.
+ * A document that supports being highlighted. The document maintains an
+ * internal List of all the Tokens. The Tokens are updated using a Lexer, passed
+ * to it during construction.
  *
  * @author Ayman Al-Sairafi
  */
 public class JSyntaxDocument extends PlainDocument {
+
     // our logger instance...
     private static final Logger LOG = Logger.getLogger(JSyntaxDocument.class.getName());
 
@@ -52,10 +53,15 @@ public class JSyntaxDocument extends PlainDocument {
         });
     }
 
+    public UndoManager getUndoManager() {
+        return undo;
+    }
+
     /**
      * Parse the entire document and return list of tokens that do not already
-     * exist in the tokens list.  There may be overlaps, and replacements,
-     * which we will cleanup later.
+     * exist in the tokens list. There may be overlaps, and replacements, which
+     * we will cleanup later.
+     *
      * @return list of tokens that do not exist in the tokens field
      */
     private void parse() {
@@ -112,12 +118,13 @@ public class JSyntaxDocument extends PlainDocument {
 
     /**
      * Replace the token with the replacement string
+     *
      * @param token
      * @param replacement
      */
     public void replaceToken(JToken token, String replacement) {
         try {
-            replace(token.startCharacterNumber, token.endCharacterNumber-token.startCharacterNumber, replacement, null);
+            replace(token.startCharacterNumber, token.endCharacterNumber - token.startCharacterNumber, replacement, null);
         } catch (BadLocationException ex) {
             LOG.log(Level.WARNING, "unable to replace token: " + token, ex);
         }
@@ -139,13 +146,13 @@ public class JSyntaxDocument extends PlainDocument {
             this.end = end;
             if (tokens != null && !tokens.isEmpty()) {
                 JToken token = new JToken();
-                token.startCharacterNumber=start;
-                token.endCharacterNumber=end;
-                token.startLineNumber=0;
-                token.endLineNumber=0;
-                token.startColumnNumber=start;
-                token.endColumnNumber=end;
-                token.def= BlocCommentsPattern.DEFAULT;
+                token.startCharacterNumber = start;
+                token.endCharacterNumber = end;
+                token.startLineNumber = 0;
+                token.endLineNumber = 0;
+                token.startColumnNumber = start;
+                token.endColumnNumber = end;
+                token.def = BlocCommentsPattern.DEFAULT;
                 ndx = Collections.binarySearch((List) tokens, token);
                 // we will probably not find the exact token...
                 if (ndx < 0) {
@@ -229,6 +236,7 @@ public class JSyntaxDocument extends PlainDocument {
 
     /**
      * Return an iterator of tokens between p0 and p1.
+     *
      * @param start start position for getting tokens
      * @param end position for last token
      * @return Iterator for tokens that overal with range from start to end
@@ -238,8 +246,9 @@ public class JSyntaxDocument extends PlainDocument {
     }
 
     /**
-     * Find the token at a given position.  May return null if no token is
-     * found (whitespace skipped) or if the position is out of range:
+     * Find the token at a given position. May return null if no token is found
+     * (whitespace skipped) or if the position is out of range:
+     *
      * @param pos
      * @return
      */
@@ -249,14 +258,13 @@ public class JSyntaxDocument extends PlainDocument {
         }
         JToken tok = null;
         JToken tKey = new JToken();
-        tKey.startCharacterNumber=0;
-        tKey.endCharacterNumber=1;
-        tKey.startLineNumber=0;
-        tKey.endLineNumber=0;
-        tKey.startColumnNumber=0;
-        tKey.endColumnNumber=1;
-        tKey.def=BlocCommentsPattern.DEFAULT;
-
+        tKey.startCharacterNumber = 0;
+        tKey.endCharacterNumber = 1;
+        tKey.startLineNumber = 0;
+        tKey.endLineNumber = 0;
+        tKey.startColumnNumber = 0;
+        tKey.endColumnNumber = 1;
+        tKey.def = BlocCommentsPattern.DEFAULT;
 
         @SuppressWarnings("unchecked")
         int ndx = Collections.binarySearch((List) tokens, tKey);
@@ -277,16 +285,16 @@ public class JSyntaxDocument extends PlainDocument {
     /**
      * This is used to return the other part of a paired token in the document.
      * A paired part has token.pairValue &lt;&gt; 0, and the paired token will
-     * have the negative of t.pairValue.
-     * This method properly handles nesting of same pairValues, but overlaps
-     * are not checked.
-     * if The document does not contain a paired
+     * have the negative of t.pairValue. This method properly handles nesting of
+     * same pairValues, but overlaps are not checked. if The document does not
+     * contain a paired
+     *
      * @param t
      * @return the other pair's token, or null if nothing is found.
      */
     public JToken getPairFor(JToken t) {
 //        if(true){
-            return null;
+        return null;
 //        }
 //        if (t == null || t.pairValue == 0) {
 //            return null;
@@ -336,9 +344,11 @@ public class JSyntaxDocument extends PlainDocument {
             parse();
         }
     }
+
     /**
-     * Helper method to get the length of an element and avoid getting
-     * a too long element at the end of the document
+     * Helper method to get the length of an element and avoid getting a too
+     * long element at the end of the document
+     *
      * @param e
      * @return
      */
@@ -371,9 +381,9 @@ public class JSyntaxDocument extends PlainDocument {
 //        readUnlock();
 //        return result.toString();
 //    }
-
     /**
      * Returns the starting position of the line at pos
+     *
      * @param pos
      * @return starting position of the line
      */
@@ -382,9 +392,9 @@ public class JSyntaxDocument extends PlainDocument {
     }
 
     /**
-     * Returns the end position of the line at pos.
-     * Does a bounds check to ensure the returned value does not exceed
-     * document length
+     * Returns the end position of the line at pos. Does a bounds check to
+     * ensure the returned value does not exceed document length
+     *
      * @param pos
      * @return
      */
@@ -399,6 +409,7 @@ public class JSyntaxDocument extends PlainDocument {
 
     /**
      * Return the number of lines in this document
+     *
      * @return
      */
     public int getLineCount() {
@@ -408,7 +419,8 @@ public class JSyntaxDocument extends PlainDocument {
     }
 
     /**
-     * Return the line number at given position.  The line numbers are zero based
+     * Return the line number at given position. The line numbers are zero based
+     *
      * @param pos
      * @return
      */
@@ -416,6 +428,7 @@ public class JSyntaxDocument extends PlainDocument {
         int lineNr = getDefaultRootElement().getElementIndex(pos);
         return lineNr;
     }
+
     /**
      * This will discard all undoable edits
      */
@@ -423,11 +436,10 @@ public class JSyntaxDocument extends PlainDocument {
         undo.discardAllEdits();
     }
 
-
     @Override
     public String toString() {
-        return "JSyntaxDocument(" + ((tokens == null) ? 0 : tokens.size()) + " tokens)@" +
-                hashCode();
+        return "JSyntaxDocument(" + ((tokens == null) ? 0 : tokens.size()) + " tokens)@"
+                + hashCode();
     }
 
 }
