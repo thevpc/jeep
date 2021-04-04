@@ -173,6 +173,9 @@ public class JSyntaxUtils {
         } catch (BadLocationException e) {
             return -1;
         }
+        if(r==null){
+            return -1;
+        }
         int start = editor.viewToModel(new Point(0, r.y));
         int column = pos - start;
         return column;
