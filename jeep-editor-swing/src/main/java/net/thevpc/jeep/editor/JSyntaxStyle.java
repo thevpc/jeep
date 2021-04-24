@@ -15,23 +15,23 @@ public final class JSyntaxStyle {
     public static final int JAGGED = 32;
     public static final int UNDERLINE = 64;
     public static final int CROSS_OUT = 128;
-    private Color color;
-    private Color boxColor = Color.RED;
-    private Color fillColor = Color.decode("#EEEEEE");
+    private ColorResource color;
+    private ColorResource boxColor = ColorResource.of(Color.RED);
+    private ColorResource fillColor = ColorResource.of(Color.decode("#EEEEEE"));
     private int fontStyle;
 
     public JSyntaxStyle() {
         super();
     }
 
-    public JSyntaxStyle(Color color, boolean bold, boolean italic) {
+    public JSyntaxStyle(ColorResource color, boolean bold, boolean italic) {
         super();
         this.color = color;
         setBold(bold);
         setItalic(italic);
     }
 
-    public JSyntaxStyle(Color color, int fontStyle) {
+    public JSyntaxStyle(ColorResource color, int fontStyle) {
         super();
         this.color = color;
         this.fontStyle = fontStyle;
@@ -42,7 +42,7 @@ public final class JSyntaxStyle {
         if (parts.length != 2) {
             throw new IllegalArgumentException("style not correct format: " + str);
         }
-        this.color = new Color(Integer.decode(parts[0]));
+        this.color = ColorResource.of(new Color(Integer.decode(parts[0])));
         this.fontStyle = Integer.decode(parts[1]);
     }
 
@@ -61,28 +61,32 @@ public final class JSyntaxStyle {
     }
 
     public String getColorString() {
-        return String.format("0x%06x", color.getRGB() & 0x00ffffff);
+        return String.format("0x%06x", color.get().getRGB() & 0x00ffffff);
     }
 
+    public JSyntaxStyle setColorString(ColorResource color) {
+        this.color = color;
+        return this;
+    }
     public JSyntaxStyle setColorString(String color) {
-        this.color = Color.decode(color);
+        this.color = ColorResource.of(Color.decode(color));
         return this;
     }
 
-    public Color getBoxColor() {
+    public ColorResource getBoxColor() {
         return boxColor;
     }
 
-    public JSyntaxStyle setBoxColor(Color boxColor) {
+    public JSyntaxStyle setBoxColor(ColorResource boxColor) {
         this.boxColor = boxColor;
         return this;
     }
 
-    public Color getFillColor() {
+    public ColorResource getFillColor() {
         return fillColor;
     }
 
-    public JSyntaxStyle setFillColor(Color fillColor) {
+    public JSyntaxStyle setFillColor(ColorResource fillColor) {
         this.fillColor = fillColor;
         return this;
     }
@@ -109,11 +113,11 @@ public final class JSyntaxStyle {
         return this;
     }
 
-    public Color getColor() {
+    public ColorResource getColor() {
         return color;
     }
 
-    public JSyntaxStyle setColor(Color color) {
+    public JSyntaxStyle setColor(ColorResource color) {
         this.color = color;
         return this;
     }
@@ -143,17 +147,18 @@ public final class JSyntaxStyle {
         int rW = w + 2;
         int rH = h;
         if ((getFontStyle() & FILLED) != 0) {
-            Color c = getFillColor();
+            ColorResource cr = getFillColor();
+            Color c = cr==null?null:cr.get();
             if (c == null) {
                 c = Color.decode("#EEEEEE");
             }
             graphics.setColor(c);
             graphics.fillRect(rX, rY, rW, rH);
         }
-        graphics.setColor(getColor());
+        graphics.setColor(getColor()==null?null:getColor().get());
         x = Utilities.drawTabbedText(segment, x, y, graphics, e, startOffset);
         if ((getFontStyle() & BOXED) != 0) {
-            Color c = getBoxColor();
+            Color c = getBoxColor()==null?null:getBoxColor().get();
             if (c == null) {
                 c = Color.RED;
             }
@@ -161,21 +166,21 @@ public final class JSyntaxStyle {
             graphics.drawRect(rX, rY, rW, rH);
         }
         if ((getFontStyle() & JAGGED) != 0) {
-            Color c = getBoxColor();
+            Color c = getBoxColor()==null?null:getBoxColor().get();
             if (c == null) {
                 c = Color.RED;
             }
             paintJaggedLine(graphics, rY + rH, rX, rX + rW, c);
         }
         if ((getFontStyle() & UNDERLINE) != 0) {
-            Color c = getBoxColor();
+            Color c = getBoxColor()==null?null:getBoxColor().get();
             if (c == null) {
                 c = Color.RED;
             }
             paintUnderline(graphics, rY + rH, rX, rX + rW, c);
         }
         if ((getFontStyle() & CROSS_OUT) != 0) {
-            Color c = getBoxColor();
+            Color c = getBoxColor()==null?null:getBoxColor().get();
             if (c == null) {
                 c = Color.RED;
             }

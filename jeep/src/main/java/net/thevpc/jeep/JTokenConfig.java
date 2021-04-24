@@ -27,7 +27,7 @@ public interface JTokenConfig {
 
     boolean isParsetIntNumber();
 
-    JTokenConfig setParsetIntNumber(boolean acceptIntNumber);
+    JTokenConfig setParseIntNumber(boolean acceptIntNumber);
 
     JTokenConfig setParseWhitespaces(boolean parseWhitespaces);
 
@@ -91,6 +91,8 @@ public interface JTokenConfig {
     JTokenConfig setParseCStyleBlockComments();
 
     JTokenConfig setParseCStyleLineComments();
+    
+    JTokenConfig setParseBashStyleLineComments();
 
     JTokenConfig setBlockComments(String blockCommentStart, String blockCommentEnd);
 

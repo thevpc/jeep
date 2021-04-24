@@ -3,6 +3,7 @@ package net.thevpc.jeep;
 import net.thevpc.jeep.impl.JEnum;
 import net.thevpc.jeep.impl.JEnumDefinition;
 import net.thevpc.jeep.impl.JEnumTypeRegistry;
+import net.thevpc.jeep.impl.JEnumTypes;
 
 public final class JTokenType extends JEnum {
 
@@ -33,8 +34,7 @@ public final class JTokenType extends JEnum {
     public static final int TT_WHITESPACE = -98;
     public static final int TT_ERROR = -99;
     public static final int TT_NOTHING = -100;
-    public static final JEnumDefinition<JTokenType> JTOKEN_TYPES = JEnumTypeRegistry.INSTANCE.register(JTokenType.class)
-            .addConstIntFields(JTokenType.class, f -> f.getName().startsWith("TT_"));
+    public static final JEnumDefinition<JTokenType> JTOKEN_TYPES = JEnumTypes.of(JTokenType.class);
 
     public static class Enums {
 

@@ -2,7 +2,7 @@ package net.thevpc.jeep;
 
 import net.thevpc.jeep.impl.JEnum;
 import net.thevpc.jeep.impl.JEnumDefinition;
-import net.thevpc.jeep.impl.JEnumTypeRegistry;
+import net.thevpc.jeep.impl.JEnumTypes;
 
 public final class JTypeKind extends JEnum {
     public static final class Ids {
@@ -15,8 +15,7 @@ public final class JTypeKind extends JEnum {
         }
     }
 
-    public static final JEnumDefinition<JTypeKind> _DEFINITIONS = JEnumTypeRegistry.INSTANCE.register(JTypeKind.class)
-            .addConstIntFields(JTypeKind.Ids.class, f -> true);
+    public static final JEnumDefinition<JTypeKind> _DEFINITIONS = JEnumTypes.register(JTypeKind.class).addInts(Ids.class);
 
     public static final JTypeKind CLASS =   _DEFINITIONS.valueOf("CLASS");
     public static final JTypeKind INTERFACE=   _DEFINITIONS.valueOf("INTERFACE");

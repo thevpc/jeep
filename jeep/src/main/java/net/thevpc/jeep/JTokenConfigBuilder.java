@@ -64,7 +64,7 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
         lineComment = null;
         blockCommentStart = null;
         blockCommentEnd = null;
-        operators.clear();;
+        operators.clear();
         patterns.clear();
         keywords.clear();
         idPattern = null;
@@ -286,7 +286,7 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setParsetIntNumber(boolean parseIntNumber) {
+    public JTokenConfig setParseIntNumber(boolean parseIntNumber) {
         this.parsetIntNumber = parseIntNumber;
         readOnlyCopy = null;
         return this;
@@ -315,6 +315,12 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     public JTokenConfig setParseCStyleLineComments() {
         return setLineComment("//");
     }
+
+    @Override
+    public JTokenConfig setParseBashStyleLineComments() {
+        return setLineComment("#");
+    }
+    
 
     @Override
     public JTokenConfig setBlockComments(String blockCommentStart, String blockCommentEnd) {

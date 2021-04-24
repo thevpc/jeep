@@ -59,6 +59,15 @@ public class JEditorPaneBuilder {
         return this;
     }
 
+    public JScrollPane scrollPane() {
+        JComponent c = component();
+        JEditorPane e = editor();
+        if(e.getParent() instanceof JViewport){
+            return (JScrollPane)e.getParent().getParent();
+        }
+        return null;
+    }
+    
     public JComponent component() {
         if (component == null) {
             JEditorPane jEditorPane = editor();

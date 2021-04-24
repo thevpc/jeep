@@ -3,7 +3,6 @@ package net.thevpc.jeep.core.tokens;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.tokens.AbstractTokenPattern;
 import net.thevpc.jeep.impl.tokens.JTokenId;
-import net.thevpc.jeep.*;
 
 public abstract class SimpleTokenPattern extends AbstractTokenPattern {
     protected JTokenDef info;

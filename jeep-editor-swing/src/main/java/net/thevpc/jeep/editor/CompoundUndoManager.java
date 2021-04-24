@@ -15,7 +15,7 @@ import javax.swing.undo.UndoableEdit;
 public class CompoundUndoManager extends UndoManager {
 
     /**
-     * Delay between consequtive edits in ms where edits are added together.
+     * Delay between consecutive edits in ms where edits are added together.
      * If the delay is greater than this, then separate undo operations are
      * done, otherwise they are combined.
      */

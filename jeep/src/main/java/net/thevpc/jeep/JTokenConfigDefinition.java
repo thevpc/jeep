@@ -65,15 +65,15 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
             this.lineComment = null;
             this.blockCommentStart = null;
             this.blockCommentEnd = null;
-            this.operators =Collections.emptySet();
+            this.operators = Collections.emptySet();
 //                    Collections.unmodifiableSet(
 //                    JTokenConfigBuilder._defaultOperators()
 //            );
             this.keywords = Collections.emptySet();
             this.patterns = Collections.emptyList();
             this.caseSensitive = true;
-            this.idPattern =null;
-            this.parseWhitespaces =false;
+            this.idPattern = null;
+            this.parseWhitespaces = false;
 //                    JTokenConfigBuilder.DEFAULT_ID_PATTERN;
         }
     }
@@ -151,7 +151,6 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
         return quoteAnti;
     }
 
-
     public String getLineComment() {
         return lineComment;
     }
@@ -174,7 +173,6 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     // exceptions for writes
-
     private JTokenConfig throwReadOnly() {
         throw new JParseException("This is a read only copy of Token configuration");
     }
@@ -205,7 +203,7 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     @Override
-    public JTokenConfig setParsetIntNumber(boolean acceptIntNumber) {
+    public JTokenConfig setParseIntNumber(boolean acceptIntNumber) {
         return throwReadOnly();
     }
 
@@ -230,6 +228,11 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     @Override
+    public JTokenConfig setParseBashStyleLineComments() {
+        return throwReadOnly();
+    }
+
+    @Override
     public JTokenConfig setParseCStyleLineComments() {
         return throwReadOnly();
     }
@@ -248,7 +251,6 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     public JTokenConfig setIdPattern(JTokenPattern pattern) {
         return throwReadOnly();
     }
-
 
     @Override
     public JTokenConfig setLineComment(String lineComment) {

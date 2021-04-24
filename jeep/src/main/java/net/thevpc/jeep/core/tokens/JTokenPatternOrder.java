@@ -14,6 +14,7 @@ public final class JTokenPatternOrder implements Comparable<JTokenPatternOrder>{
     public static final JTokenPatternOrder ORDER_OPERATOR = valueOf(600, "ORDER_OPERATOR");
     public static final JTokenPatternOrder ORDER_IDENTIFIER = valueOf(700, "ORDER_IDENTIFIER");
     public static final JTokenPatternOrder ORDER_WHITESPACE = valueOf(800, "ORDER_WHITESPACE");
+    public static final JTokenPatternOrder ORDER_LAST = valueOf(Integer.MAX_VALUE, "ORDER_LAST");
 
     private String name;
     private int value;

@@ -70,18 +70,24 @@ public class LineNumbersRuler extends JPanel
         return e;
     }
 
+    public void plafChanged() {
+        Color foreground = Color.darkGray;//config.getColor(PROPERTY_FOREGROUND, Color.BLACK);
+        setForeground(foreground);
+        int right = DEFAULT_R_MARGIN;//config.getInteger(PROPERTY_RIGHT_MARGIN, DEFAULT_R_MARGIN);
+        int left  = DEFAULT_L_MARGIN;//config.getInteger(PROPERTY_LEFT_MARGIN , DEFAULT_L_MARGIN);
+        Color lb = UIManager.getColor("Label.background");
+        Color lf = UIManager.getColor("Label.foreground");
+        Color back = lb;//config.getColor(PROPERTY_BACKGROUND, Color.WHITE);
+        setBackground(back);
+        setForeground(lf);
+        setBorder(BorderFactory.createEmptyBorder(0, left, 0, right));
+        currentLineColor = back;//config.getColor(PROPERTY_CURRENT_BACK, back);
+    }
+    
     public void install(final JEditorPane editor) {
         this.editor = editor;
 
-        int right = DEFAULT_R_MARGIN;//config.getInteger(PROPERTY_RIGHT_MARGIN, DEFAULT_R_MARGIN);
-        int left  = DEFAULT_L_MARGIN;//config.getInteger(PROPERTY_LEFT_MARGIN , DEFAULT_L_MARGIN);
-        Color foreground = Color.darkGray;//config.getColor(PROPERTY_FOREGROUND, Color.BLACK);
-        setForeground(foreground);
-        Color back = new Color(240, 240, 240);//config.getColor(PROPERTY_BACKGROUND, Color.WHITE);
-        setBackground(back);
-        setBorder(BorderFactory.createEmptyBorder(0, left, 0, right));
-        currentLineColor = back;//config.getColor(PROPERTY_CURRENT_BACK, back);
-
+        plafChanged();
 
         setFont(editor.getFont());
 
@@ -110,6 +116,12 @@ public class LineNumbersRuler extends JPanel
             @Override
             public void ancestorMoved(AncestorEvent event) {
 
+            }
+        });
+        UIManager.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                plafChanged();
             }
         });
         JScrollPane sp = getScrollPane(editor);

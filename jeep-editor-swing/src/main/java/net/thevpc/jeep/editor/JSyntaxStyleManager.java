@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 /**
  * The STyles to use for each TokenType.  The defaults are created here, and
  * then the resource META-INF/services/syntaxstyles.properties is read and
- * merged.  You can also pass a properties instance and merge your prefered
+ * merged.  You can also pass a properties instance and merge your preferred
  * styles into the default styles
  *
  * @author Ayman
@@ -45,7 +45,9 @@ public class JSyntaxStyleManager {
     private Color caretColor=Color.BLACK;
     private static final Logger LOG = Logger.getLogger(JSyntaxStyleManager.class.getName());
 
-    private static JSyntaxStyle DEFAULT_STYLE = new JSyntaxStyle(Color.BLACK, Font.PLAIN);
+    private static JSyntaxStyle DEFAULT_STYLE = new JSyntaxStyle(
+            ColorResource.of("TextPane.foreground", Color.BLACK)
+            , Font.PLAIN);
     private static Font defaultFont;
     private Font font;
     private boolean useDefaultFont=true;
@@ -55,7 +57,7 @@ public class JSyntaxStyleManager {
             JSyntaxStyleManager jssm = JSyntaxStyleManager.this;
             JSyntaxStyle s = jssm.getTokenIdStyle(id);
 
-            Color c = s.getColor();
+            Color c = s.getColor()==null?null:s.getColor().get();
             String cs=c==null?null:String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue());
             return new HtmlStyle(cs,s.getFontStyle());
         }
@@ -152,7 +154,7 @@ public class JSyntaxStyleManager {
     public void setGraphicsStyle(Graphics g, int type) {
         JSyntaxStyle ss = getTokenIdStyle(type);
         g.setFont(g.getFont().deriveFont(ss.getFontStyle()));
-        g.setColor(ss.getColor());
+        g.setColor(ss.getColor().get());
     }
 
     /**

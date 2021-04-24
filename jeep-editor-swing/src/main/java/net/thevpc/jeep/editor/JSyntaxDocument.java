@@ -16,6 +16,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.Segment;
@@ -28,7 +29,9 @@ import javax.swing.undo.UndoManager;
  *
  * @author Ayman Al-Sairafi
  */
-public class JSyntaxDocument extends PlainDocument {
+public class JSyntaxDocument extends DefaultStyledDocument
+//        PlainDocument 
+{
 
     // our logger instance...
     private static final Logger LOG = Logger.getLogger(JSyntaxDocument.class.getName());

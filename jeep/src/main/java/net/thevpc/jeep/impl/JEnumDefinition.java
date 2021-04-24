@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-public class JEnumDefinition<T extends JEnum>{
+public class JEnumDefinition<T extends JEnum> {
 
     private final String name;
     private final Class<T> associatedClass;
@@ -25,10 +25,20 @@ public class JEnumDefinition<T extends JEnum>{
     private Map<Integer, T> v2i = new LinkedHashMap<>();
     private Map<String, T> n2i = new LinkedHashMap<>();
 
+    public JEnumDefinition<T> addInts(Class cls) {
+        return addConstIntFields(cls, null);
+    }
+
     public JEnumDefinition<T> addConstIntFields(Class cls, Predicate<Field> filter) {
         for (Field field : cls.getFields()) {
             int m = field.getModifiers();
-            if (Modifier.isStatic(m) && Modifier.isPublic(m)) {
+            if (filter == null) {
+                filter = (f) -> !f.getName().startsWith("_") && f.getName().equals(f.getName().toUpperCase());
+            }
+            if (Modifier.isStatic(m)
+                    && Modifier.isPublic(m)
+                    && Modifier.isFinal(m)
+                    && field.getType().equals(int.class)) {
                 if (filter == null || filter.test(field)) {
                     try {
                         addIntField(field.getName(), field.getInt(null));
@@ -57,6 +67,10 @@ public class JEnumDefinition<T extends JEnum>{
         return i;
     }
 
+    public T of(String name) {
+        return valueOf(name);
+    }
+    
     public T valueOf(String name) {
         T i = find(name);
         if (i == null) {
