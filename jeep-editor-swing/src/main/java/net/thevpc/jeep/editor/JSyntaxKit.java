@@ -29,7 +29,7 @@ public class JSyntaxKit extends StyledEditorKit implements ViewFactory {
     public static final String UI_KEY_FORE2 = "Objects.Green;OptionPane.questionDialog.titlePane.background;#green";
     public static final String UI_KEY_FORE3 = "Objects.GreenAndroid;OptionPane.questionDialog.border.background;#darkgreen";
     public static final String UI_KEY_FORE4 = "Objects.Gray;MenuItem.background;#gray";
-    public static final String UI_KEY_FORE5 = "Objects.Pink;OptionPane.errorDialog.titlePane.shadow;#pink";
+    public static final String UI_KEY_FORE5 = "Objects.Pink;#pink";
     public static final String UI_KEY_FORE6 = "Objects.Purple;OptionPane.errorDialog.border.background;#purple";
     public static final String UI_KEY_FORE7 = "Objects.Red;OptionPane.errorDialog.titlePane.background;#red";
     public static final String UI_KEY_FORE8 = "Objects.RedStatus;OptionPane.errorDialog.border.background;#darkred";
