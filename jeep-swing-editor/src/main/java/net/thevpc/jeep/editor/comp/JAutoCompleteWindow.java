@@ -127,7 +127,7 @@ public class JAutoCompleteWindow extends JWindow implements CaretListener,
             ));
         }
         footer.setText(completionProposals.size()+" possibilities.");
-        System.out.println(ch);
+//        System.out.println(ch);
     }
 
     protected FastListModel<JCompletionProposal> getListModel() {

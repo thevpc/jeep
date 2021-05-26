@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.jeep</groupId>
-    <artifactId>jeep-editor-swing</artifactId>
+    <artifactId>jeep-swing-editor</artifactId>
     <version>1.2.7</version>
     <packaging>jar</packaging>
-    <name>net.thevpc.jeep-editor-swing</name>
+    <name>net.thevpc.jeep.jeep-swing-editor</name>
     <url>https://github.com/thevpc/upa/wiki</url>
     <description>Java Enhanced Expression Parser (JEEP)</description>
     <!-- Java Enhanced Expression parser -->
