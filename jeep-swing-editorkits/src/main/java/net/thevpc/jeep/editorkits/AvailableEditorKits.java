@@ -9,17 +9,20 @@ public class AvailableEditorKits {
     private static Map<String, Supplier<EditorKit>> available = new HashMap<>();
 
     static {
-        register("text/x-cppsrc",()->new CppLangJSyntaxKit(true));
-        register("text/x-c++hdr",()->new CppLangJSyntaxKit(true));
-        register("text/x-csrc",()->new CppLangJSyntaxKit(false));
-        register("text/java",()->new JavaJSyntaxKit());
-        register("text/x-java",()->new JavaJSyntaxKit());
-        register("text/javascript",()->new JavaJSyntaxKit());
-        register("text/markdown",()->new MarkdownJSyntaxKit());
-        register("text/x-nuts-text-format",()->new NTFJSyntaxKit());
-        register("application/x-bash",()->new ShellLangJSyntaxKit(true));
-        register("application/x-shellscript",()->new ShellLangJSyntaxKit(true));
-        register("application/x-hadra",()->new ShellLangJSyntaxKit(true));
+        register("text/x-c++src", () -> new CppLangJSyntaxKit(true));
+        register("text/x-c++hdr", () -> new CppLangJSyntaxKit(true));
+        register("text/x-csrc", () -> new CppLangJSyntaxKit(false));
+        register("text/java", () -> new JavaJSyntaxKit());
+        register("text/x-java", () -> new JavaJSyntaxKit());
+        register("text/javascript", () -> new JavaJSyntaxKit());
+        register("text/markdown", () -> new MarkdownJSyntaxKit());
+        register("text/x-nuts-text-format", () -> new NTFJSyntaxKit());
+        register("application/x-bash", () -> new ShellLangJSyntaxKit(true));
+        register("application/x-shellscript", () -> new ShellLangJSyntaxKit(true));
+        register("application/x-hadra", () -> new HadraJSyntaxKit());
+        register("application/x-bibtex", () -> new BibtexJSyntaxKit());
+        register("text/xml", () -> new XmlJSyntaxKit());
+        register("text/html", () -> new XmlJSyntaxKit());
     }
 
     public static Map<String, Supplier<EditorKit>> getAvailable() {
@@ -28,7 +31,7 @@ public class AvailableEditorKits {
 
     public static EditorKit create(String c) {
         Supplier<EditorKit> q = available.get(c);
-        if(q!=null){
+        if (q != null) {
             return q.get();
         }
         return null;

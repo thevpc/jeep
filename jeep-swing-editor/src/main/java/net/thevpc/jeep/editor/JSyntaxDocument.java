@@ -2,7 +2,7 @@ package net.thevpc.jeep.editor;
 
 import net.thevpc.jeep.JContext;
 import net.thevpc.jeep.JToken;
-import net.thevpc.jeep.core.tokens.BlocCommentsPattern;
+import net.thevpc.jeep.core.tokens.BlockCommentsPattern;
 
 import java.io.CharArrayReader;
 import java.util.ArrayList;
@@ -155,7 +155,7 @@ public class JSyntaxDocument extends DefaultStyledDocument
                 token.endLineNumber = 0;
                 token.startColumnNumber = start;
                 token.endColumnNumber = end;
-                token.def = BlocCommentsPattern.DEFAULT;
+                token.def = BlockCommentsPattern.DEFAULT;
                 ndx = Collections.binarySearch((List) tokens, token);
                 // we will probably not find the exact token...
                 if (ndx < 0) {
@@ -267,7 +267,7 @@ public class JSyntaxDocument extends DefaultStyledDocument
         tKey.endLineNumber = 0;
         tKey.startColumnNumber = 0;
         tKey.endColumnNumber = 1;
-        tKey.def = BlocCommentsPattern.DEFAULT;
+        tKey.def = BlockCommentsPattern.DEFAULT;
 
         @SuppressWarnings("unchecked")
         int ndx = Collections.binarySearch((List) tokens, tKey);
