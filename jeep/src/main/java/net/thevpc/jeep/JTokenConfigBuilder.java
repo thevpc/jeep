@@ -312,6 +312,11 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
     }
 
     @Override
+    public JTokenConfig setParseXmlStyleBlockComments() {
+        return setBlockComments("<!--","-->");
+    }
+
+    @Override
     public JTokenConfig setParseCStyleLineComments() {
         return setLineComment("//");
     }
@@ -331,7 +336,7 @@ public final class JTokenConfigBuilder implements Cloneable, JTokenConfig {
             blockCommentEnd = null;
         }
         if ((blockCommentStart == null) != (blockCommentEnd == null)) {
-            throw new IllegalArgumentException("invalid Block comment separators " + blockCommentStart + " " + blockCommentEnd);
+            throw new IllegalArgumentException("invalid Bloc comment separators " + blockCommentStart + " " + blockCommentEnd);
         }
         this.blockCommentStart = blockCommentStart;
         this.blockCommentEnd = blockCommentEnd;

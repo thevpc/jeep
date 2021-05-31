@@ -6,44 +6,30 @@ import net.thevpc.jeep.JTokenConfigBuilder;
 import net.thevpc.jeep.JTokenType;
 import net.thevpc.jeep.core.DefaultJeep;
 import net.thevpc.jeep.core.JTokenState;
-import net.thevpc.jeep.core.tokens.*;
+import net.thevpc.jeep.core.tokens.JTokenDef;
+import net.thevpc.jeep.core.tokens.JTokenPatternOrder;
+import net.thevpc.jeep.core.tokens.JavaIdPattern;
+import net.thevpc.jeep.core.tokens.SeparatorsPattern;
 import net.thevpc.jeep.editor.ColorResource;
 import net.thevpc.jeep.editor.JSyntaxKit;
 import net.thevpc.jeep.editor.JSyntaxStyle;
 import net.thevpc.jeep.editor.JSyntaxStyleManager;
 import net.thevpc.jeep.impl.JEnumDefinition;
-import net.thevpc.jeep.impl.JEnumTypeRegistry;
+import net.thevpc.jeep.impl.JEnumTypes;
 import net.thevpc.jeep.impl.tokens.JTokenizerImpl;
 import net.thevpc.jeep.impl.tokens.JavaNumberTokenEvaluator;
-import net.thevpc.jeep.impl.tokens.RegexpBasedTokenPattern;
 
-import java.awt.*;
-import java.util.regex.Pattern;
-
-public class BibtexJSyntaxKit extends JSyntaxKit {
+public class SqlJSyntaxKit extends JSyntaxKit {
 
     public static final int OFFSET_LEFT_PARENTHESIS = 80;
-    public static final int OFFSET_RIGHT_CURLY_BRACKET = 88;
     public static final int OFFSET_COMMA = 90;
-    public static final int TOKEN_AT = -300;
-    public static final JTokenDef TOKEN_DEF_AT = new JTokenDef(
-            TOKEN_AT,
-            "@def",
-            TOKEN_AT, "@def", "@def");
-
-    public static final int TOKEN_CURL_TEXT = -301;
-    public static final JTokenDef TOKEN_DEF_CURL_TEXT = new JTokenDef(
-            TOKEN_CURL_TEXT,
-            "curl-text",
-            TOKEN_CURL_TEXT, "{text}", "{text}");
+    public static final int OFFSET_RIGHT_CURLY_BRACKET = 88;
 
     public static class LangState extends JTokenState {
 
         public static final int STATE_DEFAULT = 1;
 
-        public static final JEnumDefinition<LangState> _ET = JEnumTypeRegistry.INSTANCE
-                .register(LangState.class)
-                .addConstIntFields(LangState.class, f -> f.getName().startsWith("STATE_"));
+        public static final JEnumDefinition<LangState> _ET = JEnumTypes.of(LangState.class);
 
         public static class Enums {
 
@@ -56,49 +42,71 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
     }
 
     private static JContext langContext;
-    public BibtexJSyntaxKit() {
+
+    public SqlJSyntaxKit() {
         super();
         JContext jContext = getSingleton();
         JSyntaxStyleManager styles = new JSyntaxStyleManager();
         JSyntaxStyle keywords = new JSyntaxStyle("RESERVED_WORD",ColorResource.of(UI_KEY_RESERVED_WORD), JSyntaxStyle.BOLD);
-        JSyntaxStyle keywords2 = new JSyntaxStyle("RESERVED_WORD2",ColorResource.of(UI_KEY_RESERVED_WORD2), JSyntaxStyle.BOLD);
         JSyntaxStyle comments = new JSyntaxStyle("COMMENTS",ColorResource.of(UI_KEY_COMMENTS), JSyntaxStyle.ITALIC);
         JSyntaxStyle strings = new JSyntaxStyle("LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
-        JSyntaxStyle strings2 = new JSyntaxStyle("LITERAL_STRING2",ColorResource.of(UI_KEY_LITERAL_STRING2), JSyntaxStyle.PLAIN);
         JSyntaxStyle numbers = new JSyntaxStyle("LITERAL_NUMBER",ColorResource.of(UI_KEY_LITERAL_NUMBER), JSyntaxStyle.PLAIN);
         JSyntaxStyle operators = new JSyntaxStyle("OPERATOR",ColorResource.of(UI_KEY_OPERATOR), JSyntaxStyle.PLAIN);
         JSyntaxStyle separators = new JSyntaxStyle("SEPARATOR",ColorResource.of(UI_KEY_SEPARATOR), JSyntaxStyle.PLAIN);
         JSyntaxStyle regexs = new JSyntaxStyle("LITERAL_REGEXP",ColorResource.of(UI_KEY_LITERAL_REGEXP), JSyntaxStyle.PLAIN);
         JSyntaxStyle temporals = new JSyntaxStyle("LITERAL_DATE",ColorResource.of(UI_KEY_LITERAL_DATE), JSyntaxStyle.PLAIN);
-        JSyntaxStyle directive = new JSyntaxStyle("DIRECTIVE",ColorResource.of(UI_KEY_DIRECTIVE), JSyntaxStyle.PLAIN);
         JSyntaxStyle primitiveTypes = new JSyntaxStyle("TYPE_PRIMITIVE",ColorResource.of(UI_KEY_TYPE_PRIMITIVE), JSyntaxStyle.BOLD);
         JSyntaxStyle trueFalseLiterals = new JSyntaxStyle("LITERAL_BOOLEAN",ColorResource.of(UI_KEY_LITERAL_BOOLEAN), JSyntaxStyle.BOLD);
         for (JTokenDef o : jContext.tokens().tokenDefinitions()) {
             switch (o.ttype) {
                 case JTokenType.TT_KEYWORD: {
-                    switch (o.imageLayout) {
+                    switch (o.idName) {
+                        case "int":
+                        case "void":
+                        case "boolean":
+                        case "char":
+                        case "byte":
+                        case "short":
+                        case "long":
+                        case "float":
+                        case "double": {
+                            styles.setTokenIdStyle(o.id, primitiveTypes);
+                            break;
+                        }
+                        case "select":
+                        case "insert":
+                        case "update":
+                        case "delete":
+                        case "into":
+                        case "from":
+                        case "group":
+                        case "by":
+                        case "having":
+                        case "order":
+                        case "inner":
+                        case "join":
+                        case "left":
+                        case "outer":
+                        case "where":
+                        case "and":
+                        case "or":
+                        case "not":
+                        case "in":
+                        case "exists":
+                        case "cross":
+                        case "set":
+                        {
+                            styles.setTokenIdStyle(o.id, primitiveTypes);
+                            break;
+                        }
                         case "true":
-                        case "false": {
+                        case "false":
+                        case "null": {
                             styles.setTokenIdStyle(o.id, trueFalseLiterals);
-                            break;
-                        }
-                        case "@article":case "@book":case "@booklet"
-                                :case "@conference":case "@inbook":case "@incollection":
-                                    case "@manual":case "@mastersthesis":case "@misc":
-                                        case "@phdthesis":case "@proceedings":case "@techreport":case "@unpublished":{
-                            styles.setTokenIdStyle(o.id, keywords);
-                            break;
-                        }
-                        case "article":case "book":case "booklet"
-                                :case "conference":case "inbook":case "incollection":
-                                    case "manual":case "mastersthesis":case "misc":
-                                        case "phdthesis":case "proceedings":case "techreport":case "unpublished":{
-                            styles.setTokenIdStyle(o.id, keywords2);
                             break;
                         }
                         default: {
                             styles.setTokenIdStyle(o.id, keywords);
-                            break;
                         }
                     }
                     break;
@@ -133,14 +141,6 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
                     styles.setTokenIdStyle(o.id, temporals);
                     break;
                 }
-                case TOKEN_AT: {
-                    styles.setTokenIdStyle(o.id, directive);
-                    break;
-                }
-                case TOKEN_CURL_TEXT: {
-                    styles.setTokenIdStyle(o.id, strings2);
-                    break;
-                }
             }
         }
         setJcontext(jContext);
@@ -157,12 +157,12 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
                     .setParseWhitespaces(true)
                     .setParseIntNumber(true)
                     .setParseFloatNumber(true)
-                    .setParsetInfinity(false)
+                    .setParsetInfinity(true)
                     .setParseWhitespaces(true)
                     .setParseDoubleQuotesString(true)
                     .setParseSimpleQuotesString(true)
-//                    .setParseBashStyleLineComments()
-            ;
+                    .setParseCStyleBlockComments()
+                    .setParseCStyleLineComments();
             config.setIdPattern(new JavaIdPattern());
             config.addPatterns(new SeparatorsPattern("Separators1", OFFSET_LEFT_PARENTHESIS, JTokenType.Enums.TT_GROUP_SEPARATOR,
                     "(", ")", "[", "]", "{")
@@ -178,31 +178,35 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
             config.addPatterns(new SeparatorsPattern("Separators3", OFFSET_COMMA,
                     JTokenPatternOrder.valueOf(JTokenPatternOrder.ORDER_OPERATOR.getValue() - 1, "BEFORE_OPERATOR"),
                     JTokenType.Enums.TT_SEPARATOR,
-                    ",", ";", ":")
-            );
-            config.addPatterns(
-                    new RegexpBasedTokenPattern(TOKEN_DEF_AT, JTokenPatternOrder.ORDER_IDENTIFIER,
-                            Pattern.compile("@[a-zA-Z]+")
-                    )
-            );
-            config.addPatterns(
-                    new RegexpBasedTokenPattern(TOKEN_DEF_CURL_TEXT, JTokenPatternOrder.ORDER_STRING,
-                            Pattern.compile("[{][^{}=,]+[}]")
-                    )
+                    ",", ";", ":", "->", "@")
             );
 
+            //numbers
             config.setNumberEvaluator(new JavaNumberTokenEvaluator());
+            config.setNumberSuffixes(new char[]{'f', 'F', 'l', 'L'});
 
-            config.addKeywords("author", "title", "journal", "year", "number", "pages", "month", "note", "volume", "publisher", "volume","editor");
-            config.addKeywords("series", "address", "edition","month","isbn","booktitle","organization","chapter","institution","howpublished");
-            config.addKeywords("@article", "@book","@booklet","@conference","@inbook","@incollection","@manual","@mastersthesis","@misc","@phdthesis","@proceedings","@techreport","@unpublished");
-            config.addKeywords("article", "book","booklet","conference","inbook","incollection","manual","mastersthesis","misc","phdthesis","proceedings","techreport","unpublished");
-
+            config.addKeywords("select","insert","update","delete");
+            config.addKeywords("from", "where", "and", "or", "not", "in","into","set");
+            config.addKeywords("exists","having","order","by","group");
+            config.addKeywords("inner","outer","cross","join");
+            config.addKeywords("begin","end","create","drop","alter","grant","deny");
             langContext.tokens().setConfig(config);
 
             langContext.operators().declareCStyleOperators();
 
-            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_1, "=");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_1, "=", "+=", "-=", "*=", "|=", "&=", "~=", "^=", "%=");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_3, "||");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_4, "&&");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_5, "|");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_6, "^");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_7, "&");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_8, "==", "!=");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_9, "<", ">", "<=", ">=");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_10, "<<", "<<<", ">>", ">>>");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_11, "+", "-");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_12, "*", "/", "%");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_13, "++", "--", "~");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_15, ".");
 
             langContext.operators().declareSpecialOperators("...");
 

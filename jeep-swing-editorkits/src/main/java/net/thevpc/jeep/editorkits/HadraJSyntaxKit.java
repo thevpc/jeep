@@ -19,46 +19,27 @@ import net.thevpc.jeep.impl.JEnumTypes;
 import net.thevpc.jeep.impl.tokens.JTokenizerImpl;
 import net.thevpc.jeep.impl.tokens.JavaNumberTokenEvaluator;
 
-import java.awt.*;
-
 public class HadraJSyntaxKit extends JSyntaxKit {
 
     public static final int OFFSET_LEFT_PARENTHESIS = 80;
     public static final int OFFSET_COMMA = 90;
     public static final int OFFSET_RIGHT_CURLY_BRACKET = 88;
-
-    public static class LangState extends JTokenState {
-
-        public static final int STATE_DEFAULT = 1;
-
-        public static final JEnumDefinition<LangState> _ET = JEnumTypes.of(LangState.class);
-
-        public static class Enums {
-
-            public static final LangState STATE_DEFAULT = _ET.valueOf("STATE_DEFAULT");
-        }
-
-        private LangState(JEnumDefinition type, String name, int value) {
-            super(type, name, value);
-        }
-    }
-
     private static JContext langContext;
 
     public HadraJSyntaxKit() {
         super();
         JContext jContext = getSingleton();
         JSyntaxStyleManager styles = new JSyntaxStyleManager();
-        JSyntaxStyle keywords = new JSyntaxStyle(ColorResource.of(UI_KEY_RESERVED_WORD, Color.decode("#735db7")), JSyntaxStyle.BOLD);
-        JSyntaxStyle comments = new JSyntaxStyle(ColorResource.of(UI_KEY_COMMENTS, Color.DARK_GRAY), JSyntaxStyle.ITALIC);
-        JSyntaxStyle strings = new JSyntaxStyle(ColorResource.of(UI_KEY_LITERAL_STRING, Color.decode("#2b9946")), JSyntaxStyle.BOLD);
-        JSyntaxStyle numbers = new JSyntaxStyle(ColorResource.of(UI_KEY_LITERAL_NUMBER, Color.RED.darker()), JSyntaxStyle.PLAIN);
-        JSyntaxStyle operators = new JSyntaxStyle(ColorResource.of(UI_KEY_OPERATOR, Color.cyan.darker()), JSyntaxStyle.PLAIN);
-        JSyntaxStyle separators = new JSyntaxStyle(ColorResource.of(UI_KEY_SEPARATOR, Color.red), JSyntaxStyle.PLAIN);
-        JSyntaxStyle regexs = new JSyntaxStyle(ColorResource.of(UI_KEY_LITERAL_REGEXP, Color.MAGENTA.darker()), JSyntaxStyle.PLAIN);
-        JSyntaxStyle temporals = new JSyntaxStyle(ColorResource.of(UI_KEY_LITERAL_DATE, Color.pink.darker()), JSyntaxStyle.PLAIN);
-        JSyntaxStyle primitiveTypes = new JSyntaxStyle(ColorResource.of(UI_KEY_TYPE_PRIMITIVE, Color.decode("#aa557f")), JSyntaxStyle.BOLD);
-        JSyntaxStyle trueFalseLiterals = new JSyntaxStyle(ColorResource.of(UI_KEY_LITERAL_BOOLEAN, Color.decode("#f1a100")), JSyntaxStyle.BOLD);
+        JSyntaxStyle keywords = new JSyntaxStyle("RESERVED_WORD", ColorResource.of(UI_KEY_RESERVED_WORD), JSyntaxStyle.BOLD);
+        JSyntaxStyle comments = new JSyntaxStyle("COMMENTS", ColorResource.of(UI_KEY_COMMENTS), JSyntaxStyle.ITALIC);
+        JSyntaxStyle strings = new JSyntaxStyle("LITERAL_STRING", ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
+        JSyntaxStyle numbers = new JSyntaxStyle("LITERAL_NUMBER", ColorResource.of(UI_KEY_LITERAL_NUMBER), JSyntaxStyle.PLAIN);
+        JSyntaxStyle operators = new JSyntaxStyle("OPERATOR", ColorResource.of(UI_KEY_OPERATOR), JSyntaxStyle.PLAIN);
+        JSyntaxStyle separators = new JSyntaxStyle("KEY_SEPARATOR", ColorResource.of(UI_KEY_SEPARATOR), JSyntaxStyle.PLAIN);
+        JSyntaxStyle regexs = new JSyntaxStyle("LITERAL_REGEXP", ColorResource.of(UI_KEY_LITERAL_REGEXP), JSyntaxStyle.PLAIN);
+        JSyntaxStyle temporals = new JSyntaxStyle("LITERAL_DATE", ColorResource.of(UI_KEY_LITERAL_DATE), JSyntaxStyle.PLAIN);
+        JSyntaxStyle primitiveTypes = new JSyntaxStyle("TYPE_PRIMITIVE", ColorResource.of(UI_KEY_TYPE_PRIMITIVE), JSyntaxStyle.BOLD);
+        JSyntaxStyle trueFalseLiterals = new JSyntaxStyle("LITERAL_BOOLEAN", ColorResource.of(UI_KEY_LITERAL_BOOLEAN), JSyntaxStyle.BOLD);
         for (JTokenDef o : jContext.tokens().tokenDefinitions()) {
             switch (o.ttype) {
                 case JTokenType.TT_KEYWORD: {
@@ -196,7 +177,7 @@ public class HadraJSyntaxKit extends JSyntaxKit {
             langContext.operators().declareSpecialOperators("...");
 
             /*
-         * this is the default state, handling HL tokens
+             * this is the default state, handling HL tokens
              */
             JTokenConfigBuilder config_DEFAULT = new JTokenConfigBuilder(langContext.tokens().config());
             langContext.tokens().setFactory((reader, config1, context) -> {
@@ -207,6 +188,22 @@ public class HadraJSyntaxKit extends JSyntaxKit {
             });
         }
         return langContext;
+    }
+
+    public static class LangState extends JTokenState {
+
+        public static final int STATE_DEFAULT = 1;
+
+        public static final JEnumDefinition<LangState> _ET = JEnumTypes.of(LangState.class);
+
+        private LangState(JEnumDefinition type, String name, int value) {
+            super(type, name, value);
+        }
+
+        public static class Enums {
+
+            public static final LangState STATE_DEFAULT = _ET.valueOf("STATE_DEFAULT");
+        }
     }
 
 }

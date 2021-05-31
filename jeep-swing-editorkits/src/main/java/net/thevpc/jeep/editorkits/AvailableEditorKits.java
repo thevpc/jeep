@@ -23,6 +23,9 @@ public class AvailableEditorKits {
         register("application/x-bibtex", () -> new BibtexJSyntaxKit());
         register("text/xml", () -> new XmlJSyntaxKit());
         register("text/html", () -> new XmlJSyntaxKit());
+        register("application/x-latex", () -> new TexJSyntaxKit());
+        register("application/x-tex", () -> new TexJSyntaxKit());
+        register("application/sql", () -> new SqlJSyntaxKit());
     }
 
     public static Map<String, Supplier<EditorKit>> getAvailable() {

@@ -45,7 +45,8 @@ public class JSyntaxStyleManager {
     private Color caretColor=Color.BLACK;
     private static final Logger LOG = Logger.getLogger(JSyntaxStyleManager.class.getName());
 
-    private static JSyntaxStyle DEFAULT_STYLE = new JSyntaxStyle(
+    private static JSyntaxStyle NO_STYLE = new JSyntaxStyle("NO-STYLE");
+    private static JSyntaxStyle DEFAULT_STYLE = new JSyntaxStyle("DEFAULT",
             ColorResource.of("TextPane.foreground", Color.BLACK)
             , Font.PLAIN);
     private static Font defaultFont;
@@ -68,7 +69,7 @@ public class JSyntaxStyleManager {
     }
 
     public JSyntaxStyleManager() {
-        setTokenIdStyle(0,new JSyntaxStyle());
+        setTokenIdStyle(0,NO_STYLE);
     }
 
     public static Font getDefaultFont() {

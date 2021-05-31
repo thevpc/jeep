@@ -233,6 +233,11 @@ public final class JTokenConfigDefinition implements Cloneable, JTokenConfig {
     }
 
     @Override
+    public JTokenConfig setParseXmlStyleBlockComments() {
+        return throwReadOnly();
+    }
+
+    @Override
     public JTokenConfig setParseCStyleLineComments() {
         return throwReadOnly();
     }

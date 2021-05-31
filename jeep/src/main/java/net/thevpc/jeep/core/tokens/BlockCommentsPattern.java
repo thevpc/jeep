@@ -3,9 +3,8 @@ package net.thevpc.jeep.core.tokens;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.tokens.AbstractTokenPattern;
 import net.thevpc.jeep.impl.tokens.JTokenId;
-import net.thevpc.jeep.*;
 
-public class BlocCommentsPattern extends AbstractTokenPattern {
+public class BlockCommentsPattern extends AbstractTokenPattern {
 
     public static final JTokenDef DEFAULT=new JTokenDef(
             JTokenId.BLOCK_COMMENTS,
@@ -18,11 +17,11 @@ public class BlocCommentsPattern extends AbstractTokenPattern {
     private String end;
     private JTokenDef tokenDef;
 
-    public BlocCommentsPattern(String start, String end) {
+    public BlockCommentsPattern(String start, String end) {
         this(null,start,end);
     }
-    public BlocCommentsPattern(JTokenDef tokenDef, String start, String end) {
-        super(JTokenPatternOrder.ORDER_BLOCK_COMMENTS,tokenDef==null?"BlocComments":tokenDef.idName);
+    public BlockCommentsPattern(JTokenDef tokenDef, String start, String end) {
+        super(JTokenPatternOrder.ORDER_BLOCK_COMMENTS,tokenDef==null?"BlockComments":tokenDef.idName);
         this.tokenDef =tokenDef==null?DEFAULT : tokenDef;
         this.start = start;
         this.end = end;
@@ -51,7 +50,7 @@ public class BlocCommentsPattern extends AbstractTokenPattern {
 
             @Override
             public JTokenPattern pattern() {
-                return BlocCommentsPattern.this;
+                return BlockCommentsPattern.this;
             }
 
             @Override

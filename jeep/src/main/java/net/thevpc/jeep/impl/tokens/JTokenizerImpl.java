@@ -58,7 +58,7 @@ public class JTokenizerImpl extends AbstractJTokenizer {
         }
         if (config.getBlockCommentStart() != null && config.getBlockCommentStart().length() > 0
                 && config.getBlockCommentEnd() != null && config.getBlockCommentEnd().length() > 0) {
-            matchers.add(new BlocCommentsPattern(config.getBlockCommentStart(), config.getBlockCommentEnd()));
+            matchers.add(new BlockCommentsPattern(config.getBlockCommentStart(), config.getBlockCommentEnd()));
         }
         if (config.isParseSimpleQuotesString()) {
             matchers.add(StringPattern.SIMPLE_QUOTES());

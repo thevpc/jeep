@@ -94,6 +94,8 @@ public interface JTokenConfig {
     
     JTokenConfig setParseBashStyleLineComments();
 
+    JTokenConfig setParseXmlStyleBlockComments();
+
     JTokenConfig setBlockComments(String blockCommentStart, String blockCommentEnd);
 
     JTokenConfigDefinition readOnly();

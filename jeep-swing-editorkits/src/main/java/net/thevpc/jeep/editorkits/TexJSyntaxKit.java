@@ -6,7 +6,10 @@ import net.thevpc.jeep.JTokenConfigBuilder;
 import net.thevpc.jeep.JTokenType;
 import net.thevpc.jeep.core.DefaultJeep;
 import net.thevpc.jeep.core.JTokenState;
-import net.thevpc.jeep.core.tokens.*;
+import net.thevpc.jeep.core.tokens.JTokenDef;
+import net.thevpc.jeep.core.tokens.JTokenPatternOrder;
+import net.thevpc.jeep.core.tokens.JavaIdPattern;
+import net.thevpc.jeep.core.tokens.SeparatorsPattern;
 import net.thevpc.jeep.editor.ColorResource;
 import net.thevpc.jeep.editor.JSyntaxKit;
 import net.thevpc.jeep.editor.JSyntaxStyle;
@@ -20,22 +23,17 @@ import net.thevpc.jeep.impl.tokens.RegexpBasedTokenPattern;
 import java.awt.*;
 import java.util.regex.Pattern;
 
-public class BibtexJSyntaxKit extends JSyntaxKit {
+public class TexJSyntaxKit extends JSyntaxKit {
 
     public static final int OFFSET_LEFT_PARENTHESIS = 80;
     public static final int OFFSET_RIGHT_CURLY_BRACKET = 88;
     public static final int OFFSET_COMMA = 90;
-    public static final int TOKEN_AT = -300;
-    public static final JTokenDef TOKEN_DEF_AT = new JTokenDef(
-            TOKEN_AT,
-            "@def",
-            TOKEN_AT, "@def", "@def");
 
-    public static final int TOKEN_CURL_TEXT = -301;
-    public static final JTokenDef TOKEN_DEF_CURL_TEXT = new JTokenDef(
-            TOKEN_CURL_TEXT,
-            "curl-text",
-            TOKEN_CURL_TEXT, "{text}", "{text}");
+    public static final int TOKEN_TEX_COMMAND = -300;
+    public static final JTokenDef TOKEN_DEF_TEX_COMMAND = new JTokenDef(
+            TOKEN_TEX_COMMAND,
+            "tex-command",
+            TOKEN_TEX_COMMAND, "\\tex", "\\tex");
 
     public static class LangState extends JTokenState {
 
@@ -56,7 +54,7 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
     }
 
     private static JContext langContext;
-    public BibtexJSyntaxKit() {
+    public TexJSyntaxKit() {
         super();
         JContext jContext = getSingleton();
         JSyntaxStyleManager styles = new JSyntaxStyleManager();
@@ -73,29 +71,57 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
         JSyntaxStyle directive = new JSyntaxStyle("DIRECTIVE",ColorResource.of(UI_KEY_DIRECTIVE), JSyntaxStyle.PLAIN);
         JSyntaxStyle primitiveTypes = new JSyntaxStyle("TYPE_PRIMITIVE",ColorResource.of(UI_KEY_TYPE_PRIMITIVE), JSyntaxStyle.BOLD);
         JSyntaxStyle trueFalseLiterals = new JSyntaxStyle("LITERAL_BOOLEAN",ColorResource.of(UI_KEY_LITERAL_BOOLEAN), JSyntaxStyle.BOLD);
+        JSyntaxStyle lvl1 = new JSyntaxStyle("FORE1",ColorResource.of(UI_KEY_FORE1), JSyntaxStyle.BOLD);
+        JSyntaxStyle lvl2 = new JSyntaxStyle("FORE2",ColorResource.of(UI_KEY_FORE2), JSyntaxStyle.BOLD);
+        JSyntaxStyle lvl3 = new JSyntaxStyle("FORE3",ColorResource.of(UI_KEY_FORE3), JSyntaxStyle.BOLD);
+        JSyntaxStyle lvl4 = new JSyntaxStyle("FORE4",ColorResource.of(UI_KEY_FORE4), JSyntaxStyle.BOLD);
+        JSyntaxStyle lvl5 = new JSyntaxStyle("FORE5",ColorResource.of(UI_KEY_FORE5), JSyntaxStyle.BOLD);
+        JSyntaxStyle lvl6 = new JSyntaxStyle("FORE6",ColorResource.of(UI_KEY_FORE6), JSyntaxStyle.BOLD);
+        JSyntaxStyle lvl7 = new JSyntaxStyle("FORE7",ColorResource.of(UI_KEY_FORE7), JSyntaxStyle.BOLD);
         for (JTokenDef o : jContext.tokens().tokenDefinitions()) {
             switch (o.ttype) {
                 case JTokenType.TT_KEYWORD: {
                     switch (o.imageLayout) {
+                        case "\\part":{
+                            styles.setTokenIdStyle(o.id, lvl1);
+                            break;
+                        }
+                        case "\\chapter":{
+                            styles.setTokenIdStyle(o.id, lvl2);
+                            break;
+                        }
+                        case "\\section":{
+                            styles.setTokenIdStyle(o.id, lvl3);
+                            break;
+                        }
+                        case "\\subsection":{
+                            styles.setTokenIdStyle(o.id, lvl4);
+                            break;
+                        }
+                        case "\\subsubsection":{
+                            styles.setTokenIdStyle(o.id, lvl5);
+                            break;
+                        }
+                        case "\\paragraph":{
+                            styles.setTokenIdStyle(o.id, lvl6);
+                            break;
+                        }
+                        case "\\subparagraph":{
+                            styles.setTokenIdStyle(o.id, lvl7);
+                            break;
+                        }
                         case "true":
                         case "false": {
                             styles.setTokenIdStyle(o.id, trueFalseLiterals);
                             break;
                         }
-                        case "@article":case "@book":case "@booklet"
-                                :case "@conference":case "@inbook":case "@incollection":
-                                    case "@manual":case "@mastersthesis":case "@misc":
-                                        case "@phdthesis":case "@proceedings":case "@techreport":case "@unpublished":{
-                            styles.setTokenIdStyle(o.id, keywords);
-                            break;
-                        }
-                        case "article":case "book":case "booklet"
-                                :case "conference":case "inbook":case "incollection":
-                                    case "manual":case "mastersthesis":case "misc":
-                                        case "phdthesis":case "proceedings":case "techreport":case "unpublished":{
-                            styles.setTokenIdStyle(o.id, keywords2);
-                            break;
-                        }
+//                        case "article":case "book":case "booklet"
+//                                :case "conference":case "inbook":case "incollection":
+//                                    case "manual":case "mastersthesis":case "misc":
+//                                        case "phdthesis":case "proceedings":case "techreport":case "unpublished":{
+//                            styles.setTokenIdStyle(o.id, keywords2);
+//                            break;
+//                        }
                         default: {
                             styles.setTokenIdStyle(o.id, keywords);
                             break;
@@ -133,12 +159,8 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
                     styles.setTokenIdStyle(o.id, temporals);
                     break;
                 }
-                case TOKEN_AT: {
+                case TOKEN_TEX_COMMAND: {
                     styles.setTokenIdStyle(o.id, directive);
-                    break;
-                }
-                case TOKEN_CURL_TEXT: {
-                    styles.setTokenIdStyle(o.id, strings2);
                     break;
                 }
             }
@@ -159,52 +181,39 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
                     .setParseFloatNumber(true)
                     .setParsetInfinity(false)
                     .setParseWhitespaces(true)
-                    .setParseDoubleQuotesString(true)
-                    .setParseSimpleQuotesString(true)
-//                    .setParseBashStyleLineComments()
+                    .setParseDoubleQuotesString(false)
+                    .setParseSimpleQuotesString(false)
+                    .setBlockComments("\\begin{comment}","\\end{comment}")
             ;
             config.setIdPattern(new JavaIdPattern());
             config.addPatterns(new SeparatorsPattern("Separators1", OFFSET_LEFT_PARENTHESIS, JTokenType.Enums.TT_GROUP_SEPARATOR,
-                    "(", ")", "[", "]", "{")
+                    "(", ")", "[", "]", "{", "}")
             );
-            //this will be handled in a special way
-            config.addPatterns(new SeparatorsPattern("Separators2",
-                    OFFSET_RIGHT_CURLY_BRACKET,
-                    JTokenPatternOrder.ORDER_OPERATOR,
-                    JTokenType.Enums.TT_GROUP_SEPARATOR,
-                    "}")
-            );
-
             config.addPatterns(new SeparatorsPattern("Separators3", OFFSET_COMMA,
                     JTokenPatternOrder.valueOf(JTokenPatternOrder.ORDER_OPERATOR.getValue() - 1, "BEFORE_OPERATOR"),
                     JTokenType.Enums.TT_SEPARATOR,
                     ",", ";", ":")
             );
             config.addPatterns(
-                    new RegexpBasedTokenPattern(TOKEN_DEF_AT, JTokenPatternOrder.ORDER_IDENTIFIER,
-                            Pattern.compile("@[a-zA-Z]+")
-                    )
-            );
-            config.addPatterns(
-                    new RegexpBasedTokenPattern(TOKEN_DEF_CURL_TEXT, JTokenPatternOrder.ORDER_STRING,
-                            Pattern.compile("[{][^{}=,]+[}]")
+                    new RegexpBasedTokenPattern(TOKEN_DEF_TEX_COMMAND, JTokenPatternOrder.ORDER_IDENTIFIER,
+                            Pattern.compile("\\\\[a-zA-Z]+")
                     )
             );
 
             config.setNumberEvaluator(new JavaNumberTokenEvaluator());
 
-            config.addKeywords("author", "title", "journal", "year", "number", "pages", "month", "note", "volume", "publisher", "volume","editor");
-            config.addKeywords("series", "address", "edition","month","isbn","booktitle","organization","chapter","institution","howpublished");
-            config.addKeywords("@article", "@book","@booklet","@conference","@inbook","@incollection","@manual","@mastersthesis","@misc","@phdthesis","@proceedings","@techreport","@unpublished");
-            config.addKeywords("article", "book","booklet","conference","inbook","incollection","manual","mastersthesis","misc","phdthesis","proceedings","techreport","unpublished");
+            config.addKeywords("\\part","\\chapter","\\section","\\subsection","\\subsubsection","\\paragraph","\\subparagraph");
+            config.addKeywords("\\documentclass","\\usepackage","\\title","\\author","\\date","\\tableofcontents");
+            config.addKeywords("\\begin","\\end","\\usepackage","\\title","\\author","\\date");
+            config.addKeywords("\\if","\\else","\\ifdraft","\\ifnew","\\drafttrue","\\draftfalse","\\iffalse","\\iftrue");
+            //    \ { }
+            config.addKeywords("\\$","\\#","\\%","\\&","\\~","\\~","\\_","\\^","\\\\","\\{","\\}");
 
             langContext.tokens().setConfig(config);
 
             langContext.operators().declareCStyleOperators();
 
-            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_1, "=");
-
-            langContext.operators().declareSpecialOperators("...");
+            langContext.operators().declareBinaryOperators(JOperatorPrecedences.PRECEDENCE_1, "=","&","~","_","^");
 
             /*
          * this is the default state, handling HL tokens

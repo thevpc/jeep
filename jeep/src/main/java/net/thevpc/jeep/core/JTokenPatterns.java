@@ -31,8 +31,8 @@ public class JTokenPatterns {
         return new NumberPattern(null, true, true, true, new char[]{'f', 'F'}, null);
     }
 
-    public static JTokenPattern forCstyleBlocComments() {
-        return new BlocCommentsPattern(new JTokenDef(
+    public static JTokenPattern forCstyleBlockComments() {
+        return new BlockCommentsPattern(new JTokenDef(
                 JTokenId.BLOCK_COMMENTS,
                 "BLOCK_COMMENTS",
                 JTokenType.TT_BLOCK_COMMENTS,

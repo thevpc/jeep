@@ -15,8 +15,8 @@ public class JSyntaxKit extends StyledEditorKit implements ViewFactory {
 
     public static final String UI_KEY_DEFAULT = "TextPane.foreground;textForeground;#black";
     public static final String UI_KEY_RESERVED_WORD = "Button.default.focusColor;#735db7";
-    public static final String UI_KEY_RESERVED_WORD2 = "Objects.Green;OptionPane.questionDialog.titlePane.background;#green";
-    public static final String UI_KEY_RESERVED_WORD3 = "Objects.Purple;OptionPane.errorDialog.border.background;#purple";
+    public static final String UI_KEY_RESERVED_WORD2 = "Objects.GreenAndroid;OptionPane.questionDialog.border.background;#darkgreen";
+    public static final String UI_KEY_RESERVED_WORD3 = "Objects.Pink;#pink";
     public static final String UI_KEY_COMMENTS = "Label.disabledForeground;#darkgray";
     public static final String UI_KEY_LITERAL_STRING = "OptionPane.questionDialog.border.background;#2b9946";
     public static final String UI_KEY_LITERAL_STRING2 = "OptionPane.questionDialog.border.background;#2b9946";
@@ -31,7 +31,8 @@ public class JSyntaxKit extends StyledEditorKit implements ViewFactory {
     public static final String UI_KEY_FORE1 = "Objects.Blue;MenuItem.acceleratorForeground;#blue";
     public static final String UI_KEY_FORE2 = "Objects.Green;OptionPane.questionDialog.titlePane.background;#green";
     public static final String UI_KEY_FORE3 = "Objects.GreenAndroid;OptionPane.questionDialog.border.background;#darkgreen";
-    public static final String UI_KEY_FORE4 = "Objects.Gray;MenuItem.background;#gray";
+    public static final String UI_KEY_FORE4 = "OptionPane.warningDialog.titlePane.foreground;#darkcyan";
+//    public static final String UI_KEY_FORE4 = "Objects.Gray;MenuItem.background;#gray";
     public static final String UI_KEY_FORE5 = "Objects.Pink;#pink";
     public static final String UI_KEY_FORE6 = "Objects.Purple;OptionPane.errorDialog.border.background;#purple";
     public static final String UI_KEY_FORE7 = "Objects.Red;OptionPane.errorDialog.titlePane.background;#red";

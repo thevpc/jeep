@@ -15,35 +15,44 @@ public final class JSyntaxStyle {
     public static final int JAGGED = 32;
     public static final int UNDERLINE = 64;
     public static final int CROSS_OUT = 128;
+    private String name;
     private ColorResource color;
     private ColorResource boxColor = ColorResource.of(Color.RED);
     private ColorResource fillColor = ColorResource.of(Color.decode("#EEEEEE"));
     private int fontStyle;
 
-    public JSyntaxStyle() {
+    public JSyntaxStyle(String name) {
         super();
+        this.name=name;
     }
 
-    public JSyntaxStyle(ColorResource color, boolean bold, boolean italic) {
+    public JSyntaxStyle(String name,ColorResource color, boolean bold, boolean italic) {
         super();
         this.color = color;
         setBold(bold);
         setItalic(italic);
+        this.name=name;
     }
 
-    public JSyntaxStyle(ColorResource color, int fontStyle) {
+    public JSyntaxStyle(String name,ColorResource color, int fontStyle) {
         super();
         this.color = color;
         this.fontStyle = fontStyle;
+        this.name=name;
     }
 
-    JSyntaxStyle(String str) {
+    JSyntaxStyle(String name,String str) {
+        this.name=name;
         String[] parts = str.split("\\s*,\\s*");
         if (parts.length != 2) {
             throw new IllegalArgumentException("style not correct format: " + str);
         }
         this.color = ColorResource.of(new Color(Integer.decode(parts[0])));
         this.fontStyle = Integer.decode(parts[1]);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean isBold() {
