@@ -11,7 +11,6 @@ import net.thevpc.jeep.impl.tokens.AbstractTokenPattern;
 import net.thevpc.jeep.impl.tokens.JNamedImage;
 import net.thevpc.jeep.impl.tokens.JTokenId;
 import net.thevpc.jeep.impl.tokens.JTypedImage;
-import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.DefaultCharTypes;
 
 import java.util.TreeMap;
@@ -21,20 +20,21 @@ public class WordListPattern extends AbstractTokenPattern {
     private JTypedImage[] words;
     private JTokenDef[] wordInfos;
     private int startId;
+    private boolean caseSensitive;
 
-    public WordListPattern(String name, int startId, JTokenPatternOrder order, JTokenType ttype, String... words) {
-        this(name, startId, order, toJTypedImages(startId, ttype, words));
+    public WordListPattern(String name, int startId, JTokenPatternOrder order, JTokenType ttype, boolean caseSensitive, String... words) {
+        this(name, startId, order, caseSensitive, toJTypedImages(startId, ttype, words));
     }
 
-    public WordListPattern(String name, int startId, JTokenPatternOrder order, JTokenType ttype, JNamedImage... words) {
-        this(name, startId, order, toJTypedImages(startId, ttype, words));
+    public WordListPattern(String name, int startId, JTokenPatternOrder order, JTokenType ttype, boolean caseSensitive, JNamedImage... words) {
+        this(name, startId, order, caseSensitive, toJTypedImages(startId, ttype, words));
     }
 
-    public WordListPattern(String name, JTokenPatternOrder order, JTokenType ttype, JNamedImage... words) {
-        this(name, Integer.MIN_VALUE, order, toJTypedImages(Integer.MIN_VALUE, ttype, words));
+    public WordListPattern(String name, JTokenPatternOrder order, JTokenType ttype, boolean caseSensitive, JNamedImage... words) {
+        this(name, Integer.MIN_VALUE, order, caseSensitive, toJTypedImages(Integer.MIN_VALUE, ttype, words));
     }
 
-    public WordListPattern(String name, int startId, JTokenPatternOrder order, JTypedImage... words) {
+    public WordListPattern(String name, int startId, JTokenPatternOrder order, boolean caseSensitive, JTypedImage... words) {
         super(order, name == null ? "Words" : name);
         this.startId = startId;
         //remove duplicates!
@@ -134,7 +134,10 @@ public class WordListPattern extends AbstractTokenPattern {
             int to = words.length;
             int pos = 0;
             boolean error = false;
-
+            boolean caseSensitive;
+            {
+                this.caseSensitive=WordListPattern.this.caseSensitive;
+            }
             @Override
             public JTokenPattern pattern() {
                 return WordListPattern.this;
@@ -192,7 +195,12 @@ public class WordListPattern extends AbstractTokenPattern {
             private boolean ok(int i, char c) {
                 String w = words[i].image();
                 if (pos < w.length()) {
-                    return w.charAt(pos) == c;
+                    char c0 = w.charAt(pos);
+                    if(caseSensitive) {
+                        return c0 == c;
+                    }else{
+                        return Character.toUpperCase(c0)==Character.toUpperCase(c);
+                    }
                 }
                 return false;
             }

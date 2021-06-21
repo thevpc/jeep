@@ -9,7 +9,7 @@ public class TestKeywordsPattern {
 
     @Test
     public void test1() {
-        KeywordsPattern p = new KeywordsPattern("abc", "abd", "gthg");
+        KeywordsPattern p = new KeywordsPattern(true, "abc", "abd", "gthg");
         JTokenMatcher matcher = p.matcher();
         check(matcher, "a", true, false);
         check(matcher, "abc", true, true);

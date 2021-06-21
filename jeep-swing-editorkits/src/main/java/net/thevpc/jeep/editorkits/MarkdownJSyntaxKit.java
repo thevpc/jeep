@@ -67,26 +67,6 @@ public class MarkdownJSyntaxKit extends JSyntaxKit {
         JSyntaxStyle bold = new JSyntaxStyle("BOLD",null, JSyntaxStyle.BOLD);
         JSyntaxStyle italic = new JSyntaxStyle("ITALIC",null, JSyntaxStyle.ITALIC);
         JSyntaxStyle boldItalic = new JSyntaxStyle("BOLD_ITALIC",null, JSyntaxStyle.BOLD | JSyntaxStyle.ITALIC);
-        JSyntaxStyle keywords = new JSyntaxStyle("UI_KEY_RESERVED_WORD",ColorResource.of(UI_KEY_RESERVED_WORD), JSyntaxStyle.BOLD);
-        JSyntaxStyle comments = new JSyntaxStyle("UI_KEY_COMMENTS",ColorResource.of(UI_KEY_COMMENTS), JSyntaxStyle.ITALIC);
-        JSyntaxStyle strings = new JSyntaxStyle("UI_KEY_LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
-        JSyntaxStyle numbers = new JSyntaxStyle("UI_KEY_LITERAL_NUMBER",ColorResource.of(UI_KEY_LITERAL_NUMBER), JSyntaxStyle.PLAIN);
-        JSyntaxStyle operators = new JSyntaxStyle("UI_KEY_OPERATOR",ColorResource.of(UI_KEY_OPERATOR), JSyntaxStyle.PLAIN);
-        JSyntaxStyle separators = new JSyntaxStyle("UI_KEY_SEPARATOR",ColorResource.of(UI_KEY_SEPARATOR), JSyntaxStyle.PLAIN);
-        JSyntaxStyle regexs = new JSyntaxStyle("UI_KEY_LITERAL_REGEXP",ColorResource.of(UI_KEY_LITERAL_REGEXP), JSyntaxStyle.PLAIN);
-        JSyntaxStyle temporals = new JSyntaxStyle("UI_KEY_LITERAL_DATE",ColorResource.of(UI_KEY_LITERAL_DATE), JSyntaxStyle.PLAIN);
-        JSyntaxStyle directive = new JSyntaxStyle("UI_KEY_DIRECTIVE",ColorResource.of(UI_KEY_DIRECTIVE), JSyntaxStyle.PLAIN);
-        JSyntaxStyle primitiveTypes = new JSyntaxStyle("UI_KEY_TYPE_PRIMITIVE",ColorResource.of(UI_KEY_TYPE_PRIMITIVE), JSyntaxStyle.BOLD);
-        JSyntaxStyle trueFalseLiterals = new JSyntaxStyle("UI_KEY_LITERAL_BOOLEAN",ColorResource.of(UI_KEY_LITERAL_BOOLEAN), JSyntaxStyle.BOLD);
-        JSyntaxStyle title1 = new JSyntaxStyle("UI_KEY_FORE1",ColorResource.of(UI_KEY_FORE1), JSyntaxStyle.BOLD);
-        JSyntaxStyle title2 = new JSyntaxStyle("UI_KEY_FORE2",ColorResource.of(UI_KEY_FORE2), JSyntaxStyle.BOLD);
-        JSyntaxStyle title3 = new JSyntaxStyle("UI_KEY_FORE3",ColorResource.of(UI_KEY_FORE3), JSyntaxStyle.BOLD);
-        JSyntaxStyle title4 = new JSyntaxStyle("UI_KEY_FORE4",ColorResource.of(UI_KEY_FORE4), JSyntaxStyle.BOLD);
-        JSyntaxStyle title5 = new JSyntaxStyle("UI_KEY_FORE5",ColorResource.of(UI_KEY_FORE5), JSyntaxStyle.BOLD);
-        JSyntaxStyle title6 = new JSyntaxStyle("UI_KEY_FORE6",ColorResource.of(UI_KEY_FORE6), JSyntaxStyle.BOLD);
-        JSyntaxStyle title7 = new JSyntaxStyle("UI_KEY_FORE7",ColorResource.of(UI_KEY_FORE7), JSyntaxStyle.BOLD);
-        JSyntaxStyle title8 = new JSyntaxStyle("UI_KEY_FORE8",ColorResource.of(UI_KEY_FORE8), JSyntaxStyle.BOLD);
-        JSyntaxStyle title9 = new JSyntaxStyle("UI_KEY_FORE9",ColorResource.of(UI_KEY_FORE9), JSyntaxStyle.BOLD);
         JSyntaxStyle pre = new JSyntaxStyle("PRE",ColorResource.of("OptionPane.warningDialog.titlePane.shadow;ToolWindowTitleBarUI.background.active.end;Tree.selectionBackground"), JSyntaxStyle.PLAIN).setFillColor(ColorResource.of("#fff5b9"));
         JSyntaxStyle code = new JSyntaxStyle("CODE",ColorResource.of("OptionPane.warningDialog.titlePane.shadow;ToolWindowTitleBarUI.background.active.end;Tree.selectionBackground"), JSyntaxStyle.PLAIN).setFillColor(ColorResource.of("#fae0ff"));
         for (JTokenDef o : jContext.tokens().tokenDefinitions()) {
@@ -95,43 +75,43 @@ public class MarkdownJSyntaxKit extends JSyntaxKit {
                     switch (o.idName) {
                         case "true":
                         case "false": {
-                            styles.setTokenIdStyle(o.id, trueFalseLiterals);
+                            styles.setTokenIdStyle(o.id, BOOLEAN_LITERALS);
                             break;
                         }
                         default: {
-                            styles.setTokenIdStyle(o.id, keywords);
+                            styles.setTokenIdStyle(o.id, KEYWORDS);
                         }
                     }
                     break;
                 }
                 case JTokenType.TT_BLOCK_COMMENTS:
                 case JTokenType.TT_LINE_COMMENTS: {
-                    styles.setTokenIdStyle(o.id, comments);
+                    styles.setTokenIdStyle(o.id, COMMENTS);
                     break;
                 }
                 case JTokenType.TT_STRING: {
-                    styles.setTokenIdStyle(o.id, strings);
+                    styles.setTokenIdStyle(o.id, STRING);
                     break;
                 }
                 case JTokenType.TT_NUMBER: {
-                    styles.setTokenIdStyle(o.id, numbers);
+                    styles.setTokenIdStyle(o.id, NUMBERS);
                     break;
                 }
                 case JTokenType.TT_OPERATOR: {
-                    styles.setTokenIdStyle(o.id, operators);
+                    styles.setTokenIdStyle(o.id, OPERATORS);
                     break;
                 }
                 case JTokenType.TT_GROUP_SEPARATOR:
                 case JTokenType.TT_SEPARATOR: {
-                    styles.setTokenIdStyle(o.id, separators);
+                    styles.setTokenIdStyle(o.id, SEPARATORS);
                     break;
                 }
                 case JTokenType.TT_REGEX: {
-                    styles.setTokenIdStyle(o.id, regexs);
+                    styles.setTokenIdStyle(o.id, REGEXPS);
                     break;
                 }
                 case JTokenType.TT_TEMPORAL: {
-                    styles.setTokenIdStyle(o.id, temporals);
+                    styles.setTokenIdStyle(o.id, TEMPORALS);
                     break;
                 }
                 case TT_STAR1: {
@@ -147,39 +127,39 @@ public class MarkdownJSyntaxKit extends JSyntaxKit {
                     break;
                 }
                 case TT_TITLE1: {
-                    styles.setTokenIdStyle(o.id, title1);
+                    styles.setTokenIdStyle(o.id, TITLE1);
                     break;
                 }
                 case TT_TITLE2: {
-                    styles.setTokenIdStyle(o.id, title2);
+                    styles.setTokenIdStyle(o.id, TITLE2);
                     break;
                 }
                 case TT_TITLE3: {
-                    styles.setTokenIdStyle(o.id, title3);
+                    styles.setTokenIdStyle(o.id, TITLE3);
                     break;
                 }
                 case TT_TITLE4: {
-                    styles.setTokenIdStyle(o.id, title4);
+                    styles.setTokenIdStyle(o.id, TITLE4);
                     break;
                 }
                 case TT_TITLE5: {
-                    styles.setTokenIdStyle(o.id, title5);
+                    styles.setTokenIdStyle(o.id, TITLE5);
                     break;
                 }
                 case TT_TITLE6: {
-                    styles.setTokenIdStyle(o.id, title6);
+                    styles.setTokenIdStyle(o.id, TITLE6);
                     break;
                 }
                 case TT_TITLE7: {
-                    styles.setTokenIdStyle(o.id, title7);
+                    styles.setTokenIdStyle(o.id, TITLE7);
                     break;
                 }
                 case TT_TITLE8: {
-                    styles.setTokenIdStyle(o.id, title8);
+                    styles.setTokenIdStyle(o.id, TITLE8);
                     break;
                 }
                 case TT_TITLE9: {
-                    styles.setTokenIdStyle(o.id, title9);
+                    styles.setTokenIdStyle(o.id, TITLE9);
                     break;
                 }
                 case TT_PRE: {

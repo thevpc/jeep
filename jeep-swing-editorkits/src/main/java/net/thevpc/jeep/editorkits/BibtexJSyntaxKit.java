@@ -60,44 +60,31 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
         super();
         JContext jContext = getSingleton();
         JSyntaxStyleManager styles = new JSyntaxStyleManager();
-        JSyntaxStyle keywords = new JSyntaxStyle("RESERVED_WORD",ColorResource.of(UI_KEY_RESERVED_WORD), JSyntaxStyle.BOLD);
-        JSyntaxStyle keywords2 = new JSyntaxStyle("RESERVED_WORD2",ColorResource.of(UI_KEY_RESERVED_WORD2), JSyntaxStyle.BOLD);
-        JSyntaxStyle comments = new JSyntaxStyle("COMMENTS",ColorResource.of(UI_KEY_COMMENTS), JSyntaxStyle.ITALIC);
-        JSyntaxStyle strings = new JSyntaxStyle("LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
-        JSyntaxStyle strings2 = new JSyntaxStyle("LITERAL_STRING2",ColorResource.of(UI_KEY_LITERAL_STRING2), JSyntaxStyle.PLAIN);
-        JSyntaxStyle numbers = new JSyntaxStyle("LITERAL_NUMBER",ColorResource.of(UI_KEY_LITERAL_NUMBER), JSyntaxStyle.PLAIN);
-        JSyntaxStyle operators = new JSyntaxStyle("OPERATOR",ColorResource.of(UI_KEY_OPERATOR), JSyntaxStyle.PLAIN);
-        JSyntaxStyle separators = new JSyntaxStyle("SEPARATOR",ColorResource.of(UI_KEY_SEPARATOR), JSyntaxStyle.PLAIN);
-        JSyntaxStyle regexs = new JSyntaxStyle("LITERAL_REGEXP",ColorResource.of(UI_KEY_LITERAL_REGEXP), JSyntaxStyle.PLAIN);
-        JSyntaxStyle temporals = new JSyntaxStyle("LITERAL_DATE",ColorResource.of(UI_KEY_LITERAL_DATE), JSyntaxStyle.PLAIN);
-        JSyntaxStyle directive = new JSyntaxStyle("DIRECTIVE",ColorResource.of(UI_KEY_DIRECTIVE), JSyntaxStyle.PLAIN);
-        JSyntaxStyle primitiveTypes = new JSyntaxStyle("TYPE_PRIMITIVE",ColorResource.of(UI_KEY_TYPE_PRIMITIVE), JSyntaxStyle.BOLD);
-        JSyntaxStyle trueFalseLiterals = new JSyntaxStyle("LITERAL_BOOLEAN",ColorResource.of(UI_KEY_LITERAL_BOOLEAN), JSyntaxStyle.BOLD);
         for (JTokenDef o : jContext.tokens().tokenDefinitions()) {
             switch (o.ttype) {
                 case JTokenType.TT_KEYWORD: {
                     switch (o.imageLayout) {
                         case "true":
                         case "false": {
-                            styles.setTokenIdStyle(o.id, trueFalseLiterals);
+                            styles.setTokenIdStyle(o.id, BOOLEAN_LITERALS);
                             break;
                         }
                         case "@article":case "@book":case "@booklet"
                                 :case "@conference":case "@inbook":case "@incollection":
                                     case "@manual":case "@mastersthesis":case "@misc":
                                         case "@phdthesis":case "@proceedings":case "@techreport":case "@unpublished":{
-                            styles.setTokenIdStyle(o.id, keywords);
+                            styles.setTokenIdStyle(o.id, KEYWORDS);
                             break;
                         }
                         case "article":case "book":case "booklet"
                                 :case "conference":case "inbook":case "incollection":
                                     case "manual":case "mastersthesis":case "misc":
                                         case "phdthesis":case "proceedings":case "techreport":case "unpublished":{
-                            styles.setTokenIdStyle(o.id, keywords2);
+                            styles.setTokenIdStyle(o.id, KEYWORDS2);
                             break;
                         }
                         default: {
-                            styles.setTokenIdStyle(o.id, keywords);
+                            styles.setTokenIdStyle(o.id, KEYWORDS);
                             break;
                         }
                     }
@@ -105,40 +92,40 @@ public class BibtexJSyntaxKit extends JSyntaxKit {
                 }
                 case JTokenType.TT_BLOCK_COMMENTS:
                 case JTokenType.TT_LINE_COMMENTS: {
-                    styles.setTokenIdStyle(o.id, comments);
+                    styles.setTokenIdStyle(o.id, COMMENTS);
                     break;
                 }
                 case JTokenType.TT_STRING: {
-                    styles.setTokenIdStyle(o.id, strings);
+                    styles.setTokenIdStyle(o.id, STRINGS);
                     break;
                 }
                 case JTokenType.TT_NUMBER: {
-                    styles.setTokenIdStyle(o.id, numbers);
+                    styles.setTokenIdStyle(o.id, NUMBERS);
                     break;
                 }
                 case JTokenType.TT_OPERATOR: {
-                    styles.setTokenIdStyle(o.id, operators);
+                    styles.setTokenIdStyle(o.id, OPERATORS);
                     break;
                 }
                 case JTokenType.TT_GROUP_SEPARATOR:
                 case JTokenType.TT_SEPARATOR: {
-                    styles.setTokenIdStyle(o.id, separators);
+                    styles.setTokenIdStyle(o.id, SEPARATORS);
                     break;
                 }
                 case JTokenType.TT_REGEX: {
-                    styles.setTokenIdStyle(o.id, regexs);
+                    styles.setTokenIdStyle(o.id, REGEXPS);
                     break;
                 }
                 case JTokenType.TT_TEMPORAL: {
-                    styles.setTokenIdStyle(o.id, temporals);
+                    styles.setTokenIdStyle(o.id, TEMPORALS);
                     break;
                 }
                 case TOKEN_AT: {
-                    styles.setTokenIdStyle(o.id, directive);
+                    styles.setTokenIdStyle(o.id, DIRECTIVES);
                     break;
                 }
                 case TOKEN_CURL_TEXT: {
-                    styles.setTokenIdStyle(o.id, strings2);
+                    styles.setTokenIdStyle(o.id, STRINGS2);
                     break;
                 }
             }

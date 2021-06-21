@@ -1,5 +1,6 @@
 package net.thevpc.jeep.editorkits;
 
+import javax.swing.*;
 import javax.swing.text.EditorKit;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,29 +10,33 @@ public class AvailableEditorKits {
     private static Map<String, Supplier<EditorKit>> available = new HashMap<>();
 
     static {
-        register("text/x-c++src", () -> new CppLangJSyntaxKit(true));
-        register("text/x-c++hdr", () -> new CppLangJSyntaxKit(true));
-        register("text/x-csrc", () -> new CppLangJSyntaxKit(false));
-        register("text/java", () -> new JavaJSyntaxKit());
-        register("text/x-java", () -> new JavaJSyntaxKit());
-        register("text/javascript", () -> new JavaJSyntaxKit());
-        register("text/markdown", () -> new MarkdownJSyntaxKit());
-        register("text/x-nuts-text-format", () -> new NTFJSyntaxKit());
-        register("application/x-bash", () -> new ShellLangJSyntaxKit(true));
-        register("application/x-shellscript", () -> new ShellLangJSyntaxKit(true));
-        register("application/x-hadra", () -> new HadraJSyntaxKit());
-        register("application/x-bibtex", () -> new BibtexJSyntaxKit());
-        register("text/xml", () -> new XmlJSyntaxKit());
-        register("text/html", () -> new XmlJSyntaxKit());
-        register("application/x-latex", () -> new TexJSyntaxKit());
-        register("application/x-tex", () -> new TexJSyntaxKit());
-        register("application/sql", () -> new SqlJSyntaxKit());
+        register(() -> new CppLangJSyntaxKit(true), "text/x-c++src","text/x-c++hdr");
+        register(() -> new CppLangJSyntaxKit(false), "text/x-csrc","text/x-chdr");
+        register(() -> new JavaJSyntaxKit(), "text/java","text/x-java");
+        register(() -> new JavascriptJSyntaxKit(), "text/javascript");
+        register(() -> new JsonJSyntaxKit(), "application/json");
+        register(() -> new CssJSyntaxKit(), "text/css");
+        register(() -> new MarkdownJSyntaxKit(), "text/markdown");
+        register(() -> new NTFJSyntaxKit(), "text/x-nuts-text-format");
+        register(() -> new ShellLangJSyntaxKit(true), "application/x-bash","application/x-shellscript");
+        register(() -> new HadraJSyntaxKit(), "application/x-hadra");
+        register(() -> new BibtexJSyntaxKit(), "application/x-bibtex");
+        register(() -> new XmlJSyntaxKit(), "text/xml");
+        register(() -> new XmlJSyntaxKit(), "text/html");
+        register(() -> new TexJSyntaxKit(), "application/x-latex");
+        register(() -> new TexJSyntaxKit(), "application/x-tex");
+        register(() -> new SqlJSyntaxKit(), "application/sql");
     }
 
     public static Map<String, Supplier<EditorKit>> getAvailable() {
         return available;
     }
 
+    public static void installEditorKits(JEditorPane editor) {
+        for (Map.Entry<String, Supplier<EditorKit>> ee : AvailableEditorKits.getAvailable().entrySet()) {
+            editor.setEditorKitForContentType(ee.getKey(), ee.getValue().get());
+        }
+    }
     public static EditorKit create(String c) {
         Supplier<EditorKit> q = available.get(c);
         if (q != null) {
@@ -40,11 +45,13 @@ public class AvailableEditorKits {
         return null;
     }
 
-    public static void register(String c, Supplier<EditorKit> k) {
-        if (k == null) {
-            available.remove(c);
-        } else {
-            available.put(c, k);
+    public static void register(Supplier<EditorKit> k, String ... cc) {
+        for (String c : cc) {
+            if (k == null) {
+                available.remove(c);
+            } else {
+                available.put(c, k);
+            }
         }
     }
 }

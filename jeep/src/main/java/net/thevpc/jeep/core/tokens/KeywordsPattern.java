@@ -6,9 +6,9 @@ import net.thevpc.jeep.JTokenType;
 
 public class KeywordsPattern extends WordListPattern {
 
-    public KeywordsPattern(String... words) {
+    public KeywordsPattern(boolean caseSensitive, String... words) {
         super("Keywords", JTokenId.OFFSET_KEYWORDS, JTokenPatternOrder.ORDER_KEYWORD,
-                toJTypedImages2(JTokenId.OFFSET_KEYWORDS, JTokenType.TT_KEYWORD, "TT_KEYWORD", words)
+                caseSensitive, toJTypedImages2(JTokenId.OFFSET_KEYWORDS, JTokenType.TT_KEYWORD, "TT_KEYWORD", words)
         );
     }
 

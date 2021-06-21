@@ -40,9 +40,35 @@ public class JSyntaxKit extends StyledEditorKit implements ViewFactory {
     public static final String UI_KEY_FORE9 = "Objects.Yellow;OptionPane.warningDialog.titlePane.background;#yellow";
     public static final String UI_KEY_FORE10 = "Objects.YellowDark;OptionPane.warningDialog.border.background;#darkyellow";
     private static Set<String> CONTENTS = new HashSet<>();
+    private static final Logger LOG = Logger.getLogger(JSyntaxKit.class.getName());
     private JContext jcontext;
     private JSyntaxStyleManager styles;
-    private static final Logger LOG = Logger.getLogger(JSyntaxKit.class.getName());
+
+    protected JSyntaxStyle KEYWORDS = new JSyntaxStyle("RESERVED_WORD",ColorResource.of(UI_KEY_RESERVED_WORD), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle COMMENTS = new JSyntaxStyle("COMMENTS",ColorResource.of(UI_KEY_COMMENTS), JSyntaxStyle.ITALIC);
+    protected JSyntaxStyle STRING = new JSyntaxStyle("LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle NUMBERS = new JSyntaxStyle("LITERAL_NUMBER",ColorResource.of(UI_KEY_LITERAL_NUMBER), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle OPERATORS = new JSyntaxStyle("OPERATOR",ColorResource.of(UI_KEY_OPERATOR), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle SEPARATORS = new JSyntaxStyle("SEPARATOR",ColorResource.of(UI_KEY_SEPARATOR), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle REGEXPS = new JSyntaxStyle("LITERAL_REGEXP",ColorResource.of(UI_KEY_LITERAL_REGEXP), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle TEMPORALS = new JSyntaxStyle("LITERAL_DATE",ColorResource.of(UI_KEY_LITERAL_DATE), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle DIRECTIVES = new JSyntaxStyle("DIRECTIVE",ColorResource.of(UI_KEY_DIRECTIVE), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle PRIMITIVE_TYPES = new JSyntaxStyle("TYPE_PRIMITIVE",ColorResource.of(UI_KEY_TYPE_PRIMITIVE), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle BOOLEAN_LITERALS = new JSyntaxStyle("LITERAL_BOOLEAN",ColorResource.of(UI_KEY_LITERAL_BOOLEAN), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle KEYWORDS2 = new JSyntaxStyle("RESERVED_WORD2",ColorResource.of(UI_KEY_RESERVED_WORD2), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STRINGS = new JSyntaxStyle("LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STRINGS2 = new JSyntaxStyle("LITERAL_STRING2",ColorResource.of(UI_KEY_LITERAL_STRING2), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle TITLE1 = new JSyntaxStyle("UI_KEY_FORE1",ColorResource.of(UI_KEY_FORE1), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle TITLE2 = new JSyntaxStyle("UI_KEY_FORE2",ColorResource.of(UI_KEY_FORE2), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle TITLE3 = new JSyntaxStyle("UI_KEY_FORE3",ColorResource.of(UI_KEY_FORE3), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle TITLE4 = new JSyntaxStyle("UI_KEY_FORE4",ColorResource.of(UI_KEY_FORE4), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle TITLE5 = new JSyntaxStyle("UI_KEY_FORE5",ColorResource.of(UI_KEY_FORE5), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle TITLE6 = new JSyntaxStyle("UI_KEY_FORE6",ColorResource.of(UI_KEY_FORE6), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle TITLE7 = new JSyntaxStyle("UI_KEY_FORE7",ColorResource.of(UI_KEY_FORE7), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle TITLE8 = new JSyntaxStyle("UI_KEY_FORE8",ColorResource.of(UI_KEY_FORE8), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle TITLE9 = new JSyntaxStyle("UI_KEY_FORE9",ColorResource.of(UI_KEY_FORE9), JSyntaxStyle.BOLD);
+
+    //
 
     /**
      * Create a new Kit for the given language

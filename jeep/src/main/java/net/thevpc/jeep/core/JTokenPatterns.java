@@ -71,8 +71,8 @@ public class JTokenPatterns {
         return new OperatorsPattern();
     }
 
-    public static JTokenPattern forKeywords(String... words) {
-        return new KeywordsPattern(words);
+    public static JTokenPattern forKeywords(boolean caseSensitive,String... words) {
+        return new KeywordsPattern(caseSensitive, words);
     }
 
     public static SeparatorsPattern forSeparators(String... seps) {

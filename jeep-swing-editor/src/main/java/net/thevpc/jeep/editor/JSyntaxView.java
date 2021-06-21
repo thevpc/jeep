@@ -14,7 +14,7 @@ public class JSyntaxView extends PlainView {
 
     public static final String PROPERTY_TEXTAA = "TextAA";
 
-    private static final Logger log = Logger.getLogger(JSyntaxView.class.getName());
+    private static final Logger LOG = Logger.getLogger(JSyntaxView.class.getName());
     private JSyntaxStyle DEFAULT_STYLE;
     private final boolean singleColorSelect;
     private final int rightMarginColumn;
@@ -33,7 +33,8 @@ public class JSyntaxView extends PlainView {
             Map<RenderingHints.Key,?> map = (Map<RenderingHints.Key,?>)
                     toolkit.getDesktopProperty("awt.font.desktophints");
             sysHints = new RenderingHints(map);
-        } catch (Throwable t) {
+        } catch (Throwable ex) {
+            LOG.log(Level.FINE,ex,()->"error storing 'awt.font.desktophints'");
             //ignore...
         }
     }
@@ -97,7 +98,7 @@ public class JSyntaxView extends PlainView {
                 x = DEFAULT_STYLE.drawText(segment, x, y, graphics, this, start);
             }
         } catch (BadLocationException ex) {
-            log.log(Level.SEVERE, "Bad Location "+ex.offsetRequested(), ex);
+            LOG.log(Level.SEVERE, "Bad Location "+ex.offsetRequested(), ex);
         } finally {
             graphics.setFont(saveFont);
             graphics.setColor(saveColor);
@@ -144,7 +145,9 @@ public class JSyntaxView extends PlainView {
      * @param g2d
      */
     public static void setRenderingHits(Graphics2D g2d) {
-        g2d.addRenderingHints(sysHints);
+        if(sysHints!=null){
+            g2d.addRenderingHints(sysHints);
+        }
     }
 
     /**

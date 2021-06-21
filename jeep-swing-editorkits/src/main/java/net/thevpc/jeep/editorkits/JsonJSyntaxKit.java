@@ -1,37 +1,27 @@
 package net.thevpc.jeep.editorkits;
 
-import net.thevpc.jeep.JTokenType;
-import net.thevpc.jeep.core.tokens.JTokenDef;
-import net.thevpc.jeep.editor.JSyntaxKit;
-import net.thevpc.jeep.editor.JSyntaxStyle;
-import net.thevpc.jeep.editor.JSyntaxStyleManager;
-
-import java.awt.*;
 import net.thevpc.jeep.JContext;
 import net.thevpc.jeep.JOperatorPrecedences;
 import net.thevpc.jeep.JTokenConfigBuilder;
+import net.thevpc.jeep.JTokenType;
 import net.thevpc.jeep.core.DefaultJeep;
 import net.thevpc.jeep.core.JTokenState;
+import net.thevpc.jeep.core.tokens.JTokenDef;
 import net.thevpc.jeep.core.tokens.JTokenPatternOrder;
 import net.thevpc.jeep.core.tokens.JavaIdPattern;
 import net.thevpc.jeep.core.tokens.SeparatorsPattern;
-import net.thevpc.jeep.core.tokens.SimpleTokenPattern;
-import net.thevpc.jeep.editor.ColorResource;
+import net.thevpc.jeep.editor.JSyntaxKit;
+import net.thevpc.jeep.editor.JSyntaxStyleManager;
 import net.thevpc.jeep.impl.JEnumDefinition;
 import net.thevpc.jeep.impl.JEnumTypes;
 import net.thevpc.jeep.impl.tokens.JTokenizerImpl;
 import net.thevpc.jeep.impl.tokens.JavaNumberTokenEvaluator;
 
-public class CppLangJSyntaxKit extends JSyntaxKit {
+public class JsonJSyntaxKit extends JSyntaxKit {
 
     public static final int OFFSET_LEFT_PARENTHESIS = 80;
-    public static final int OFFSET_RIGHT_CURLY_BRACKET = 88;
     public static final int OFFSET_COMMA = 90;
-    public static final int TOKEN_DIRECTIVE = -300;
-    public static final JTokenDef TOKEN_DEF_DIRECTIVE = new JTokenDef(
-            TOKEN_DIRECTIVE,
-            "directive",
-            TOKEN_DIRECTIVE, "directive", "#...");
+    public static final int OFFSET_RIGHT_CURLY_BRACKET = 88;
 
     public static class LangState extends JTokenState {
 
@@ -50,11 +40,9 @@ public class CppLangJSyntaxKit extends JSyntaxKit {
     }
 
     private static JContext langContext;
-    private static boolean cpp;
 
-    public CppLangJSyntaxKit(boolean cpp) {
+    public JsonJSyntaxKit() {
         super();
-        this.cpp = cpp;
         JContext jContext = getSingleton();
         JSyntaxStyleManager styles = new JSyntaxStyleManager();
         for (JTokenDef o : jContext.tokens().tokenDefinitions()) {
@@ -75,11 +63,7 @@ public class CppLangJSyntaxKit extends JSyntaxKit {
                         }
                         case "true":
                         case "false":
-                        case "null":
-                        case "NULL":
-                        case "TRUE":
-                        case "FALSE":
-                        {
+                        case "null": {
                             styles.setTokenIdStyle(o.id, BOOLEAN_LITERALS);
                             break;
                         }
@@ -95,7 +79,7 @@ public class CppLangJSyntaxKit extends JSyntaxKit {
                     break;
                 }
                 case JTokenType.TT_STRING: {
-                    styles.setTokenIdStyle(o.id, STRING);
+                    styles.setTokenIdStyle(o.id, STRINGS);
                     break;
                 }
                 case JTokenType.TT_NUMBER: {
@@ -117,10 +101,6 @@ public class CppLangJSyntaxKit extends JSyntaxKit {
                 }
                 case JTokenType.TT_TEMPORAL: {
                     styles.setTokenIdStyle(o.id, TEMPORALS);
-                    break;
-                }
-                case TOKEN_DIRECTIVE: {
-                    styles.setTokenIdStyle(o.id, DIRECTIVES);
                     break;
                 }
             }
@@ -162,35 +142,21 @@ public class CppLangJSyntaxKit extends JSyntaxKit {
                     JTokenType.Enums.TT_SEPARATOR,
                     ",", ";", ":", "->", "@")
             );
-            config.addPatterns(
-                    new SimpleTokenPattern(TOKEN_DEF_DIRECTIVE) {
-                @Override
-                public boolean accept(CharSequence prefix, char c) {
-                    if (prefix.length() == 0) {
-                        return c == '#';
-                    }
-                    return c > 32;
-                }
-            }
-            );
 
             //numbers
             config.setNumberEvaluator(new JavaNumberTokenEvaluator());
-            config.setNumberSuffixes(new char[]{'f', 'F'});
-            if(cpp){
-                //using namespace
-                config.addKeywords("public", "private", "protected", "abstract", "final", "package", "using","class","namespace");
-                config.addKeywords("try", "catch", "finally");
-                config.addKeywords("super", "this", "operator");
-                config.addKeywords("cin", "cout","endl","new");
-            }
-            config.addKeywords("void", "var", "val", "return", "default","static");
+            config.setNumberSuffixes(new char[]{'f', 'F', 'l', 'L'});
+
+            config.addKeywords("public", "private", "protected", "abstract", "static", "final", "package", "import");
+            config.addKeywords("try", "catch", "finally");
+            config.addKeywords("void", "var", "val", "class", "interface", "extends", "return", "default");
             config.addKeywords("if", "else", "switch", "case", "break", "continue", "for", "do", "while");
             config.addKeywords("double", "float", "long", "int", "short", "byte", "float", "char", "boolean");
-            config.addKeywords("null", "true", "false","NULL","TRUE","FALSE");
-            config.addKeywords("extern");
+            config.addKeywords("null", "true", "false");
+            config.addKeywords("strictfp", "volatile", "transient");
 
             config.addKeywords("struct", "const");
+            config.addKeywords("super", "this", "operator");
 
             //other reserved words for future use
             config.addKeywords("record", "instanceof", "native", "synchronized");

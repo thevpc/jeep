@@ -75,7 +75,7 @@ public class JTokenizerImpl extends AbstractJTokenizer {
         }
         Set<String> keywords = config.getKeywords();
         if (keywords.size() > 0) {
-            matchers.add(new KeywordsPattern(keywords.toArray(new String[0])));
+            matchers.add(new KeywordsPattern(config.isCaseSensitive(), keywords.toArray(new String[0])));
         }
         if (config.isParsetIntNumber() || config.isParsetInfinity() || config.isParseFloatNumber()) {
             matchers.add(new NumberPattern(null,

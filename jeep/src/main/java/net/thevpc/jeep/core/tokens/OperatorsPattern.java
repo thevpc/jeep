@@ -13,13 +13,13 @@ public class OperatorsPattern extends WordListPattern {
     
     public OperatorsPattern(String name, String[] words) {
         super("Operators", JTokenId.OFFSET_OPERATORS, JTokenPatternOrder.ORDER_OPERATOR,
-                toJTypedImages(JTokenId.OFFSET_OPERATORS, JTokenType.Enums.TT_OPERATOR, words)
+                true, toJTypedImages(JTokenId.OFFSET_OPERATORS, JTokenType.Enums.TT_OPERATOR, words)
         );
     }
 
     public OperatorsPattern(String name, JNamedImage[] words) {
         super("Operators", JTokenId.OFFSET_OPERATORS, JTokenPatternOrder.ORDER_OPERATOR,
-                toJTypedImages(JTokenId.OFFSET_OPERATORS, JTokenType.Enums.TT_OPERATOR, words)
+                true, toJTypedImages(JTokenId.OFFSET_OPERATORS, JTokenType.Enums.TT_OPERATOR, words)
         );
     }
 
@@ -28,15 +28,15 @@ public class OperatorsPattern extends WordListPattern {
 //    }
 
     public OperatorsPattern(String name, int startId, JTokenType ttype, String... words) {
-        super(validateName(name), startId, JTokenPatternOrder.ORDER_OPERATOR, ttype, words);
+        super(validateName(name), startId, JTokenPatternOrder.ORDER_OPERATOR, ttype, true, words);
     }
 
     public OperatorsPattern(String name, int startId, JTokenType ttype, JTokenPatternOrder order, String... words) {
-        super(validateName(name), startId, order, ttype, words);
+        super(validateName(name), startId, order, ttype, true, words);
     }
 
     public OperatorsPattern(String name, JTokenType ttype, JNamedImage... words) {
-        super(validateName(name), words[0].getPreferredId(), JTokenPatternOrder.ORDER_OPERATOR, ttype, words);
+        super(validateName(name), words[0].getPreferredId(), JTokenPatternOrder.ORDER_OPERATOR, ttype, true, words);
     }
 
     private static String validateName(String name) {
