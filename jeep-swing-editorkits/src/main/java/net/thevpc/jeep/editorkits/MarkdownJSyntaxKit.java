@@ -1,23 +1,21 @@
 package net.thevpc.jeep.editorkits;
 
-import net.thevpc.jeep.JTokenType;
-import net.thevpc.jeep.core.tokens.JTokenDef;
-import net.thevpc.jeep.editor.JSyntaxKit;
-import net.thevpc.jeep.editor.JSyntaxStyle;
-import net.thevpc.jeep.editor.JSyntaxStyleManager;
-
-import java.util.regex.Pattern;
 import net.thevpc.jeep.JContext;
 import net.thevpc.jeep.JTokenConfigBuilder;
+import net.thevpc.jeep.JTokenType;
 import net.thevpc.jeep.core.DefaultJeep;
 import net.thevpc.jeep.core.JTokenState;
+import net.thevpc.jeep.core.tokens.JTokenDef;
 import net.thevpc.jeep.core.tokens.JTokenPatternOrder;
 import net.thevpc.jeep.core.tokens.SimpleTokenPattern;
-import net.thevpc.jeep.editor.ColorResource;
+import net.thevpc.jeep.editor.JSyntaxKit;
+import net.thevpc.jeep.editor.JSyntaxStyleManager;
 import net.thevpc.jeep.impl.JEnumDefinition;
 import net.thevpc.jeep.impl.JEnumTypeRegistry;
 import net.thevpc.jeep.impl.tokens.JTokenizerImpl;
 import net.thevpc.jeep.impl.tokens.RegexpBasedTokenPattern;
+
+import java.util.regex.Pattern;
 
 public class MarkdownJSyntaxKit extends JSyntaxKit {
 
@@ -37,137 +35,152 @@ public class MarkdownJSyntaxKit extends JSyntaxKit {
     public static final int TT_TITLE8 = -1110;
     public static final int TT_TITLE9 = -1111;
     public static final int TT_PRE = -1112;
-    public static final int TT_CODE = -1113;
+    public static final int TT_CODE1 = -1113;
+    public static final int TT_CODE3 = -1114;
+    public static final int TT_UNDERSCORE1 = -1115;
+    public static final int TT_UNDERSCORE2 = -1116;
+    public static final int TT_UNDERSCORE3 = -1117;
+    public static final int TT_TILDE2 = -1118;
+    public static final int TT_BLOCKQUOTE = -1119;
+    public static final int TT_LINK = -1120;
+    public static final int TT_IMAGE = -1121;
+    public static final int TT_CODE3_BOLD = -1122;
 //    public static final int TT_ANY = -1114;
-
-    public static class LangState extends JTokenState {
-
-        public static final int STATE_DEFAULT = 1;
-
-        public static final JEnumDefinition<LangState> _ET = JEnumTypeRegistry.INSTANCE
-                .register(LangState.class)
-                .addConstIntFields(LangState.class, f -> f.getName().startsWith("STATE_"));
-
-        public static class Enums {
-
-            public static final LangState STATE_DEFAULT = _ET.valueOf("STATE_DEFAULT");
-        }
-
-        private LangState(JEnumDefinition type, String name, int value) {
-            super(type, name, value);
-        }
-    }
-
     private static JContext langContext;
 
     public MarkdownJSyntaxKit() {
         super();
         JContext jContext = getSingleton();
         JSyntaxStyleManager styles = new JSyntaxStyleManager();
-        JSyntaxStyle bold = new JSyntaxStyle("BOLD",null, JSyntaxStyle.BOLD);
-        JSyntaxStyle italic = new JSyntaxStyle("ITALIC",null, JSyntaxStyle.ITALIC);
-        JSyntaxStyle boldItalic = new JSyntaxStyle("BOLD_ITALIC",null, JSyntaxStyle.BOLD | JSyntaxStyle.ITALIC);
-        JSyntaxStyle pre = new JSyntaxStyle("PRE",ColorResource.of("OptionPane.warningDialog.titlePane.shadow;ToolWindowTitleBarUI.background.active.end;Tree.selectionBackground"), JSyntaxStyle.PLAIN).setFillColor(ColorResource.of("#fff5b9"));
-        JSyntaxStyle code = new JSyntaxStyle("CODE",ColorResource.of("OptionPane.warningDialog.titlePane.shadow;ToolWindowTitleBarUI.background.active.end;Tree.selectionBackground"), JSyntaxStyle.PLAIN).setFillColor(ColorResource.of("#fae0ff"));
         for (JTokenDef o : jContext.tokens().tokenDefinitions()) {
             switch (o.ttype) {
                 case JTokenType.TT_KEYWORD: {
                     switch (o.idName) {
                         case "true":
                         case "false": {
-                            styles.setTokenIdStyle(o.id, BOOLEAN_LITERALS);
+                            styles.setTokenIdStyle(o.id, STYLE_BOOLEAN_LITERALS);
                             break;
                         }
                         default: {
-                            styles.setTokenIdStyle(o.id, KEYWORDS);
+                            styles.setTokenIdStyle(o.id, STYLE_KEYWORDS);
                         }
                     }
                     break;
                 }
                 case JTokenType.TT_BLOCK_COMMENTS:
                 case JTokenType.TT_LINE_COMMENTS: {
-                    styles.setTokenIdStyle(o.id, COMMENTS);
+                    styles.setTokenIdStyle(o.id, STYLE_COMMENTS);
                     break;
                 }
                 case JTokenType.TT_STRING: {
-                    styles.setTokenIdStyle(o.id, STRING);
+                    styles.setTokenIdStyle(o.id, STYLE_STRING);
                     break;
                 }
                 case JTokenType.TT_NUMBER: {
-                    styles.setTokenIdStyle(o.id, NUMBERS);
+                    styles.setTokenIdStyle(o.id, STYLE_NUMBERS);
                     break;
                 }
                 case JTokenType.TT_OPERATOR: {
-                    styles.setTokenIdStyle(o.id, OPERATORS);
+                    styles.setTokenIdStyle(o.id, STYLE_OPERATORS);
                     break;
                 }
                 case JTokenType.TT_GROUP_SEPARATOR:
                 case JTokenType.TT_SEPARATOR: {
-                    styles.setTokenIdStyle(o.id, SEPARATORS);
+                    styles.setTokenIdStyle(o.id, STYLE_SEPARATORS);
                     break;
                 }
                 case JTokenType.TT_REGEX: {
-                    styles.setTokenIdStyle(o.id, REGEXPS);
+                    styles.setTokenIdStyle(o.id, STYLE_REGEXPS);
                     break;
                 }
                 case JTokenType.TT_TEMPORAL: {
-                    styles.setTokenIdStyle(o.id, TEMPORALS);
+                    styles.setTokenIdStyle(o.id, STYLE_TEMPORALS);
                     break;
                 }
                 case TT_STAR1: {
-                    styles.setTokenIdStyle(o.id, italic);
+                    styles.setTokenIdStyle(o.id, STYLE_ITALIC);
                     break;
                 }
                 case TT_STAR2: {
-                    styles.setTokenIdStyle(o.id, bold);
+                    styles.setTokenIdStyle(o.id, STYLE_BOLD);
                     break;
                 }
                 case TT_STAR3: {
-                    styles.setTokenIdStyle(o.id, boldItalic);
+                    styles.setTokenIdStyle(o.id, STYLE_BOLD_ITALIC);
+                    break;
+                }
+                case TT_UNDERSCORE1:
+                case TT_UNDERSCORE2:
+                case TT_UNDERSCORE3: {
+                    styles.setTokenIdStyle(o.id, STYLE_ITALIC);
+                    break;
+                }
+                case TT_TILDE2: {
+                    styles.setTokenIdStyle(o.id, STYLE_CROSS_OUT);
                     break;
                 }
                 case TT_TITLE1: {
-                    styles.setTokenIdStyle(o.id, TITLE1);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE1);
                     break;
                 }
                 case TT_TITLE2: {
-                    styles.setTokenIdStyle(o.id, TITLE2);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE2);
                     break;
                 }
                 case TT_TITLE3: {
-                    styles.setTokenIdStyle(o.id, TITLE3);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE3);
                     break;
                 }
                 case TT_TITLE4: {
-                    styles.setTokenIdStyle(o.id, TITLE4);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE4);
                     break;
                 }
                 case TT_TITLE5: {
-                    styles.setTokenIdStyle(o.id, TITLE5);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE5);
                     break;
                 }
                 case TT_TITLE6: {
-                    styles.setTokenIdStyle(o.id, TITLE6);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE6);
                     break;
                 }
                 case TT_TITLE7: {
-                    styles.setTokenIdStyle(o.id, TITLE7);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE7);
                     break;
                 }
                 case TT_TITLE8: {
-                    styles.setTokenIdStyle(o.id, TITLE8);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE8);
                     break;
                 }
                 case TT_TITLE9: {
-                    styles.setTokenIdStyle(o.id, TITLE9);
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE9);
+                    break;
+                }
+                case TT_BLOCKQUOTE: {
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE6);
                     break;
                 }
                 case TT_PRE: {
-                    styles.setTokenIdStyle(o.id, pre);
+                    styles.setTokenIdStyle(o.id, STYLE_PRE);
                     break;
                 }
-                case TT_CODE: {
-                    styles.setTokenIdStyle(o.id, code);
+                case TT_CODE1: {
+                    styles.setTokenIdStyle(o.id, STYLE_CODE);
+                    break;
+                }
+                case TT_CODE3: {
+                    styles.setTokenIdStyle(o.id, STYLE_CODE);
+                    break;
+                }
+                case TT_IMAGE: {
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE6);
+                    break;
+                }
+                case TT_LINK: {
+                    styles.setTokenIdStyle(o.id, STYLE_TITLE6);
+                    break;
+                }
+                case TT_CODE3_BOLD: {
+                    styles.setTokenIdStyle(o.id, STYLE_CODE.copy().setBold(true));
                     break;
                 }
             }
@@ -182,14 +195,26 @@ public class MarkdownJSyntaxKit extends JSyntaxKit {
             langContext = new DefaultJeep();
 
             JTokenConfigBuilder config = langContext.tokens().config().builder();
-            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_STAR3, "**"), JTokenPatternOrder.ORDER_OPERATOR, Pattern.compile(
-                    "|([*]{3}((?![*]{3}).)+[*]{3})|([_]{3}[^_][_]{3})"
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_STAR3, "***"), JTokenPatternOrder.ORDER_OPERATOR, Pattern.compile(
+                    "([*]{3}((?![*]{3}).)+[*]{3})"
             )));
             config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_STAR2, "**"), JTokenPatternOrder.ORDER_OPERATOR, Pattern.compile(
-                    "|([*]{2}((?![*]{2}).)+[*]{2})|([_]{2}[^_][_]{2})"
+                    "([*]{2}((?![*]{2}).)+[*]{2})"
             )));
             config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_STAR1, "*"), JTokenPatternOrder.ORDER_OPERATOR, Pattern.compile(
-                    "([*][^*]+[*])|([_][^_][_])"
+                    "([*][^*]+[*])"
+            )));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_UNDERSCORE3, "___"), JTokenPatternOrder.ORDER_OPERATOR, Pattern.compile(
+                    "([_]{3}[^_][_]{3})"
+            )));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_UNDERSCORE2, "__"), JTokenPatternOrder.ORDER_OPERATOR, Pattern.compile(
+                    "([_]{2}[^_][_]{2})"
+            )));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_UNDERSCORE1, "_"), JTokenPatternOrder.ORDER_OPERATOR, Pattern.compile(
+                    "([_][^_][_])"
+            )));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_TILDE2, "~"), JTokenPatternOrder.ORDER_OPERATOR, Pattern.compile(
+                    "([~]{2}[^~][~]{2})"
             )));
 //
             config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_TITLE9, "#9"), JTokenPatternOrder.ORDER_OPERATOR,
@@ -208,12 +233,22 @@ public class MarkdownJSyntaxKit extends JSyntaxKit {
                     Pattern.compile("^( )*[#]{3}[^#].*")));
             config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_TITLE2, "#2"), JTokenPatternOrder.ORDER_OPERATOR,
                     Pattern.compile("^( )*[#]{2}[^#].*")));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_BLOCKQUOTE, "blockquote"), JTokenPatternOrder.ORDER_OPERATOR,
+                    Pattern.compile("^[ \t]*[>]+[ \t].*")));
             config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_TITLE1, "#"), JTokenPatternOrder.ORDER_OPERATOR,
                     Pattern.compile("^( )*[#][^#].*")));
             config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_PRE, "pre"), JTokenPatternOrder.ORDER_OPERATOR,
-                    Pattern.compile("<pre>((?!</pre>).)*</pre>",Pattern.DOTALL)));
-            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_CODE, "code"), JTokenPatternOrder.ORDER_OPERATOR,
-                    Pattern.compile("```((?!```).)*```",Pattern.DOTALL)));
+                    Pattern.compile("<pre>((?!</pre>).)*</pre>", Pattern.DOTALL)));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_CODE3, "code3"), JTokenPatternOrder.ORDER_OPERATOR,
+                    Pattern.compile("```((?!```).)*```", Pattern.DOTALL)));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_CODE3_BOLD, "code3_bold"), JTokenPatternOrder.ORDER_OPERATOR,
+                    Pattern.compile("[*][*]```((?!```).)*```[*][*]", Pattern.DOTALL)));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_CODE1, "code1"), JTokenPatternOrder.ORDER_OPERATOR,
+                    Pattern.compile("`((?!`).)*`")));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_LINK, "link"), JTokenPatternOrder.ORDER_OPERATOR,
+                    Pattern.compile("\\[[^]]*]\\([^)]+\\)")));
+            config.addPatterns(new RegexpBasedTokenPattern(new JTokenDef(TT_IMAGE, "image"), JTokenPatternOrder.ORDER_OPERATOR,
+                    Pattern.compile("!\\[[^]]*]\\([^)]+\\)")));
 
             config.setIdPattern(new SimpleTokenPattern() {
                 @Override
@@ -247,6 +282,24 @@ public class MarkdownJSyntaxKit extends JSyntaxKit {
             });
         }
         return langContext;
+    }
+
+    public static class LangState extends JTokenState {
+
+        public static final int STATE_DEFAULT = 1;
+
+        public static final JEnumDefinition<LangState> _ET = JEnumTypeRegistry.INSTANCE
+                .register(LangState.class)
+                .addConstIntFields(LangState.class, f -> f.getName().startsWith("STATE_"));
+
+        private LangState(JEnumDefinition type, String name, int value) {
+            super(type, name, value);
+        }
+
+        public static class Enums {
+
+            public static final LangState STATE_DEFAULT = _ET.valueOf("STATE_DEFAULT");
+        }
     }
 
 }

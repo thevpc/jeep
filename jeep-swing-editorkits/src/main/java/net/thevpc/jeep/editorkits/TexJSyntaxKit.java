@@ -10,9 +10,7 @@ import net.thevpc.jeep.core.tokens.JTokenDef;
 import net.thevpc.jeep.core.tokens.JTokenPatternOrder;
 import net.thevpc.jeep.core.tokens.JavaIdPattern;
 import net.thevpc.jeep.core.tokens.SeparatorsPattern;
-import net.thevpc.jeep.editor.ColorResource;
 import net.thevpc.jeep.editor.JSyntaxKit;
-import net.thevpc.jeep.editor.JSyntaxStyle;
 import net.thevpc.jeep.editor.JSyntaxStyleManager;
 import net.thevpc.jeep.impl.JEnumDefinition;
 import net.thevpc.jeep.impl.JEnumTypeRegistry;
@@ -20,7 +18,6 @@ import net.thevpc.jeep.impl.tokens.JTokenizerImpl;
 import net.thevpc.jeep.impl.tokens.JavaNumberTokenEvaluator;
 import net.thevpc.jeep.impl.tokens.RegexpBasedTokenPattern;
 
-import java.awt.*;
 import java.util.regex.Pattern;
 
 public class TexJSyntaxKit extends JSyntaxKit {
@@ -63,36 +60,36 @@ public class TexJSyntaxKit extends JSyntaxKit {
                 case JTokenType.TT_KEYWORD: {
                     switch (o.imageLayout) {
                         case "\\part":{
-                            styles.setTokenIdStyle(o.id, TITLE1);
+                            styles.setTokenIdStyle(o.id, STYLE_TITLE1);
                             break;
                         }
                         case "\\chapter":{
-                            styles.setTokenIdStyle(o.id, TITLE2);
+                            styles.setTokenIdStyle(o.id, STYLE_TITLE2);
                             break;
                         }
                         case "\\section":{
-                            styles.setTokenIdStyle(o.id, TITLE3);
+                            styles.setTokenIdStyle(o.id, STYLE_TITLE3);
                             break;
                         }
                         case "\\subsection":{
-                            styles.setTokenIdStyle(o.id, TITLE4);
+                            styles.setTokenIdStyle(o.id, STYLE_TITLE4);
                             break;
                         }
                         case "\\subsubsection":{
-                            styles.setTokenIdStyle(o.id, TITLE5);
+                            styles.setTokenIdStyle(o.id, STYLE_TITLE5);
                             break;
                         }
                         case "\\paragraph":{
-                            styles.setTokenIdStyle(o.id, TITLE6);
+                            styles.setTokenIdStyle(o.id, STYLE_TITLE6);
                             break;
                         }
                         case "\\subparagraph":{
-                            styles.setTokenIdStyle(o.id, TITLE7);
+                            styles.setTokenIdStyle(o.id, STYLE_TITLE7);
                             break;
                         }
                         case "true":
                         case "false": {
-                            styles.setTokenIdStyle(o.id, BOOLEAN_LITERALS);
+                            styles.setTokenIdStyle(o.id, STYLE_BOOLEAN_LITERALS);
                             break;
                         }
 //                        case "article":case "book":case "booklet"
@@ -103,7 +100,7 @@ public class TexJSyntaxKit extends JSyntaxKit {
 //                            break;
 //                        }
                         default: {
-                            styles.setTokenIdStyle(o.id, KEYWORDS);
+                            styles.setTokenIdStyle(o.id, STYLE_KEYWORDS);
                             break;
                         }
                     }
@@ -111,36 +108,36 @@ public class TexJSyntaxKit extends JSyntaxKit {
                 }
                 case JTokenType.TT_BLOCK_COMMENTS:
                 case JTokenType.TT_LINE_COMMENTS: {
-                    styles.setTokenIdStyle(o.id, COMMENTS);
+                    styles.setTokenIdStyle(o.id, STYLE_COMMENTS);
                     break;
                 }
                 case JTokenType.TT_STRING: {
-                    styles.setTokenIdStyle(o.id, STRING);
+                    styles.setTokenIdStyle(o.id, STYLE_STRING);
                     break;
                 }
                 case JTokenType.TT_NUMBER: {
-                    styles.setTokenIdStyle(o.id, NUMBERS);
+                    styles.setTokenIdStyle(o.id, STYLE_NUMBERS);
                     break;
                 }
                 case JTokenType.TT_OPERATOR: {
-                    styles.setTokenIdStyle(o.id, OPERATORS);
+                    styles.setTokenIdStyle(o.id, STYLE_OPERATORS);
                     break;
                 }
                 case JTokenType.TT_GROUP_SEPARATOR:
                 case JTokenType.TT_SEPARATOR: {
-                    styles.setTokenIdStyle(o.id, SEPARATORS);
+                    styles.setTokenIdStyle(o.id, STYLE_SEPARATORS);
                     break;
                 }
                 case JTokenType.TT_REGEX: {
-                    styles.setTokenIdStyle(o.id, REGEXPS);
+                    styles.setTokenIdStyle(o.id, STYLE_REGEXPS);
                     break;
                 }
                 case JTokenType.TT_TEMPORAL: {
-                    styles.setTokenIdStyle(o.id, TEMPORALS);
+                    styles.setTokenIdStyle(o.id, STYLE_TEMPORALS);
                     break;
                 }
                 case TOKEN_TEX_COMMAND: {
-                    styles.setTokenIdStyle(o.id, DIRECTIVES);
+                    styles.setTokenIdStyle(o.id, STYLE_DIRECTIVES);
                     break;
                 }
             }

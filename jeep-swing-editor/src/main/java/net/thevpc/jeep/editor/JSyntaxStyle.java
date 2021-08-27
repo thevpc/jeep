@@ -5,7 +5,7 @@ import javax.swing.text.TabExpander;
 import javax.swing.text.Utilities;
 import java.awt.*;
 
-public final class JSyntaxStyle {
+public final class JSyntaxStyle implements Cloneable {
 
     public static final int BOLD = Font.BOLD;
     public static final int ITALIC = Font.ITALIC;
@@ -15,7 +15,7 @@ public final class JSyntaxStyle {
     public static final int JAGGED = 32;
     public static final int UNDERLINE = 64;
     public static final int CROSS_OUT = 128;
-    private String name;
+    private final String name;
     private ColorResource color;
     private ColorResource boxColor = ColorResource.of(Color.RED);
     private ColorResource fillColor = ColorResource.of(Color.decode("#EEEEEE"));
@@ -23,26 +23,26 @@ public final class JSyntaxStyle {
 
     public JSyntaxStyle(String name) {
         super();
-        this.name=name;
+        this.name = name;
     }
 
-    public JSyntaxStyle(String name,ColorResource color, boolean bold, boolean italic) {
+    public JSyntaxStyle(String name, ColorResource color, boolean bold, boolean italic) {
         super();
         this.color = color;
         setBold(bold);
         setItalic(italic);
-        this.name=name;
+        this.name = name;
     }
 
-    public JSyntaxStyle(String name,ColorResource color, int fontStyle) {
+    public JSyntaxStyle(String name, ColorResource color, int fontStyle) {
         super();
         this.color = color;
         this.fontStyle = fontStyle;
-        this.name=name;
+        this.name = name;
     }
 
-    JSyntaxStyle(String name,String str) {
-        this.name=name;
+    JSyntaxStyle(String name, String str) {
+        this.name = name;
         String[] parts = str.split("\\s*,\\s*");
         if (parts.length != 2) {
             throw new IllegalArgumentException("style not correct format: " + str);
@@ -56,7 +56,7 @@ public final class JSyntaxStyle {
     }
 
     public boolean isBold() {
-        return (fontStyle & Font.BOLD) != 0;
+        return isFontStyleFlag(Font.BOLD);
     }
 
     public JSyntaxStyle setBold(boolean bold) {
@@ -64,6 +64,20 @@ public final class JSyntaxStyle {
             fontStyle |= Font.BOLD;
         } else {
             int mask = -1 ^ Font.BOLD;
+            fontStyle = (fontStyle & (mask));
+        }
+        return this;
+    }
+
+    private boolean isFontStyleFlag(int flag) {
+        return (fontStyle & flag) != 0;
+    }
+
+    private JSyntaxStyle setFontStyleFlag(int flag, boolean armed) {
+        if (armed) {
+            fontStyle |= flag;
+        } else {
+            int mask = -1 ^ flag;
             fontStyle = (fontStyle & (mask));
         }
         return this;
@@ -77,6 +91,7 @@ public final class JSyntaxStyle {
         this.color = color;
         return this;
     }
+
     public JSyntaxStyle setColorString(String color) {
         this.color = ColorResource.of(Color.decode(color));
         return this;
@@ -101,15 +116,11 @@ public final class JSyntaxStyle {
     }
 
     public Boolean isItalic() {
-        return (fontStyle & Font.ITALIC) != 0;
+        return isFontStyleFlag(Font.ITALIC);
     }
 
     public JSyntaxStyle setItalic(boolean italic) {
-        if (italic) {
-            fontStyle |= Font.ITALIC;
-        } else {
-            fontStyle = (fontStyle & (-1 ^ Font.ITALIC));
-        }
+        setFontStyleFlag(Font.ITALIC, italic);
         return this;
     }
 
@@ -122,6 +133,46 @@ public final class JSyntaxStyle {
         return this;
     }
 
+    public boolean isFilled() {
+        return isFontStyleFlag(FILLED);
+    }
+
+    public JSyntaxStyle setFilled(boolean b) {
+        return setFontStyleFlag(FILLED, b);
+    }
+
+    public boolean isBoxed() {
+        return isFontStyleFlag(BOXED);
+    }
+
+    public JSyntaxStyle setBoxed(boolean b) {
+        return setFontStyleFlag(BOXED, b);
+    }
+
+    public boolean isJagged() {
+        return isFontStyleFlag(JAGGED);
+    }
+
+    public JSyntaxStyle setJagged(boolean b) {
+        return setFontStyleFlag(JAGGED, b);
+    }
+
+    public boolean isUnderline() {
+        return isFontStyleFlag(UNDERLINE);
+    }
+
+    public JSyntaxStyle setUnderline(boolean b) {
+        return setFontStyleFlag(UNDERLINE, b);
+    }
+
+    public boolean isCrossOut() {
+        return isFontStyleFlag(CROSS_OUT);
+    }
+
+    public JSyntaxStyle setCrossOut(boolean b) {
+        return setFontStyleFlag(CROSS_OUT, b);
+    }
+
     public ColorResource getColor() {
         return color;
     }
@@ -129,6 +180,14 @@ public final class JSyntaxStyle {
     public JSyntaxStyle setColor(ColorResource color) {
         this.color = color;
         return this;
+    }
+
+    public JSyntaxStyle copy() {
+        try {
+            return (JSyntaxStyle) this.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalArgumentException("invalid");
+        }
     }
 
     /**
@@ -146,6 +205,7 @@ public final class JSyntaxStyle {
      */
     public int drawText(Segment segment, int x, int y,
                         Graphics graphics, TabExpander e, int startOffset) {
+        Color basefg=graphics.getColor();
         graphics.setFont(graphics.getFont().deriveFont(getFontStyle()));
         FontMetrics fontMetrics = graphics.getFontMetrics();
         int a = fontMetrics.getAscent();
@@ -157,17 +217,21 @@ public final class JSyntaxStyle {
         int rH = h;
         if ((getFontStyle() & FILLED) != 0) {
             ColorResource cr = getFillColor();
-            Color c = cr==null?null:cr.get();
+            Color c = cr == null ? null : cr.get();
             if (c == null) {
                 c = Color.decode("#EEEEEE");
             }
             graphics.setColor(c);
             graphics.fillRect(rX, rY, rW, rH);
         }
-        graphics.setColor(getColor()==null?null:getColor().get());
+        Color cfg=getColor() == null ? null : getColor().get();
+        if(cfg==null){
+            cfg=basefg;
+        }
+        graphics.setColor(getColor() == null ? basefg : getColor().get());
         x = Utilities.drawTabbedText(segment, x, y, graphics, e, startOffset);
         if ((getFontStyle() & BOXED) != 0) {
-            Color c = getBoxColor()==null?null:getBoxColor().get();
+            Color c = getBoxColor() == null ? null : getBoxColor().get();
             if (c == null) {
                 c = Color.RED;
             }
@@ -175,26 +239,27 @@ public final class JSyntaxStyle {
             graphics.drawRect(rX, rY, rW, rH);
         }
         if ((getFontStyle() & JAGGED) != 0) {
-            Color c = getBoxColor()==null?null:getBoxColor().get();
+            Color c = getBoxColor() == null ? null : getBoxColor().get();
             if (c == null) {
                 c = Color.RED;
             }
             paintJaggedLine(graphics, rY + rH, rX, rX + rW, c);
         }
         if ((getFontStyle() & UNDERLINE) != 0) {
-            Color c = getBoxColor()==null?null:getBoxColor().get();
+            Color c = getBoxColor() == null ? null : getBoxColor().get();
             if (c == null) {
                 c = Color.RED;
             }
             paintUnderline(graphics, rY + rH, rX, rX + rW, c);
         }
         if ((getFontStyle() & CROSS_OUT) != 0) {
-            Color c = getBoxColor()==null?null:getBoxColor().get();
+            Color c = getBoxColor() == null ? null : getBoxColor().get();
             if (c == null) {
                 c = Color.RED;
             }
-            paintUnderline(graphics, (rY + rH)/2, rX, rX + rW, c);
+            paintUnderline(graphics, (rY + rH) / 2, rX, rX + rW, c);
         }
+        graphics.setColor(basefg);
         return x;
     }
 
@@ -211,7 +276,7 @@ public final class JSyntaxStyle {
     public void paintUnderline(Graphics g, int y, int x1, int x2, Color color) {
         Color old = g.getColor();
         g.setColor(color);
-        g.drawLine(x1,y,x2,y);
+        g.drawLine(x1, y, x2, y);
         g.setColor(old);
     }
 

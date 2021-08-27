@@ -58,49 +58,49 @@ public class JsonJSyntaxKit extends JSyntaxKit {
                         case "long":
                         case "float":
                         case "double": {
-                            styles.setTokenIdStyle(o.id, PRIMITIVE_TYPES);
+                            styles.setTokenIdStyle(o.id, STYLE_PRIMITIVE_TYPES);
                             break;
                         }
                         case "true":
                         case "false":
                         case "null": {
-                            styles.setTokenIdStyle(o.id, BOOLEAN_LITERALS);
+                            styles.setTokenIdStyle(o.id, STYLE_BOOLEAN_LITERALS);
                             break;
                         }
                         default: {
-                            styles.setTokenIdStyle(o.id, KEYWORDS);
+                            styles.setTokenIdStyle(o.id, STYLE_KEYWORDS);
                         }
                     }
                     break;
                 }
                 case JTokenType.TT_BLOCK_COMMENTS:
                 case JTokenType.TT_LINE_COMMENTS: {
-                    styles.setTokenIdStyle(o.id, COMMENTS);
+                    styles.setTokenIdStyle(o.id, STYLE_COMMENTS);
                     break;
                 }
                 case JTokenType.TT_STRING: {
-                    styles.setTokenIdStyle(o.id, STRINGS);
+                    styles.setTokenIdStyle(o.id, STYLE_STRINGS);
                     break;
                 }
                 case JTokenType.TT_NUMBER: {
-                    styles.setTokenIdStyle(o.id, NUMBERS);
+                    styles.setTokenIdStyle(o.id, STYLE_NUMBERS);
                     break;
                 }
                 case JTokenType.TT_OPERATOR: {
-                    styles.setTokenIdStyle(o.id, OPERATORS);
+                    styles.setTokenIdStyle(o.id, STYLE_OPERATORS);
                     break;
                 }
                 case JTokenType.TT_GROUP_SEPARATOR:
                 case JTokenType.TT_SEPARATOR: {
-                    styles.setTokenIdStyle(o.id, SEPARATORS);
+                    styles.setTokenIdStyle(o.id, STYLE_SEPARATORS);
                     break;
                 }
                 case JTokenType.TT_REGEX: {
-                    styles.setTokenIdStyle(o.id, REGEXPS);
+                    styles.setTokenIdStyle(o.id, STYLE_REGEXPS);
                     break;
                 }
                 case JTokenType.TT_TEMPORAL: {
-                    styles.setTokenIdStyle(o.id, TEMPORALS);
+                    styles.setTokenIdStyle(o.id, STYLE_TEMPORALS);
                     break;
                 }
             }

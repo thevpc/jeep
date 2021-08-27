@@ -158,6 +158,13 @@ public class JSyntaxStyleManager {
         g.setColor(ss.getColor().get());
     }
 
+    public JSyntaxStyle getTokenIdStyle(JToken token) {
+        if(token==null){
+            return null;
+        }
+        return getTokenIdStyle(token.def.id);
+    }
+
     /**
      * Return the style for the given TokenType
      * @param type
@@ -185,7 +192,7 @@ public class JSyntaxStyleManager {
      */
     public int drawText(Segment segment, int x, int y,
                         Graphics graphics, TabExpander e, JToken token) {
-        JSyntaxStyle s = getTokenIdStyle(token.def.id);
+        JSyntaxStyle s = getTokenIdStyle(token);
         if(s==null){
             s= getTokenIdStyle(0);
         }

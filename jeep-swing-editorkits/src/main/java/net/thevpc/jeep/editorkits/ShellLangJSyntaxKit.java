@@ -3,10 +3,8 @@ package net.thevpc.jeep.editorkits;
 import net.thevpc.jeep.JTokenType;
 import net.thevpc.jeep.core.tokens.JTokenDef;
 import net.thevpc.jeep.editor.JSyntaxKit;
-import net.thevpc.jeep.editor.JSyntaxStyle;
 import net.thevpc.jeep.editor.JSyntaxStyleManager;
 
-import java.awt.*;
 import java.util.regex.Pattern;
 import net.thevpc.jeep.JContext;
 import net.thevpc.jeep.JOperatorPrecedences;
@@ -16,7 +14,6 @@ import net.thevpc.jeep.core.JTokenState;
 import net.thevpc.jeep.core.tokens.JTokenPatternOrder;
 import net.thevpc.jeep.core.tokens.JavaIdPattern;
 import net.thevpc.jeep.core.tokens.SeparatorsPattern;
-import net.thevpc.jeep.editor.ColorResource;
 import net.thevpc.jeep.impl.JEnumDefinition;
 import net.thevpc.jeep.impl.JEnumTypeRegistry;
 import net.thevpc.jeep.impl.tokens.JTokenizerImpl;
@@ -66,47 +63,47 @@ public class ShellLangJSyntaxKit extends JSyntaxKit {
                     switch (o.idName) {
                         case "true":
                         case "false": {
-                            styles.setTokenIdStyle(o.id, BOOLEAN_LITERALS);
+                            styles.setTokenIdStyle(o.id, STYLE_BOOLEAN_LITERALS);
                             break;
                         }
                         default: {
-                            styles.setTokenIdStyle(o.id, KEYWORDS);
+                            styles.setTokenIdStyle(o.id, STYLE_KEYWORDS);
                         }
                     }
                     break;
                 }
                 case JTokenType.TT_BLOCK_COMMENTS:
                 case JTokenType.TT_LINE_COMMENTS: {
-                    styles.setTokenIdStyle(o.id, COMMENTS);
+                    styles.setTokenIdStyle(o.id, STYLE_COMMENTS);
                     break;
                 }
                 case JTokenType.TT_STRING: {
-                    styles.setTokenIdStyle(o.id, STRINGS);
+                    styles.setTokenIdStyle(o.id, STYLE_STRINGS);
                     break;
                 }
                 case JTokenType.TT_NUMBER: {
-                    styles.setTokenIdStyle(o.id, NUMBERS);
+                    styles.setTokenIdStyle(o.id, STYLE_NUMBERS);
                     break;
                 }
                 case JTokenType.TT_OPERATOR: {
-                    styles.setTokenIdStyle(o.id, OPERATORS);
+                    styles.setTokenIdStyle(o.id, STYLE_OPERATORS);
                     break;
                 }
                 case JTokenType.TT_GROUP_SEPARATOR:
                 case JTokenType.TT_SEPARATOR: {
-                    styles.setTokenIdStyle(o.id, SEPARATORS);
+                    styles.setTokenIdStyle(o.id, STYLE_SEPARATORS);
                     break;
                 }
                 case JTokenType.TT_REGEX: {
-                    styles.setTokenIdStyle(o.id, REGEXPS);
+                    styles.setTokenIdStyle(o.id, STYLE_REGEXPS);
                     break;
                 }
                 case JTokenType.TT_TEMPORAL: {
-                    styles.setTokenIdStyle(o.id, TEMPORALS);
+                    styles.setTokenIdStyle(o.id, STYLE_TEMPORALS);
                     break;
                 }
                 case TOKEN_DIRECTIVE: {
-                    styles.setTokenIdStyle(o.id, DIRECTIVES);
+                    styles.setTokenIdStyle(o.id, STYLE_DIRECTIVES);
                     break;
                 }
             }

@@ -22,7 +22,11 @@ public class JSyntaxKit extends StyledEditorKit implements ViewFactory {
     public static final String UI_KEY_LITERAL_STRING2 = "OptionPane.questionDialog.border.background;#2b9946";
     public static final String UI_KEY_DIRECTIVE = "OptionPane.questionDialog.border.background;#darkgreen";
     public static final String UI_KEY_LITERAL_NUMBER = "Label.errorForeground,#darkred";
+    public static final String UI_KEY_SUCCESS = "Objects.GreenAndroid;OptionPane.questionDialog.border.background;#darkgreen";
+    public static final String UI_KEY_ERROR = "Label.errorForeground,#darkred";
     public static final String UI_KEY_LITERAL_DATE = "OptionPane.warningDialog.titlePane.foreground;#darkgreen";
+    public static final String UI_KEY_WARNING = "OptionPane.warningDialog.titlePane.foreground;#darkorange";
+    public static final String UI_KEY_INFO = "OptionPane.warningDialog.titlePane.foreground;#darkcyan";
     public static final String UI_KEY_LITERAL_REGEXP = "OptionPane.warningDialog.titlePane.foreground;#darkgreen";
     public static final String UI_KEY_LITERAL_BOOLEAN = "Button.default.focusColor;#darkblue";
     public static final String UI_KEY_TYPE_PRIMITIVE = "Button.default.focusColor;#darkblue";
@@ -44,29 +48,51 @@ public class JSyntaxKit extends StyledEditorKit implements ViewFactory {
     private JContext jcontext;
     private JSyntaxStyleManager styles;
 
-    protected JSyntaxStyle KEYWORDS = new JSyntaxStyle("RESERVED_WORD",ColorResource.of(UI_KEY_RESERVED_WORD), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle COMMENTS = new JSyntaxStyle("COMMENTS",ColorResource.of(UI_KEY_COMMENTS), JSyntaxStyle.ITALIC);
-    protected JSyntaxStyle STRING = new JSyntaxStyle("LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle NUMBERS = new JSyntaxStyle("LITERAL_NUMBER",ColorResource.of(UI_KEY_LITERAL_NUMBER), JSyntaxStyle.PLAIN);
-    protected JSyntaxStyle OPERATORS = new JSyntaxStyle("OPERATOR",ColorResource.of(UI_KEY_OPERATOR), JSyntaxStyle.PLAIN);
-    protected JSyntaxStyle SEPARATORS = new JSyntaxStyle("SEPARATOR",ColorResource.of(UI_KEY_SEPARATOR), JSyntaxStyle.PLAIN);
-    protected JSyntaxStyle REGEXPS = new JSyntaxStyle("LITERAL_REGEXP",ColorResource.of(UI_KEY_LITERAL_REGEXP), JSyntaxStyle.PLAIN);
-    protected JSyntaxStyle TEMPORALS = new JSyntaxStyle("LITERAL_DATE",ColorResource.of(UI_KEY_LITERAL_DATE), JSyntaxStyle.PLAIN);
-    protected JSyntaxStyle DIRECTIVES = new JSyntaxStyle("DIRECTIVE",ColorResource.of(UI_KEY_DIRECTIVE), JSyntaxStyle.PLAIN);
-    protected JSyntaxStyle PRIMITIVE_TYPES = new JSyntaxStyle("TYPE_PRIMITIVE",ColorResource.of(UI_KEY_TYPE_PRIMITIVE), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle BOOLEAN_LITERALS = new JSyntaxStyle("LITERAL_BOOLEAN",ColorResource.of(UI_KEY_LITERAL_BOOLEAN), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle KEYWORDS2 = new JSyntaxStyle("RESERVED_WORD2",ColorResource.of(UI_KEY_RESERVED_WORD2), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle STRINGS = new JSyntaxStyle("LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle STRINGS2 = new JSyntaxStyle("LITERAL_STRING2",ColorResource.of(UI_KEY_LITERAL_STRING2), JSyntaxStyle.PLAIN);
-    protected JSyntaxStyle TITLE1 = new JSyntaxStyle("UI_KEY_FORE1",ColorResource.of(UI_KEY_FORE1), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle TITLE2 = new JSyntaxStyle("UI_KEY_FORE2",ColorResource.of(UI_KEY_FORE2), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle TITLE3 = new JSyntaxStyle("UI_KEY_FORE3",ColorResource.of(UI_KEY_FORE3), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle TITLE4 = new JSyntaxStyle("UI_KEY_FORE4",ColorResource.of(UI_KEY_FORE4), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle TITLE5 = new JSyntaxStyle("UI_KEY_FORE5",ColorResource.of(UI_KEY_FORE5), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle TITLE6 = new JSyntaxStyle("UI_KEY_FORE6",ColorResource.of(UI_KEY_FORE6), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle TITLE7 = new JSyntaxStyle("UI_KEY_FORE7",ColorResource.of(UI_KEY_FORE7), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle TITLE8 = new JSyntaxStyle("UI_KEY_FORE8",ColorResource.of(UI_KEY_FORE8), JSyntaxStyle.BOLD);
-    protected JSyntaxStyle TITLE9 = new JSyntaxStyle("UI_KEY_FORE9",ColorResource.of(UI_KEY_FORE9), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_KEYWORDS = new JSyntaxStyle("RESERVED_WORD",ColorResource.of(UI_KEY_RESERVED_WORD), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_COMMENTS = new JSyntaxStyle("COMMENTS",ColorResource.of(UI_KEY_COMMENTS), JSyntaxStyle.ITALIC);
+    protected JSyntaxStyle STYLE_STRING = new JSyntaxStyle("LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_NUMBERS = new JSyntaxStyle("LITERAL_NUMBER",ColorResource.of(UI_KEY_LITERAL_NUMBER), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_OPERATORS = new JSyntaxStyle("OPERATOR",ColorResource.of(UI_KEY_OPERATOR), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_SEPARATORS = new JSyntaxStyle("SEPARATOR",ColorResource.of(UI_KEY_SEPARATOR), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_REGEXPS = new JSyntaxStyle("LITERAL_REGEXP",ColorResource.of(UI_KEY_LITERAL_REGEXP), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_TEMPORALS = new JSyntaxStyle("LITERAL_DATE",ColorResource.of(UI_KEY_LITERAL_DATE), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_DIRECTIVES = new JSyntaxStyle("DIRECTIVE",ColorResource.of(UI_KEY_DIRECTIVE), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_PRIMITIVE_TYPES = new JSyntaxStyle("TYPE_PRIMITIVE",ColorResource.of(UI_KEY_TYPE_PRIMITIVE), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_BOOLEAN_LITERALS = new JSyntaxStyle("LITERAL_BOOLEAN",ColorResource.of(UI_KEY_LITERAL_BOOLEAN), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_KEYWORDS2 = new JSyntaxStyle("RESERVED_WORD2",ColorResource.of(UI_KEY_RESERVED_WORD2), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_STRINGS = new JSyntaxStyle("LITERAL_STRING",ColorResource.of(UI_KEY_LITERAL_STRING), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_STRINGS2 = new JSyntaxStyle("LITERAL_STRING2",ColorResource.of(UI_KEY_LITERAL_STRING2), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_TITLE1 = new JSyntaxStyle("UI_KEY_FORE1",ColorResource.of(UI_KEY_FORE1), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_TITLE2 = new JSyntaxStyle("UI_KEY_FORE2",ColorResource.of(UI_KEY_FORE2), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_TITLE3 = new JSyntaxStyle("UI_KEY_FORE3",ColorResource.of(UI_KEY_FORE3), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_TITLE4 = new JSyntaxStyle("UI_KEY_FORE4",ColorResource.of(UI_KEY_FORE4), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_TITLE5 = new JSyntaxStyle("UI_KEY_FORE5",ColorResource.of(UI_KEY_FORE5), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_TITLE6 = new JSyntaxStyle("UI_KEY_FORE6",ColorResource.of(UI_KEY_FORE6), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_TITLE7 = new JSyntaxStyle("UI_KEY_FORE7",ColorResource.of(UI_KEY_FORE7), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_TITLE8 = new JSyntaxStyle("UI_KEY_FORE8",ColorResource.of(UI_KEY_FORE8), JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_TITLE9 = new JSyntaxStyle("UI_KEY_FORE9",ColorResource.of(UI_KEY_FORE9), JSyntaxStyle.BOLD);
+
+    protected JSyntaxStyle STYLE_BG1 = new JSyntaxStyle("UI_KEY_BG1", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE1));
+    protected JSyntaxStyle STYLE_BG2 = new JSyntaxStyle("UI_KEY_BG2", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE2));
+    protected JSyntaxStyle STYLE_BG3 = new JSyntaxStyle("UI_KEY_BG3", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE3));
+    protected JSyntaxStyle STYLE_BG4 = new JSyntaxStyle("UI_KEY_BG4", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE4));
+    protected JSyntaxStyle STYLE_BG5 = new JSyntaxStyle("UI_KEY_BG5", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE5));
+    protected JSyntaxStyle STYLE_BG6 = new JSyntaxStyle("UI_KEY_BG6", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE6));
+    protected JSyntaxStyle STYLE_BG7 = new JSyntaxStyle("UI_KEY_BG7", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE7));
+    protected JSyntaxStyle STYLE_BG8 = new JSyntaxStyle("UI_KEY_BG8", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE8));
+    protected JSyntaxStyle STYLE_BG9 = new JSyntaxStyle("UI_KEY_BG9", null, JSyntaxStyle.FILLED).setFillColor(ColorResource.of(UI_KEY_FORE9));
+
+    protected JSyntaxStyle STYLE_BOLD = new JSyntaxStyle("BOLD", null, JSyntaxStyle.BOLD);
+    protected JSyntaxStyle STYLE_ITALIC = new JSyntaxStyle("ITALIC", null, JSyntaxStyle.ITALIC);
+    protected JSyntaxStyle STYLE_CROSS_OUT = new JSyntaxStyle("CROSS_OUT", null, JSyntaxStyle.CROSS_OUT);
+    protected JSyntaxStyle STYLE_UNDERLINE = new JSyntaxStyle("CROSS_OUT", null, JSyntaxStyle.UNDERLINE);
+    protected JSyntaxStyle STYLE_BOLD_ITALIC = new JSyntaxStyle("BOLD_ITALIC", null, JSyntaxStyle.BOLD | JSyntaxStyle.ITALIC);
+    protected JSyntaxStyle STYLE_PRE = new JSyntaxStyle("PRE", ColorResource.of("OptionPane.warningDialog.titlePane.shadow;ToolWindowTitleBarUI.background.active.end;Tree.selectionBackground"), JSyntaxStyle.PLAIN).setFillColor(ColorResource.of("#fff5b9"));
+    protected JSyntaxStyle STYLE_CODE = new JSyntaxStyle("CODE", ColorResource.of("OptionPane.warningDialog.titlePane.shadow;ToolWindowTitleBarUI.background.active.end;Tree.selectionBackground"), JSyntaxStyle.PLAIN).setFillColor(ColorResource.of("#fae0ff"));
+    protected JSyntaxStyle STYLE_SUCCESS = new JSyntaxStyle("UI_KEY_SUCCESS", ColorResource.of(UI_KEY_SUCCESS), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_ERROR = new JSyntaxStyle("UI_KEY_ERROR", ColorResource.of(UI_KEY_ERROR), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_WARN = new JSyntaxStyle("UI_KEY_WARNING", ColorResource.of(UI_KEY_WARNING), JSyntaxStyle.PLAIN);
+    protected JSyntaxStyle STYLE_INFO = new JSyntaxStyle("UI_KEY_INFO", ColorResource.of(UI_KEY_INFO), JSyntaxStyle.PLAIN);
 
     //
 
@@ -270,4 +296,42 @@ public class JSyntaxKit extends StyledEditorKit implements ViewFactory {
         return types;
     }
 
+    protected JSyntaxStyle getTitleStyle(int ii){
+        return getForegroundStyle(ii);
+    }
+
+    protected JSyntaxStyle getForegroundStyle(int ii){
+        if (ii >= 1 && ii <= 9) {
+            switch (ii){
+                case 1:
+                    return STYLE_TITLE1;
+                case 2:return STYLE_TITLE2;
+                case 3:return STYLE_TITLE3;
+                case 4:return STYLE_TITLE4;
+                case 5:return STYLE_TITLE5;
+                case 6:return STYLE_TITLE6;
+                case 7:return STYLE_TITLE7;
+                case 8:return STYLE_TITLE8;
+                case 9:return STYLE_TITLE9;
+            }
+        }
+        return null;
+    }
+    protected JSyntaxStyle getBackgroundStyle(int ii){
+        if (ii >= 1 && ii <= 9) {
+            switch (ii){
+                case 1:
+                    return STYLE_BG1;
+                case 2:return STYLE_BG2;
+                case 3:return STYLE_BG3;
+                case 4:return STYLE_BG4;
+                case 5:return STYLE_BG5;
+                case 6:return STYLE_BG6;
+                case 7:return STYLE_BG7;
+                case 8:return STYLE_BG8;
+                case 9:return STYLE_BG9;
+            }
+        }
+        return null;
+    }
 }
