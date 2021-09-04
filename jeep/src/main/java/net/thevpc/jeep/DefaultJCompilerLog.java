@@ -1,7 +1,6 @@
 package net.thevpc.jeep;
 
-import net.thevpc.common.textsource.log.impl.DefaultJTextSourceLog;
-
+import net.thevpc.jeep.log.impl.DefaultJTextSourceLog;
 
 public class DefaultJCompilerLog extends DefaultJTextSourceLog implements JCompilerLog {
 
@@ -10,7 +9,7 @@ public class DefaultJCompilerLog extends DefaultJTextSourceLog implements JCompi
     }
 
     @Override
-    public String getErrorMssage() {
+    public String getErrorMessage() {
         return isSuccessful() ? null : getFooterMessage();
     }
 

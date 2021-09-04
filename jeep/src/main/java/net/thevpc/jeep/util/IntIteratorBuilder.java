@@ -114,14 +114,6 @@ public class IntIteratorBuilder {
             }
             return x;
         }
-//        public static net.thevpc.common.util.IntIteratorBySum ofDim(int a, long maxElements) {
-//            return new net.thevpc.common.util.IntIteratorBySum(new int[a], maxElements);
-//        }
-//
-//        public static net.thevpc.common.util.IntIteratorBySum startWith(int[] a, long maxElements) {
-//            return new IntIteratorBySum(a, maxElements);
-//        }
-
 
         @Override
         public boolean isInfinite() {

@@ -1,7 +1,7 @@
 package net.thevpc.jeep.log;
 
 import net.thevpc.jeep.JCompilerLog;
-import net.thevpc.common.textsource.JTextSourceReport;
+import net.thevpc.jeep.source.JTextSourceReport;
 
 public class LogJTextSourceReport implements JTextSourceReport {
     private JCompilerLog clog;

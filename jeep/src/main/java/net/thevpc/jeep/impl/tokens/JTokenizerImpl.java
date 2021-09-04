@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import net.thevpc.jeep.core.JTokenState;
-import net.thevpc.common.textsource.JTextSourcePositionTracker;
+import net.thevpc.jeep.source.JTextSourcePositionTracker;
 
 /**
  * @author thevpc

@@ -1,13 +1,12 @@
 package net.thevpc.jeep.util;
 
 import net.thevpc.jeep.*;
-import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.AbstractJConverter;
 import net.thevpc.jeep.core.types.JTypeNameBounded;
 import net.thevpc.jeep.impl.CastJConverter;
 import net.thevpc.jeep.impl.JTypesSPI;
 import net.thevpc.jeep.impl.functions.JSignature;
-import net.thevpc.common.textsource.log.JMessageList;
+import net.thevpc.jeep.log.JMessageList;
 
 import java.util.*;
 

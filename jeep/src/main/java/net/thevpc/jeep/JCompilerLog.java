@@ -1,8 +1,8 @@
 package net.thevpc.jeep;
 
 
-import net.thevpc.common.textsource.log.JTextSourceLog;
+import net.thevpc.jeep.log.JTextSourceLog;
 
 public interface JCompilerLog extends JTextSourceLog {
-    String getErrorMssage();
+    String getErrorMessage();
 }

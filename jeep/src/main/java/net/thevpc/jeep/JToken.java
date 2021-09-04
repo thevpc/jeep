@@ -2,8 +2,8 @@ package net.thevpc.jeep;
 
 import net.thevpc.jeep.core.tokens.JTokenDef;
 import net.thevpc.jeep.impl.JEnum;
-import net.thevpc.common.textsource.JTextSourceToken;
-import net.thevpc.common.textsource.JTextSource;
+import net.thevpc.jeep.source.JTextSource;
+import net.thevpc.jeep.source.JTextSourceToken;
 
 public class JToken implements Cloneable, Comparable<JToken>, JTextSourceToken {
 
