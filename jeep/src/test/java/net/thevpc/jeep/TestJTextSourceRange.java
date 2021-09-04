@@ -1,7 +1,7 @@
 package net.thevpc.jeep;
 
-import net.thevpc.common.textsource.JTextSourceFactory;
-import net.thevpc.common.textsource.log.JSourceMessage;
+import net.thevpc.jeep.log.JSourceMessage;
+import net.thevpc.jeep.source.JTextSourceFactory;
 import org.junit.jupiter.api.Test;
 
 public class TestJTextSourceRange {

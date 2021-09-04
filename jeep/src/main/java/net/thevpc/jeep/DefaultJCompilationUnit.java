@@ -1,6 +1,6 @@
 package net.thevpc.jeep;
 
-import net.thevpc.common.textsource.JTextSource;
+import net.thevpc.jeep.source.JTextSource;
 
 public class DefaultJCompilationUnit implements JCompilationUnit {
     private JTextSource source;

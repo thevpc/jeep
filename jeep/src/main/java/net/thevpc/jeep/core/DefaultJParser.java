@@ -9,7 +9,7 @@ import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.nodes.JNodeTokens;
 import net.thevpc.jeep.impl.tokens.JTokenId;
 import net.thevpc.jeep.*;
-import net.thevpc.common.textsource.log.JSourceMessage;
+import net.thevpc.jeep.log.JSourceMessage;
 
 import java.util.*;
 import java.util.function.Predicate;

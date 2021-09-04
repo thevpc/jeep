@@ -4,22 +4,22 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.jeep</groupId>
     <artifactId>jeep</artifactId>
-    <version>1.2.8</version>
+    <version>1.2.9</version>
     <packaging>jar</packaging>
-    <name>net.thevpc.jeep.jeep</name>
-    <url>https://github.com/thevpc/upa/wiki</url>
+    <name>Java Enhanced Expression parser</name>
+    <url>https://github.com/thevpc/jeep</url>
     <description>Java Enhanced Expression Parser (JEEP)</description>
-    <!-- Java Enhanced Expression parser -->
+
+    <scm>
+        <connection>scm:git:git://github.com/thevpc/vpc-common.git</connection>
+        <developerConnection>scm:git:ssh://github.com:thevpc/vpc-common.git</developerConnection>
+        <url>https://github.com/thevpc/vpc-common/tree/master</url>
+    </scm>
+
     <organization>
         <name>vpc open source initiative</name>
         <url>http://thevpc.net</url>
     </organization>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <github.global.server>github</github.global.server>
-    </properties>
     <developers>
         <developer>
             <id>vpc</id>
@@ -46,23 +46,28 @@
         </license>
     </licenses>
 
-
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <github.global.server>github</github.global.server>
+    </properties>
     <dependencies>
         <!--<dependency>-->
         <!--<groupId>org.apache.commons</groupId>-->
         <!--<artifactId>commons-lang3</artifactId>-->
         <!--<version>3.1</version>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>net.thevpc.common</groupId>
-            <artifactId>thevpc-common-text-source</artifactId>
-            <version>1.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>net.thevpc.common</groupId>
-            <artifactId>thevpc-common-text-source-log</artifactId>
-            <version>1.3.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>net.thevpc.common</groupId>-->
+<!--            <artifactId>thevpc-common-text-source</artifactId>-->
+<!--            <version>1.3.0</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>net.thevpc.common</groupId>-->
+<!--            <artifactId>thevpc-common-text-source-log</artifactId>-->
+<!--            <version>1.3.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>net.thevpc.common</groupId>
             <artifactId>thevpc-common-classpath</artifactId>
@@ -75,20 +80,23 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <distributionManagement>
-        <site>
-            <id>github</id>
-            <name>github</name>
-            <url>file://${project.build.directory}/vpc-public-maven</url>
-        </site>
-        <repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/vpc-public-maven</url>
-        </repository>
-    </distributionManagement>
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -115,81 +123,57 @@
                     </execution>
                 </executions>
             </plugin>
-<plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-gpg-plugin</artifactId>
-      <version>1.6</version>
-      <executions>
-        <execution>
-          <id>sign-artifacts</id>
-          <phase>verify</phase>
-          <goals>
-            <goal>sign</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin><plugin>
+            <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.0.2</version>
                 <executions>
                     <execution>
                         <phase>process-sources</phase>
-
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
-
                         <configuration>
                             <outputDirectory>${targetdirectory}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <showDeprecation>true</showDeprecation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
-                <configuration>
-                    <altDeploymentRepository>
-                        internal.repo::default::file://${project.build.directory}/vpc-public-maven
-                    </altDeploymentRepository>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.11</version>
-                <!--<version>0.9</version>-->
-                <configuration>
-                    <message>Maven artifacts for ${project.groupId}:${project.artifactId}#${project.version}
-                    </message>  <!-- git commit message -->
-                    <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
-                    <outputDirectory>${project.build.directory}/vpc-public-maven
-                    </outputDirectory> <!-- matches distribution management repository url above -->
-                    <branch>refs/heads/master</branch>                       <!-- remote branch name -->
-                    <includes>
-                        <include>**/*</include>
-                    </includes>
-                    <merge>true</merge>
-                    <repositoryName>vpc-public-maven</repositoryName>      <!-- github repo name -->
-                    <repositoryOwner>thevpc</repositoryOwner>    <!-- github username  -->
-                </configuration>
+                <version>3.8.0</version>
                 <executions>
-                    <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
                     <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>site</goal>
+                            <goal>compile</goal>
                         </goals>
-                        <phase>deploy</phase>
+                    </execution>
+                    <execution>
+                        <id>testCompile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <showDeprecation>true</showDeprecation>
+                    <debug>true</debug>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -2,7 +2,7 @@ package net.thevpc.jeep.impl;
 
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.SimpleJParser;
-import net.thevpc.common.textsource.JTextSourceFactory;
+import net.thevpc.jeep.source.JTextSourceFactory;
 
 import java.io.*;
 import java.net.URL;

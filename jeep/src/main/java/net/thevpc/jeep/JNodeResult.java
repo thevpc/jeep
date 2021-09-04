@@ -1,6 +1,7 @@
 package net.thevpc.jeep;
 
-import net.thevpc.common.textsource.log.JMessageList;
+
+import net.thevpc.jeep.log.JMessageList;
 
 /**
  * parse functions mainly return a Node within a list of messages
