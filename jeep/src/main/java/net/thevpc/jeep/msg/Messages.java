@@ -9,7 +9,7 @@ import java.util.logging.Level;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class Messages {
 

@@ -10,7 +10,7 @@ import javax.swing.UIManager;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class DefaultColorResource implements ColorResource {
     

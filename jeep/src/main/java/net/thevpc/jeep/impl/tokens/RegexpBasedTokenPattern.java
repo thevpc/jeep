@@ -17,7 +17,7 @@ import net.thevpc.jeep.core.tokens.JTokenPatternOrder;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class RegexpBasedTokenPattern extends AbstractTokenPattern {
 
