@@ -149,11 +149,11 @@ public class JavaJSyntaxKit extends JSyntaxKit {
             config.setNumberSuffixes(new char[]{'f', 'F', 'l', 'L'});
 
             config.addKeywords("public", "private", "protected", "abstract", "static", "final", "package", "import");
-            config.addKeywords("try", "catch", "finally");
+            config.addKeywords("try", "catch", "finally","enum","record");
             config.addKeywords("void", "var", "val", "class", "interface", "extends", "return", "default");
             config.addKeywords("if", "else", "switch", "case", "break", "continue", "for", "do", "while");
             config.addKeywords("double", "float", "long", "int", "short", "byte", "float", "char", "boolean");
-            config.addKeywords("null", "true", "false");
+            config.addKeywords("null", "true", "false","throw","throws");
             config.addKeywords("strictfp", "volatile", "transient","new");
 
             config.addKeywords("struct", "const");
