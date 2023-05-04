@@ -31,6 +31,10 @@ public interface JTypesSPI {
         return type;
     }
 
+    JType getRegisteredOrAliasCurrent(String jt, boolean checkAliases, boolean checkTypes);
+
+    JType getRegisteredOrAlias(String jt, boolean checkAliases, boolean checkTypes);
+
     JType getRegisteredOrAlias(String jt);
 
     JType getRegistered(String jt);
@@ -66,11 +70,13 @@ public interface JTypesSPI {
     boolean isPublicConstructor(JConstructor c);
 
     boolean isPublicMethod(JMethod c);
+
     boolean isSyntheticMethod(JMethod c);
 
     boolean isPublicField(JField c);
 
     boolean isStaticType(JType c);
+
     boolean isInterfaceType(JType c);
 
     boolean isStaticMethod(JMethod c);

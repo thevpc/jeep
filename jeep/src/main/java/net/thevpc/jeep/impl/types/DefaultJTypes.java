@@ -24,22 +24,23 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
     private final List<JTypesResolver> resolvers = new ArrayList<>();
 
     public DefaultJTypes() {
-        this((JTypes) null,null);
+        this((JTypes) null, null);
     }
 
     public DefaultJTypes(JContext context, ClassLoader hostClassLoader) {
         this(
-                context.parent()==null?null:context.parent().types(),
+                context.parent() == null ? null : context.parent().types(),
                 hostClassLoader
         );
     }
+
     public DefaultJTypes(JTypes parent, ClassLoader hostClassLoader) {
         this.parent = parent;
         this.hostClassLoader = hostClassLoader != null ? hostClassLoader : Thread.currentThread().getContextClassLoader();
 //        if (parent == null) {
-            //register null type...
+        //register null type...
         JType nullType0 = createNullType0();
-        if(nullType0!=null) {
+        if (nullType0 != null) {
             registerType(nullType0);
         }
 //        }
@@ -305,7 +306,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 
     public DefaultJTypes setResolvers(List<JTypesResolver> resolvers) {
         this.resolvers.clear();
-        if(resolvers!=null){
+        if (resolvers != null) {
             this.resolvers.addAll(resolvers);
         }
         return this;
@@ -327,7 +328,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
     }
 
     public JType forNameOrNull(JTypeNameOrVariable tnov, JDeclaration enclosingDeclaration) {
-        if(tnov==null){
+        if (tnov == null) {
             return null;
         }
         if (tnov instanceof JTypeNameBounded) {
@@ -353,7 +354,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
             if (found != null) {
                 JTypeNameOrVariable[] vars = tn.vars();
                 if (vars.length > 0) {
-                    return ((JRawType)found).parametrize(forNameOrNull(vars, found));
+                    return ((JRawType) found).parametrize(forNameOrNull(vars, found));
                 }
                 return found;
             }
@@ -372,11 +373,11 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 //                }
             } else {
                 JType jType = createHostType0(tn.name());
-                if(jType!=null){
+                if (jType != null) {
                     registerType(jType);
                     JTypeNameOrVariable[] vars = tn.vars();
                     if (vars.length > 0) {
-                        return ((JRawType)jType).parametrize(forNameOrNull(vars, jType));
+                        return ((JRawType) jType).parametrize(forNameOrNull(vars, jType));
                     }
                     return jType;
                 }
@@ -401,41 +402,50 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
     }
 
 
+    @Override
+    public JType getRegisteredOrAliasCurrent(String jt, boolean checkAliases, boolean checkTypes) {
+        if (checkAliases) {
+            JType jType = aliases.get(jt);
+            if (jType != null) {
+                return jType;
+            }
+        }
+        if (checkTypes) {
+            JType jType = typesMap.get(jt);
+            if (jType != null) {
+                return jType;
+            }
+        }
+        return null;
+    }
 
     @Override
-    public JType getRegisteredOrAlias(String jt) {
-        JType jType = aliases.get(jt);
+    public JType getRegisteredOrAlias(String jt, boolean checkAliases, boolean checkTypes) {
+        JType jType = getRegisteredOrAliasCurrent(jt, checkTypes, checkTypes);
         if (jType != null) {
             return jType;
         }
-        jType = typesMap.get(jt);
-        if(jType!=null){
-            return jType;
-        }
         JTypes p = parent();
-        if(p instanceof JTypesSPI){
+        if (p instanceof JTypesSPI) {
             return ((JTypesSPI) p).getRegisteredOrAlias(jt);
         }
         return null;
     }
 
     @Override
+    public JType getRegisteredOrAlias(String jt) {
+        return getRegisteredOrAlias(jt, true, true);
+    }
+
+    @Override
     public JType getRegistered(String jt) {
-        final JType jType = typesMap.get(jt);
-        if(jType!=null){
-            return jType;
-        }
-        JTypes p = parent();
-        if(p instanceof JTypesSPI){
-            return ((JTypesSPI) p).getRegistered(jt);
-        }
-        return null;
+        return getRegisteredOrAlias(jt, false, true);
     }
 
     @Override
     public void registerType(JType jt) {
         JTypes p = parent();
-        if(p instanceof JTypesSPI){
+        if (p instanceof JTypesSPI) {
             ((JTypesSPI) p).registerType(jt);
             return;
         }
@@ -445,10 +455,10 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 //        while (implClassName.length() < 14) {
 //            implClassName += " ";
 //        }
-        boolean reg=false;
+        boolean reg = false;
         if (!typesMap.containsKey(fn0)) {
             typesMap.put(fn0, jt);
-            reg=true;
+            reg = true;
 //            System.err.println(System.identityHashCode(this) + " : register type " + implClassName + " " + fn0);
         }
         String fn = jTypeName.fullName();
@@ -456,31 +466,32 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
             if (typesMap.containsKey(fn)) {
 //                System.err.println(System.identityHashCode(this) + " : register (again) type " + implClassName + " " + fn);
             } else {
-                reg=true;
+                reg = true;
                 typesMap.put(fn, jt);
 //                System.err.println(System.identityHashCode(this) + " : register type " + implClassName + " " + fn);
             }
         }
-        if(reg){
-            ((AbstractJType)jt).onPostRegister();
+        if (reg) {
+            ((AbstractJType) jt).onPostRegister();
         }
     }
 
 
     @Override
-    public JType createArrayType0(JType root, int dim){
-        return new DefaultJArrayType(root,dim);
+    public JType createArrayType0(JType root, int dim) {
+        return new DefaultJArrayType(root, dim);
     }
+
     @Override
-    public JType createNullType0(){
+    public JType createNullType0() {
         return new NullJType(this);
     }
 
-    protected JType createHostType0(Class name){
-        if(name.isEnum()){
+    protected JType createHostType0(Class name) {
+        if (name.isEnum()) {
             return new HostJEnumType(name, this);
         }
-        if(name.isAnnotation()){
+        if (name.isAnnotation()) {
             return new HostJAnnotationType(name, this);
         }
         return new HostJClassType(name, this);
@@ -502,7 +513,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
     }
 
     @Override
-    public JType createHostType0(String name){
+    public JType createHostType0(String name) {
         switch (name) {
             case "Object":
             case "object":
@@ -560,7 +571,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
             case "time":
                 return createHostType0(LocalTime.class);
         }
-        ClassLoader hostClassLoader=this.hostClassLoader();
+        ClassLoader hostClassLoader = this.hostClassLoader();
         Class<?> t = null;
         try {
             //i should replace this witch
@@ -576,23 +587,23 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
     }
 
     @Override
-    public JType createMutableType0(String name, JTypeKind kind){
-        switch (kind.getValue()){
-            case JTypeKind.Ids.ANNOTATION:{
-                return new DefaultJAnnotationType(name,kind,this);
+    public JType createMutableType0(String name, JTypeKind kind) {
+        switch (kind.getValue()) {
+            case JTypeKind.Ids.ANNOTATION: {
+                return new DefaultJAnnotationType(name, kind, this);
             }
-            case JTypeKind.Ids.ENUM:{
-                return new DefaultJEnumType(name,kind,this);
+            case JTypeKind.Ids.ENUM: {
+                return new DefaultJEnumType(name, kind, this);
             }
-            default:{
-                return new DefaultJType(name,kind,this);
+            default: {
+                return new DefaultJType(name, kind, this);
             }
         }
     }
 
     @Override
-    public JType createVarType0(String name, JType[] lowerBounds, JType[] upperBounds, JDeclaration declaration){
-        return new DefaultJTypeVariable(name,lowerBounds,upperBounds,declaration,this);
+    public JType createVarType0(String name, JType[] lowerBounds, JType[] upperBounds, JDeclaration declaration) {
+        return new DefaultJTypeVariable(name, lowerBounds, upperBounds, declaration, this);
     }
 
     @Override
@@ -602,21 +613,21 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 
     @Override
     public JType forHostType(Type ctype, JDeclaration declaration) {
-        return forHostType(ctype, declaration,null);
+        return forHostType(ctype, declaration, null);
     }
 
-    public JType forHostType(Type ctype, JDeclaration declaration,Map<Type,JType> pending) {
-        if(pending==null){
-           pending=new HashMap<>();
+    public JType forHostType(Type ctype, JDeclaration declaration, Map<Type, JType> pending) {
+        if (pending == null) {
+            pending = new HashMap<>();
         }
         final JType v = pending.get(ctype);
-        if(v!=null){
+        if (v != null) {
             return v;
         }
         if (ctype instanceof Class) {
             Class clazz = (Class) ctype;
             if (clazz.isArray()) {
-                return forHostType(clazz.getComponentType(), declaration,pending).toArray();
+                return forHostType(clazz.getComponentType(), declaration, pending).toArray();
             }
             JType found = getRegisteredOrAlias(getCanonicalTypeName(ctype));
             if (found != null) {
@@ -636,9 +647,9 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
         } else if (ctype instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) ctype;
             Type rawType = pt.getRawType();
-            JType rootRaw = forHostType(rawType, declaration,pending);
+            JType rootRaw = forHostType(rawType, declaration, pending);
 
-            //need to handle loopback in parameters 
+            //need to handle loopback in parameters
             // examples: interface OfField<F extends OfField<F>> extends TypeDescriptor;
             final JParameterizedType found = createParameterizedType0(
                     rootRaw,
@@ -646,7 +657,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
                     rootRaw.getDeclaringType()
             );
             pending.put(ctype, found);
-            ((JParameterizedTypeImpl)found).setActualTypeArguments(forHostType(pt.getActualTypeArguments(), declaration,pending));
+            ((JParameterizedTypeImpl) found).setActualTypeArguments(forHostType(pt.getActualTypeArguments(), declaration, pending));
             registerType(found);
             return found;
         } else if (ctype instanceof TypeVariable) {
@@ -654,7 +665,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
             final JType found = createVarType0(
                     tv.getName(),
                     new JType[0],
-                    forHostType(tv.getBounds(),declaration,pending),
+                    forHostType(tv.getBounds(), declaration, pending),
                     declaration
             );
 //            registerType(found);
@@ -663,15 +674,15 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
             WildcardType tv = (WildcardType) ctype;
             final JType found = createVarType0(
                     "?",
-                    forHostType(tv.getLowerBounds(),declaration,pending),
-                    forHostType(tv.getUpperBounds(),declaration,pending),
+                    forHostType(tv.getLowerBounds(), declaration, pending),
+                    forHostType(tv.getUpperBounds(), declaration, pending),
                     declaration
             );
 //            registerType(found);
             return found;
         } else if (ctype instanceof GenericArrayType) {
             Type c = ((GenericArrayType) ctype).getGenericComponentType();
-            return forHostType(c,declaration,pending).toArray();
+            return forHostType(c, declaration, pending).toArray();
         } else {
             throw new IllegalArgumentException("Unsupported");
         }
@@ -690,10 +701,10 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
         return jTypes;
     }
 
-    public JType[] forHostType(Type[] names, JDeclaration declaration,Map<Type,JType> pending) {
+    public JType[] forHostType(Type[] names, JDeclaration declaration, Map<Type, JType> pending) {
         JType[] jTypes = new JType[names.length];
         for (int i = 0; i < jTypes.length; i++) {
-            jTypes[i] = forHostType(names[i], declaration,pending);
+            jTypes[i] = forHostType(names[i], declaration, pending);
         }
         return jTypes;
     }
@@ -745,8 +756,8 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 
     @Override
     public boolean isInterfaceType(JType c) {
-        if(c.isRawType()){
-            if(c instanceof HostJClassType){
+        if (c.isRawType()) {
+            if (c instanceof HostJClassType) {
                 return c.isInterface();
             }
         }

@@ -7,11 +7,16 @@ public class JTypeNameBounded implements JTypeNameOrVariable {
     private String name;
     private JTypeName[] lowerBounds;
     private JTypeName[] upperBounds;
+    private int array;
 
     public JTypeNameBounded(String name, JTypeName[] lowerBounds, JTypeName[] upperBounds) {
+        this(name, lowerBounds, upperBounds,0);
+    }
+    public JTypeNameBounded(String name, JTypeName[] lowerBounds, JTypeName[] upperBounds,int array) {
         this.name = name;
         this.lowerBounds = lowerBounds == null ? new JTypeName[0] : lowerBounds;
         this.upperBounds = upperBounds == null ? new JTypeName[0] : upperBounds;
+        this.array = array;
     }
 
     public String name() {
@@ -37,7 +42,7 @@ public class JTypeNameBounded implements JTypeNameOrVariable {
         for (int i = 0; i < upperBounds.length; i++) {
             upperBounds[i] = (JTypeName) this.upperBounds[i].withSimpleName();
         }
-        return new JTypeNameBounded(name, lowerBounds, upperBounds);
+        return new JTypeNameBounded(name, lowerBounds, upperBounds,array);
     }
 
     @Override
@@ -69,5 +74,10 @@ public class JTypeNameBounded implements JTypeNameOrVariable {
             }
         }
         return sb.toString();
+    }
+
+    @Override
+    public JTypeNameOrVariable toArray() {
+        return new JTypeNameBounded(name, lowerBounds, upperBounds, array+1);
     }
 }

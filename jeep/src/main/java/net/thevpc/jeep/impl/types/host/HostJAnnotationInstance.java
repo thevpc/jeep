@@ -29,6 +29,11 @@ public class HostJAnnotationInstance implements JAnnotationInstance, InvocationH
                 new Class[]{hostType}, this);
     }
 
+    @Override
+    public String getName() {
+        return annotationType.getName();
+    }
+
     public HostJAnnotationInstance(Annotation annotation, JType annotationType) {
         this.object = annotation;
         if(annotation instanceof JAnnotationType) {

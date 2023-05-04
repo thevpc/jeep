@@ -88,4 +88,15 @@ public class JTextSourceFile implements JTextSourceRoot {
         };
     }
 
+    @Override
+    public String toString() {
+        if(file==null){
+            return "null";
+        }
+        try {
+            return file.getCanonicalPath();
+        } catch (IOException e) {
+            return file.getAbsolutePath();
+        }
+    }
 }

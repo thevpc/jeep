@@ -353,32 +353,25 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
     }
 
 //    @Override
-    public JMethod createMethod(JSignature signature, String[] argNames, JType returnType, JInvoke handler, JModifier[] modifiers, JAnnotationInstance[] annotations) {
-        DefaultJRawMethod m = new DefaultJRawMethod();
-        m.setArgNames(argNames);
-        m.setDeclaringType(this);
-        ((DefaultJModifierList) m.getModifiers()).addAll(modifiers);
-        ((DefaultJAnnotationInstanceList) m.getAnnotations()).addAll(annotations);
-        m.setGenericReturnType(returnType);
-        m.setHandler(handler);
-        m.setGenericSignature(signature);
-        return m;
-    }
 
-    public JMethod addMethod(JSignature signature, String[] argNames, JType returnType, JInvoke handler, JModifier[] modifiers, JAnnotationInstance[] annotations, boolean redefine) {
-        JMethod old = findDeclaredMethodOrNull(signature.toNoVarArgs());
-        if (old != null) {
-            if (redefine) {
-                //old.dispose();
-            } else {
-                throw new IllegalArgumentException("Method already registered " + getName() + "." + signature);
-            }
-        }
-        JMethod m = createMethod(signature, argNames, returnType, handler, modifiers,annotations);
-        methods.put(signature.toNoVarArgs(), m);
-        return m;
-    }
 
+//    public JMethod addMethod(JSignature signature, String[] argNames, JType returnType, JInvoke handler, JModifier[] modifiers, JAnnotationInstance[] annotations, boolean redefine) {
+//        JMethod old = findDeclaredMethodOrNull(signature.toNoVarArgs());
+//        if (old != null) {
+//            if (redefine) {
+//                //old.dispose();
+//            } else {
+//                throw new IllegalArgumentException("Method already registered " + getName() + "." + signature);
+//            }
+//        }
+//        JMethod m = createMethod(signature, argNames, returnType, handler, modifiers,annotations);
+//        methods.put(signature.toNoVarArgs(), m);
+//        return m;
+//    }
+
+    public void addMethod(JMethod m) {
+        methods.put(m.getSignature().toNoVarArgs(), m);
+    }
     public void addInterface(JType interfaceType){
         interfaces.add(interfaceType);
     }

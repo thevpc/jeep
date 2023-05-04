@@ -3,15 +3,16 @@ package net.thevpc.jeep;
 public class JIndexQueryLookup {
     private final String key;
     private final String value;
-//    private final int hash;
+    private final JIndexQueryLookupOp op;
 
-    public JIndexQueryLookup(String key, String value) {
-//        if(key==null|| value==null){
-//            throw new NullPointerException();
-//        }
+    public JIndexQueryLookup(String key, String value,JIndexQueryLookupOp op) {
         this.key = key;
         this.value = value;
-//        this.hash = key.hashCode()*31+value.hashCode();
+        this.op = op;
+    }
+
+    public JIndexQueryLookupOp getOp() {
+        return op;
     }
 
     public String getKey() {
@@ -39,6 +40,16 @@ public class JIndexQueryLookup {
 
     @Override
     public String toString() {
+        switch (op){
+            case EQ:
+                return key+"='" + value + '\'';
+            case NE:
+                return key+"!='" + value + '\'';
+            case DOT_START:
+                return key+"~ '" + value + "\'.*";
+            case EXISTS:
+                return "exists("+key+")";
+        }
         return key+"='" + value + '\'';
     }
 }

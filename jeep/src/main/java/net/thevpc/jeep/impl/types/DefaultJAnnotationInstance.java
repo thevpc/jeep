@@ -23,6 +23,11 @@ public class DefaultJAnnotationInstance implements JAnnotationInstance {
     }
 
     @Override
+    public String getName() {
+        return annotationType.getName();
+    }
+
+    @Override
     public JAnnotationInstanceField[] getFields() {
         if (fields == null) {
             JMethod[] declaredMethods = annotationType.getDeclaredMethods();

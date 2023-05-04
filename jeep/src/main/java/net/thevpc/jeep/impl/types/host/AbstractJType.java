@@ -2,6 +2,9 @@ package net.thevpc.jeep.impl.types.host;
 
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.functions.JSignature;
+import net.thevpc.jeep.impl.types.DefaultJAnnotationInstanceList;
+import net.thevpc.jeep.impl.types.DefaultJModifierList;
+import net.thevpc.jeep.impl.types.DefaultJRawMethod;
 import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.impl.JTypesSPI;
 
@@ -32,15 +35,16 @@ public abstract class AbstractJType implements JType {
 
     /**
      * simple name including declaring type
+     *
      * @return simple name including declaring type
      */
     @Override
-    public String dname(){
+    public String dname() {
         JType d = getDeclaringType();
-        if(d==null){
+        if (d == null) {
             return getName();
-        }else{
-            return d.dname()+'.'+ getName();
+        } else {
+            return d.dname() + '.' + getName();
         }
     }
 
@@ -73,7 +77,7 @@ public abstract class AbstractJType implements JType {
 
     @Override
     public boolean isInstance(Object instance) {
-        if(instance==null){
+        if (instance == null) {
             return !isPrimitive();
         }
         return isAssignableFrom(getTypes().typeOf(instance));
@@ -81,13 +85,13 @@ public abstract class AbstractJType implements JType {
 
     @Override
     public boolean isAssignableFrom(JTypePattern other) {
-        if(other.isType()){
+        if (other.isType()) {
             return isAssignableFrom(other.getType());
         }
         JType[] o = other.getLambdaArgTypes();
         JSignature a = JTypeUtils.extractLambdaArgTypesOrNull(this, o.length);
-        if(a!=null){
-            return a.acceptAndExpand(o) !=null;
+        if (a != null) {
+            return a.acceptAndExpand(o) != null;
         }
         return false;
     }
@@ -98,14 +102,14 @@ public abstract class AbstractJType implements JType {
             return true;
         }
         if (isPrimitive() || other.isPrimitive()) {
-            if(getName().equals("void") || other.getName().equals("void")){
+            if (getName().equals("void") || other.getName().equals("void")) {
                 return false;
             }
         }
-        if(getRawType().getName().equals(other.getRawType().getName())){
-            if(isRawType() || other.isRawType()) {
+        if (getRawType().getName().equals(other.getRawType().getName())) {
+            if (isRawType() || other.isRawType()) {
                 return true;
-            }else if(this instanceof JParameterizedType && other instanceof JParameterizedType) {
+            } else if (this instanceof JParameterizedType && other instanceof JParameterizedType) {
                 JParameterizedType t1 = (JParameterizedType) this;
                 JParameterizedType t2 = (JParameterizedType) other;
                 JType[] actualTypeArguments1 = t1.getActualTypeArguments();
@@ -113,12 +117,12 @@ public abstract class AbstractJType implements JType {
                 for (int i = 0; i < actualTypeArguments1.length; i++) {
                     JType s1 = actualTypeArguments1[i];
                     JType s2 = actualTypeArguments2[i];
-                    if(!s1.isAssignableFrom(s2)){
+                    if (!s1.isAssignableFrom(s2)) {
                         return false;
                     }
                 }
                 return true;
-            }else{
+            } else {
                 throw new JFixMeLaterException();
             }
         }
@@ -127,12 +131,12 @@ public abstract class AbstractJType implements JType {
                 return true;
             }
         }
-        if(JTypeUtils.isNullType(other)){
-            if(isNullable()){
+        if (JTypeUtils.isNullType(other)) {
+            if (isNullable()) {
                 return true;
             }
         }
-        if(JTypeUtils.isObjectType(this)){
+        if (JTypeUtils.isObjectType(this)) {
             return true;
         }
         return false;
@@ -236,7 +240,7 @@ public abstract class AbstractJType implements JType {
 
     @Override
     public JMethod[] getDeclaredMethods(boolean includeParents) {
-        if(!includeParents){
+        if (!includeParents) {
             return getDeclaredMethods();
         }
         LinkedHashMap<JSignature, JMethod> all = new LinkedHashMap<>();
@@ -284,7 +288,6 @@ public abstract class AbstractJType implements JType {
         }
         return all.values().toArray(new JMethod[0]);
     }
-
 
 
 //    @Override
@@ -386,18 +389,18 @@ public abstract class AbstractJType implements JType {
     }
 
     @Override
-    public boolean isRawType(){
-        return getRawType()==this;
+    public boolean isRawType() {
+        return getRawType() == this;
     }
 
     @Override
     public JField[] getDeclaredFieldsWithParents() {
-        LinkedHashSet<JField> fields=new LinkedHashSet<>();
+        LinkedHashSet<JField> fields = new LinkedHashSet<>();
         fields.addAll(Arrays.asList(getDeclaredFields()));
         for (JType parent : getParents()) {
             fields.addAll(Arrays.asList(parent.getDeclaredFieldsWithParents()));
         }
-        return  fields.toArray(new JField[0]);
+        return fields.toArray(new JField[0]);
     }
 
     @Override
@@ -423,7 +426,7 @@ public abstract class AbstractJType implements JType {
     @Override
     public JMethod findDeclaredMethodOrNull(JSignature sig) {
         for (JMethod s : getDeclaredMethods(sig.name())) {
-            if(s.getSignature().equals(sig)){
+            if (s.getSignature().equals(sig)) {
                 return s;
             }
         }
@@ -433,7 +436,7 @@ public abstract class AbstractJType implements JType {
     @Override
     public JField findDeclaredFieldOrNull(String fieldName) {
         for (JField jField : getDeclaredFields()) {
-            if(jField.name().equals(fieldName)){
+            if (jField.name().equals(fieldName)) {
                 return jField;
             }
         }
@@ -443,13 +446,12 @@ public abstract class AbstractJType implements JType {
     @Override
     public JConstructor findDeclaredConstructorOrNull(JSignature sig) {
         for (JConstructor s : getDeclaredConstructors()) {
-            if(s.getSignature().equals(sig)){
+            if (s.getSignature().equals(sig)) {
                 return s;
             }
         }
         return null;
     }
-
 
 
     @Override
@@ -464,7 +466,7 @@ public abstract class AbstractJType implements JType {
 //        if (modified) {
 //            return new JParameterizedTypeImpl(rawType(),y,types());
 //        } else {
-            return this;
+        return this;
 //        }
     }
 
@@ -492,7 +494,7 @@ public abstract class AbstractJType implements JType {
     public JType getDeclaredInnerType(String name) {
         JType d = findDeclaredInnerTypeOrNull(name);
         if (d == null) {
-            throw new JEvalException("inner type not found : " + getName()+"."+name);
+            throw new JEvalException("inner type not found : " + getName() + "." + name);
         }
         return d;
     }
@@ -500,14 +502,44 @@ public abstract class AbstractJType implements JType {
     @Override
     public JType findDeclaredInnerTypeOrNull(String name) {
         for (JType jType : getDeclaredInnerTypes()) {
-            if(jType.getRawType().getName().equals(name)){
+            if (jType.getRawType().getName().equals(name)) {
                 return jType;
             }
         }
         return null;
     }
 
-    public void onPostRegister(){
+    public void onPostRegister() {
 
+    }
+
+    public JMethod addMethod(JSignature signature, String[] argNames, JType returnType, JInvoke handler, JModifier[] modifiers, JAnnotationInstance[] annotations, boolean redefine) {
+        JMethod old = findDeclaredMethodOrNull(signature.toNoVarArgs());
+        if (old != null) {
+            if (redefine) {
+                //old.dispose();
+            } else {
+                throw new IllegalArgumentException("Method already registered " + getName() + "." + signature);
+            }
+        }
+        JMethod m = createMethod(signature, argNames, returnType, handler, modifiers, annotations);
+        addMethod(m);
+        return m;
+    }
+
+    public void addMethod(JMethod m) {
+        throw new IllegalArgumentException("Unsupported");
+    }
+
+    public JMethod createMethod(JSignature signature, String[] argNames, JType returnType, JInvoke handler, JModifier[] modifiers, JAnnotationInstance[] annotations) {
+        DefaultJRawMethod m = new DefaultJRawMethod();
+        m.setArgNames(argNames);
+        m.setDeclaringType(this);
+        ((DefaultJModifierList) m.getModifiers()).addAll(modifiers);
+        ((DefaultJAnnotationInstanceList) m.getAnnotations()).addAll(annotations);
+        m.setGenericReturnType(returnType);
+        m.setHandler(handler);
+        m.setGenericSignature(signature);
+        return m;
     }
 }
