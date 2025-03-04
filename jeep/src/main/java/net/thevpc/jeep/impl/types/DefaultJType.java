@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class DefaultJType extends AbstractJRawType implements JRawType {
+public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     private String name;
     //    private int arrayDimension;
     private String simpleName;
@@ -46,7 +46,7 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
         if (name.endsWith("[]")) {
             throw new IllegalStateException();
         }
-        this.kind=kind;
+        this.kind = kind;
         this.name = name;
         this.superclass = JTypeUtils.forObject(types);
         int r = name.lastIndexOf('.');
@@ -127,11 +127,11 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
 
     @Override
     public JConstructor findDeclaredConstructorOrNull(JSignature sig) {
-        return findDeclaredConstructorOrNull(sig,true);
+        return findDeclaredConstructorOrNull(sig, true);
     }
 
     //@Override
-    public JConstructor findDeclaredConstructorOrNull(JSignature sig,boolean createDefault) {
+    public JConstructor findDeclaredConstructorOrNull(JSignature sig, boolean createDefault) {
         JConstructor f = constructors.get(sig.setName(getName()).toNoVarArgs());
         if (f != null) {
             return f;
@@ -144,15 +144,15 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
         }
         if (createDefault && sig.argTypes().length == 0 && constructors.isEmpty()) {
             JConstructor dc = createDefaultConstructor();
-            if(dc!=null) {
-                addConstructor(dc,false);
+            if (dc != null) {
+                addConstructor(dc, false);
             }
             return dc;
         }
         return null;
     }
 
-    protected JConstructor createDefaultConstructor(){
+    protected JConstructor createDefaultConstructor() {
         DefaultJConstructor constructor = (DefaultJConstructor) createConstructor(JSignature.of(getName(), new JType[0]),
                 new String[0],
                 new JInvoke() {
@@ -223,11 +223,11 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
 //                return (JArray) o;
 //            }
 //            throw new IllegalArgumentException("Invalid type");
-////            return new HostJArray(o, componentType());
+
+    /// /            return new HostJArray(o, componentType());
 //        }
 //        throw new IllegalArgumentException("Not array");
 //    }
-
     @Override
     public JTypeVariable[] getTypeParameters() {
         return typeParameters;
@@ -286,30 +286,32 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
         return superclass;
     }
 
-    public DefaultJType setSuperType(JType superclass) {
-        this.superclass = superclass;
-        return this;
-    }
 
-    public DefaultJType setInterfaces(JType[] interfaces) {
+    public void setInterfaces(JType[] interfaces) {
         this.interfaces.clear();
         this.interfaces.addAll(Arrays.asList(interfaces));
-        return this;
     }
 
-//    @Override
+    public void setSuperType(JType superclass) {
+        this.superclass = superclass;
+    }
+    public void addInterfaces(JType[] interfaces) {
+        this.interfaces.addAll(Arrays.asList(interfaces));
+    }
+
+    //    @Override
     public JConstructor addConstructor(JSignature signature, String[] argNames, JInvoke handler, JModifier[] modifiers, JAnnotationInstance[] annotations, boolean redefine) {
         JConstructor c = createConstructor(signature, argNames, handler, modifiers, annotations);
-        return addConstructor(c,redefine);
+        return addConstructor(c, redefine);
     }
 
     public JConstructor createConstructor(JSignature signature, String[] argNames, JInvoke handler, JModifier[] modifiers, JAnnotationInstance[] annotations) {
         signature = signature.setName(getName());
         DefaultJConstructor m = new DefaultJConstructor();
         m.setDeclaringType(this);
-        ((DefaultJModifierList)m.getModifiers()).addAll(modifiers);
-        m.setArgNames(Arrays.copyOf(argNames,argNames.length));
-        ((DefaultJAnnotationInstanceList)m.getAnnotations()).addAll(annotations);
+        ((DefaultJModifierList) m.getModifiers()).addAll(modifiers);
+        m.setArgNames(Arrays.copyOf(argNames, argNames.length));
+        ((DefaultJAnnotationInstanceList) m.getAnnotations()).addAll(annotations);
         m.setHandler(handler);
         m.setGenericSignature(signature);
         return m;
@@ -317,7 +319,7 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
 
     public JConstructor addConstructor(JConstructor constructor, boolean redefine) {
         JSignature signature = constructor.getSignature();
-        JConstructor old = findDeclaredConstructorOrNull(signature,false);
+        JConstructor old = findDeclaredConstructorOrNull(signature, false);
         if (old != null) {
             if (redefine) {
                 //old.dispose();
@@ -329,7 +331,7 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
         return constructor;
     }
 
-//    @Override
+    //    @Override
     public JField addField(String name, JType type, JModifier[] modifiers, JAnnotationInstance[] annotations, boolean redefine) {
         JField old = findDeclaredFieldOrNull(name);
         if (old != null) {
@@ -372,7 +374,8 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
     public void addMethod(JMethod m) {
         methods.put(m.getSignature().toNoVarArgs(), m);
     }
-    public void addInterface(JType interfaceType){
+
+    public void addInterface(JType interfaceType) {
         interfaces.add(interfaceType);
     }
 
@@ -383,7 +386,7 @@ public class DefaultJType extends AbstractJRawType implements JRawType {
 
     @Override
     public JConstructor[] getDeclaredConstructors() {
-        if(constructors.isEmpty()){
+        if (constructors.isEmpty()) {
             findDefaultConstructorOrNull();
         }
         return constructors.values().toArray(new JConstructor[0]);

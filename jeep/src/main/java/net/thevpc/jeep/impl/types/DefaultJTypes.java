@@ -278,7 +278,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
                 throw new JParseException("Type " + fullName + " declared Twice");
             }
         }
-        JType jt = createMutableType0(fullName, kind);
+        JMutableRawType jt = createMutableType0(fullName, kind);
         registerType(jt);
         return jt;
     }
@@ -489,12 +489,12 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 
     protected JType createHostType0(Class name) {
         if (name.isEnum()) {
-            return new HostJEnumType(name, this);
+            return new JMutableRawTypeAdapter(new HostJEnumType(name, this));
         }
         if (name.isAnnotation()) {
-            return new HostJAnnotationType(name, this);
+            return new JMutableRawTypeAdapter(new HostJAnnotationType(name, this));
         }
-        return new HostJClassType(name, this);
+        return new JMutableRawTypeAdapter(new HostJClassType(name, this));
     }
 
     @Override
@@ -587,7 +587,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
     }
 
     @Override
-    public JType createMutableType0(String name, JTypeKind kind) {
+    public JMutableRawType createMutableType0(String name, JTypeKind kind) {
         switch (kind.getValue()) {
             case JTypeKind.Ids.ANNOTATION: {
                 return new DefaultJAnnotationType(name, kind, this);
