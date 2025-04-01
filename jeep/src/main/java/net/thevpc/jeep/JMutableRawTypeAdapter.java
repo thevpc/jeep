@@ -316,6 +316,4 @@ public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType
         return constructor;
     }
 
-    publi
-
 }
