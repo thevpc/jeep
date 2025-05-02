@@ -43,6 +43,16 @@ public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType
                         getDeclaringType()), getTypes());
     }
 
+//    @Override
+//    public void setSuperType(JType superclass) {
+//        throw new IllegalArgumentException("TODO");
+//    }
+//
+//    @Override
+//    public void addInterfaces(JType[] interfaces) {
+//        throw new IllegalArgumentException("TODO");
+//    }
+
     @Override
     public JDeclaration getDeclaration() {
         return base.getDeclaration();

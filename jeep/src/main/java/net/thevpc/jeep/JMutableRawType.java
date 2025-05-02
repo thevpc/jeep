@@ -8,10 +8,10 @@ public interface JMutableRawType extends JRawType{
     JConstructor addConstructor(JConstructor constructor, boolean redefine);
 
 
-    public void setSuperType(JType superclass) {
-        this.superclass = superclass;
-    }
-    public void addInterfaces(JType[] interfaces) {
-        this.interfaces.addAll(Arrays.asList(interfaces));
-    }
+//    public void setSuperType(JType superclass) {
+//        this.superclass = superclass;
+//    }
+//    public void addInterfaces(JType[] interfaces) {
+//        this.interfaces.addAll(Arrays.asList(interfaces));
+//    }
 }
