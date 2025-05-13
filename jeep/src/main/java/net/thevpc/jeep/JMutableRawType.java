@@ -7,6 +7,13 @@ public interface JMutableRawType extends JRawType{
     void addInterface(JType interfaceType);
     JConstructor addConstructor(JConstructor constructor, boolean redefine);
 
+    default void setInterfaces(JType[] array){
+
+    }
+
+    default void setSuperType(JType tt){
+
+    }
 
 //    public void setSuperType(JType superclass) {
 //        this.superclass = superclass;
