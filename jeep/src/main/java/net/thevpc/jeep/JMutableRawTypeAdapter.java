@@ -8,12 +8,12 @@ import net.thevpc.jeep.impl.types.JModifierList;
 
 import java.util.*;
 
-public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType{
+public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType {
     private JRawType base;
     private LinkedHashMap<JSignature, JMethod> methods = new LinkedHashMap<>();
     private LinkedHashMap<JSignature, JConstructor> constructors = new LinkedHashMap<>();
     private List<JType> interfaces = new ArrayList<>();
-    private JType superclass;
+    private JType superClass;
 
     public JMutableRawTypeAdapter(JRawType base) {
         this.base = base;
@@ -36,7 +36,7 @@ public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType
         }
         JTypeVariable[] vars = getTypeParameters();
         if (vars.length != parameters.length) {
-            throw new IllegalArgumentException("Invalid parameters count. expected "+vars.length+" but got "+parameters.length);
+            throw new IllegalArgumentException("Invalid parameters count. expected " + vars.length + " but got " + parameters.length);
         }
         return JTypesSPI.getRegisteredOrRegister(
                 types2().createParameterizedType0(this, parameters,
@@ -155,8 +155,8 @@ public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType
 
     @Override
     public JType getSuperType() {
-        if(superclass!=null) {
-            return superclass;
+        if (superClass != null) {
+            return superClass;
         }
         return base.getSuperType();
     }
@@ -166,8 +166,6 @@ public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType
     public JType toPrimitive() {
         return base.toPrimitive();
     }
-
-
 
 
     @Override
@@ -289,7 +287,7 @@ public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType
     @Override
     public JMethod findDeclaredMethodOrNull(JSignature sig) {
         JMethod s = base.findDeclaredMethodOrNull(sig);
-        if(s==null){
+        if (s == null) {
             s = methods.get(sig);
         }
         return s;
@@ -311,7 +309,9 @@ public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType
 
     public void addInterface(JType interfaceType) {
         interfaces.add(interfaceType);
-    }    @Override
+    }
+
+    @Override
     public JConstructor addConstructor(JConstructor constructor, boolean redefine) {
         JSignature signature = constructor.getSignature();
         JConstructor old = findDeclaredConstructorOrNull(signature);
@@ -326,4 +326,8 @@ public class JMutableRawTypeAdapter extends JTypeBase implements JMutableRawType
         return constructor;
     }
 
+    @Override
+    public void setSuperType(JType superType) {
+        this.superClass = superType;
+    }
 }
