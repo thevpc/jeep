@@ -11,11 +11,42 @@ import net.thevpc.jeep.impl.JTypesSPI;
 import java.util.*;
 
 public abstract class AbstractJType extends JTypeBase implements JType {
+    protected boolean primitiveType;
     private JTypes types;
+    private JType boxedType = null;
+    private JType unboxedType = null;
     private LinkedHashMap<String, JMethod[]> methodsByName = new LinkedHashMap<>();
 
     public AbstractJType(JTypes types) {
         this.types = types;
+    }
+
+    public JType getUnboxedType() {
+        return unboxedType;
+    }
+
+    public AbstractJType setUnboxedType(JType unboxedType) {
+        this.unboxedType = unboxedType;
+        return this;
+    }
+
+    public JType getBoxedType() {
+        return boxedType;
+    }
+
+    public AbstractJType setBoxedType(JType boxedType) {
+        this.boxedType = boxedType;
+        return this;
+    }
+
+    public AbstractJType setPrimitiveType(boolean primitiveType) {
+        this.primitiveType = primitiveType;
+        return this;
+    }
+
+    @Override
+    public String getRawName() {
+        return getName();
     }
 
     @Override
@@ -62,6 +93,13 @@ public abstract class AbstractJType extends JTypeBase implements JType {
 
     @Override
     public JType boxed() {
+        if(!isPrimitive()){
+            return this;
+        }
+        JType bt = getBoxedType();
+        if(bt!=null){
+            return bt;
+        }
         return this;
     }
 
@@ -72,7 +110,7 @@ public abstract class AbstractJType extends JTypeBase implements JType {
 
     @Override
     public boolean isPrimitive() {
-        return false;
+        return primitiveType;
     }
 
     @Override
@@ -145,16 +183,11 @@ public abstract class AbstractJType extends JTypeBase implements JType {
 
     @Override
     public JType toPrimitive() {
-        return null;
+        if(isPrimitive()){
+            return this;
+        }
+        return getUnboxedType();
     }
-
-
-
-
-
-
-
-
 
 
 
@@ -347,4 +380,20 @@ public abstract class AbstractJType extends JTypeBase implements JType {
         m.setGenericSignature(signature);
         return m;
     }
+
+    @Override
+    public JAnnotationField[] getAnnotationFields() {
+        return new JAnnotationField[0];
+    }
+
+    @Override
+    public JAnnotationField getAnnotationField(String name) {
+        return null;
+    }
+
+    @Override
+    public boolean isNullable() {
+        return !isPrimitive();
+    }
+
 }

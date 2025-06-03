@@ -3,7 +3,6 @@ package net.thevpc.jeep.impl.types;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.types.host.AbstractJType;
 import net.thevpc.jeep.impl.types.host.HostJArray;
-import net.thevpc.jeep.impl.types.host.HostJRawType;
 import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.JStaticObject;
@@ -181,9 +180,9 @@ public class DefaultJArrayType extends AbstractJType implements JArrayType {
 
     @Override
     public Object newArray(int... len) {
-        if (rootComponentType() instanceof HostJRawType) {
-            HostJRawType hjt = (HostJRawType) rootComponentType().getRawType();
-            Type ht = hjt.getHostType();
+        JType rootComp = rootComponentType();
+        if (rootComp instanceof DefaultJType && ((DefaultJType)rootComp).getHostType()!=null) {
+            Type ht =((DefaultJType)rootComp).getHostType();
             return Array.newInstance((Class<?>) ht, len);
         } else {
             int len0 = len[0];

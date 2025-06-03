@@ -25,6 +25,7 @@ public class DefaultJModifierList implements JModifierList{
     public static final JPrimitiveModifier ENUM = new JPrimitiveModifier("enum");
     public static final JPrimitiveModifier ANNOTATION = new JPrimitiveModifier("annotation");
     public static final JPrimitiveModifier MANDATED = new JPrimitiveModifier("mandated");
+    public static final JPrimitiveModifier STRICT = new JPrimitiveModifier("strict");
     private static final JPrimitiveModifier[] _ALL= {PRIVATE,PROTECTED,PUBLIC,SYNTHETIC,STATIC,SYNCHRONIZED
             ,ABSTRACT
             ,FINAL
@@ -36,7 +37,7 @@ public class DefaultJModifierList implements JModifierList{
             ,BRIDGE
             ,ENUM
             ,ANNOTATION
-            ,MANDATED
+            ,MANDATED,STRICT
     };
 
     private static final Map<String,JPrimitiveModifier> _DEFAULT_MODIFIERS=new HashMap<>();

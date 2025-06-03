@@ -34,6 +34,13 @@ public class JTextSourceResourceFile implements JTextSourceRoot {
     }
 
     @Override
+    public String toString() {
+        return "JTextSourceResourceFile{" +
+                "path='" + path + '\'' +
+                '}';
+    }
+
+    @Override
     public String getId() {
         return path;
     }

@@ -5,6 +5,7 @@ import net.thevpc.jeep.impl.functions.JSignature;
 import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.*;
 
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 public class DefaultJRawMethod extends AbstractJMethod implements JRawMethod{
@@ -20,8 +21,19 @@ public class DefaultJRawMethod extends AbstractJMethod implements JRawMethod{
     private JModifierList modifiers=new DefaultJModifierList();
     private JAnnotationInstanceList annotations=new DefaultJAnnotationInstanceList();
     private String sourceName;
+    private Method hostMethod;
+    private boolean defaultMethod;
 
     public DefaultJRawMethod() {
+    }
+
+    public Method getHostMethod() {
+        return hostMethod;
+    }
+
+    public DefaultJRawMethod setHostMethod(Method hostMethod) {
+        this.hostMethod = hostMethod;
+        return this;
     }
 
     @Override
@@ -143,8 +155,14 @@ public class DefaultJRawMethod extends AbstractJMethod implements JRawMethod{
     }
 
     public boolean isDefault() {
-        return getDeclaringType().isInterface()
-                && isPublic() && !isAbstract() && !isStatic();
+        return defaultMethod;
+//                getDeclaringType().isInterface()
+//                && isPublic() && !isAbstract() && !isStatic();
+    }
+
+    public DefaultJRawMethod setDefaultMethod(boolean defaultMethod) {
+        this.defaultMethod = defaultMethod;
+        return this;
     }
 
     @Override
@@ -165,4 +183,13 @@ public class DefaultJRawMethod extends AbstractJMethod implements JRawMethod{
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
     }
+
+    public void addModifiers(JModifier... jModifiers) {
+        DefaultJModifierList mm = (DefaultJModifierList) modifiers;
+        mm.addAll(jModifiers);
+    }
+    public void addAnnotation(JAnnotationInstance jAnnotationInstance){
+        ((DefaultJAnnotationInstanceList)annotations).add(jAnnotationInstance);
+    }
+
 }

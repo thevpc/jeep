@@ -2,6 +2,8 @@ package net.thevpc.jeep;
 
 //import java.lang.reflect.Type;
 
+import net.thevpc.jeep.core.types.DefaultJField;
+
 public interface JTypes {
 
     ClassLoader hostClassLoader();

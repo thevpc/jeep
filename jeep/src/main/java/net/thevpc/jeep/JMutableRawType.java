@@ -1,6 +1,7 @@
 package net.thevpc.jeep;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public interface JMutableRawType extends JRawType{
     void addMethod(JMethod m);
@@ -15,6 +16,7 @@ public interface JMutableRawType extends JRawType{
 
     }
 
+    JAnnotationField getAnnotationField(String name);
 //    public void setSuperType(JType superclass) {
 //        this.superclass = superclass;
 //    }

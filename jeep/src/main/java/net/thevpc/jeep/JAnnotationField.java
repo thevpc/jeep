@@ -1,7 +1,7 @@
 package net.thevpc.jeep;
 
 public interface JAnnotationField {
-    JAnnotationType getAnnotationType();
+    JType getAnnotationType();
 
     String getName();
     Object getDefaultValue();

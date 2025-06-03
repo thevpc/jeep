@@ -1,5 +1,6 @@
 package net.thevpc.jeep.core.types;
 
+import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.JTypesSPI;
 import net.thevpc.jeep.impl.types.DefaultJAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.DefaultJModifierList;
@@ -7,9 +8,6 @@ import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.JModifierList;
 import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.util.JeepReflectUtils;
-import net.thevpc.jeep.JType;
-import net.thevpc.jeep.JRawField;
-import net.thevpc.jeep.JTypes;
 import net.thevpc.jeep.core.JObject;
 
 public class DefaultJField extends AbstractJField implements JRawField {
@@ -19,6 +17,30 @@ public class DefaultJField extends AbstractJField implements JRawField {
     private JType type;
     private JAnnotationInstanceList annotations = new DefaultJAnnotationInstanceList();
     private JModifierList modifiers = new DefaultJModifierList();
+    private Getter getter = new Getter() {
+        @Override
+        public Object get(JRawField field, Object instance) {
+            if(field.isStatic()){
+                return field.getDeclaringType().getStaticObject().get(field.name());
+            }else if(instance instanceof JObject){
+                return ((JObject)instance).get(name());
+            }else{
+                return JeepReflectUtils.getInstanceFieldValue(instance,field.name());
+            }
+        }
+    }; ;
+    private Setter setter = new Setter() {
+        @Override
+        public void set(JRawField field, Object instance, Object value) {
+            if(field.isStatic()){
+                field.getDeclaringType().getStaticObject().set(name(),value);
+            }else if(instance instanceof JObject){
+                ((JObject)instance).set(name(),value);
+            }else{
+                JeepReflectUtils.setInstanceFieldValue(instance,field.name(),value);
+            }
+        }
+    }; ;
 
     public DefaultJField() {
     }
@@ -27,9 +49,8 @@ public class DefaultJField extends AbstractJField implements JRawField {
         return modifiers;
     }
 
-    @Override
-    public boolean isFinal() {
-        return ((JTypesSPI)getTypes()).isFinalField(this);
+    private JTypesSPI typesSpi() {
+        return (JTypesSPI) getTypes();
     }
 
     public DefaultJField setName(String name) {
@@ -37,7 +58,15 @@ public class DefaultJField extends AbstractJField implements JRawField {
         return this;
     }
 
+    public DefaultJField setGetter(Getter getter) {
+        this.getter = getter;
+        return this;
+    }
 
+    public DefaultJField setSetter(Setter setter) {
+        this.setter = setter;
+        return this;
+    }
 
     public DefaultJField setDeclaringType(JType declaringType) {
         this.declaringType = declaringType;
@@ -85,15 +114,24 @@ public class DefaultJField extends AbstractJField implements JRawField {
             JeepReflectUtils.setInstanceFieldValue(instance,name,value);
         }
     }
+    public void addAnnotation(JAnnotationInstance jAnnotationInstance){
+        ((DefaultJAnnotationInstanceList)annotations).add(jAnnotationInstance);
+    }
+
+    @Override
+    public boolean isFinal() {
+        return typesSpi().isFinalField(this);
+    }
+
 
     @Override
     public boolean isPublic() {
-        return ((JTypesSPI)getTypes()).isPublicField(this);
+        return typesSpi().isPublicField(this);
     }
 
     @Override
     public boolean isStatic() {
-        return ((JTypesSPI)getTypes()).isStaticField(this);
+        return typesSpi().isStaticField(this);
     }
 
     @Override
@@ -114,5 +152,10 @@ public class DefaultJField extends AbstractJField implements JRawField {
     @Override
     public JTypes getTypes() {
         return getDeclaringType().getTypes();
+    }
+
+    public void addModifiers(JModifier... jModifiers) {
+        DefaultJModifierList mm = (DefaultJModifierList) modifiers;
+        mm.addAll(jModifiers);
     }
 }

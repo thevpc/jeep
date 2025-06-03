@@ -2,12 +2,9 @@ package net.thevpc.jeep.impl.types;
 
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.types.host.*;
-import net.thevpc.jeep.*;
-import net.thevpc.jeep.core.types.DefaultJField;
 import net.thevpc.jeep.core.types.DefaultTypeName;
 import net.thevpc.jeep.core.types.JTypeNameBounded;
 import net.thevpc.jeep.impl.JTypesSPI;
-import net.thevpc.jeep.impl.types.host.*;
 
 import java.lang.reflect.*;
 import java.time.LocalDate;
@@ -194,12 +191,13 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 //            }
 //            //each context should have its proper types repository...
 //            //so wont inherit parent's
-////            if (parent != null) {
-////                found = parent.forName(ctype, declaration);
-////                if (found != null) {
-////                    return found;
-////                }
-////            }
+
+    /// /            if (parent != null) {
+    /// /                found = parent.forName(ctype, declaration);
+    /// /                if (found != null) {
+    /// /                    return found;
+    /// /                }
+    /// /            }
 //            found = new HostJRawType((Class) ctype, this);
 //            registerType(found);
 //            return found;
@@ -236,7 +234,6 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 //            throw new IllegalArgumentException("Unsupported");
 //        }
 //    }
-
     @Override
     public boolean isNull(Object object) {
         return object == null;
@@ -487,29 +484,8 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
         return new NullJType(this);
     }
 
-    protected JType createHostType0(Class name) {
-        if (name.isEnum()) {
-            return new JMutableRawTypeAdapter(new HostJEnumType(name, this));
-        }
-        if (name.isAnnotation()) {
-            return new JMutableRawTypeAdapter(new HostJAnnotationType(name, this));
-        }
-        return new JMutableRawTypeAdapter(new HostJClassType(name, this));
-    }
-
-    @Override
-    public JField createHostField(Field declaredField) {
-        return new HostJField(declaredField, null, forName(declaredField.getDeclaringClass().getName()));
-    }
-
-    @Override
-    public JMethod createHostMethod(Method declaredField) {
-        return new HostJRawMethod(declaredField, forName(declaredField.getDeclaringClass().getName()));
-    }
-
-    @Override
-    public HostJRawConstructor createHostConstructor(Constructor declaredField) {
-        return new HostJRawConstructor(declaredField, forName(declaredField.getDeclaringClass().getName()));
+    public JType createHostType0(Class hostType) {
+        return HostHelper.createHostType(hostType, this);
     }
 
     @Override
@@ -588,17 +564,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 
     @Override
     public JMutableRawType createMutableType0(String name, JTypeKind kind) {
-        switch (kind.getValue()) {
-            case JTypeKind.Ids.ANNOTATION: {
-                return new DefaultJAnnotationType(name, kind, this);
-            }
-            case JTypeKind.Ids.ENUM: {
-                return new DefaultJEnumType(name, kind, this);
-            }
-            default: {
-                return new DefaultJType(name, kind, this);
-            }
-        }
+        return new DefaultJType(name, kind, this);
     }
 
     @Override
@@ -756,12 +722,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 
     @Override
     public boolean isInterfaceType(JType c) {
-        if (c.isRawType()) {
-            if (c instanceof HostJClassType) {
-                return c.isInterface();
-            }
-        }
-        return false;
+        return c.getModifiers().contains(DefaultJModifierList.INTERFACE);
     }
 
     @Override
@@ -775,7 +736,9 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
     }
 
     @Override
-    public boolean isFinalField(DefaultJField c) {
+    public boolean isFinalField(JField c) {
         return c.getModifiers().contains(DefaultJModifierList.FINAL);
     }
+
+
 }

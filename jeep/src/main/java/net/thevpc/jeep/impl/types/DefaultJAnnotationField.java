@@ -1,21 +1,21 @@
 package net.thevpc.jeep.impl.types;
 
 import net.thevpc.jeep.JAnnotationField;
-import net.thevpc.jeep.JAnnotationType;
+import net.thevpc.jeep.JType;
 
 public class DefaultJAnnotationField implements JAnnotationField {
-    private JAnnotationType annotationType;
+    private JType annotationType;
     private String name;
     private Object defaultValue;
 
-    public DefaultJAnnotationField(String name, Object defaultValue, JAnnotationType annotationType) {
+    public DefaultJAnnotationField(String name, Object defaultValue, JType annotationType) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.annotationType = annotationType;
     }
 
     @Override
-    public JAnnotationType getAnnotationType() {
+    public JType getAnnotationType() {
         return annotationType;
     }
 

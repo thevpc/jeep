@@ -30,4 +30,5 @@ public interface JMethod extends JInvokable {
     JTypeVariable[] getTypeParameters();
 
     JMethod parametrize(JType... parameters);
+
 }

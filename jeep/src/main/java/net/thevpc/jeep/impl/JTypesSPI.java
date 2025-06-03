@@ -1,12 +1,7 @@
 package net.thevpc.jeep.impl;
 
 import net.thevpc.jeep.*;
-import net.thevpc.jeep.impl.types.host.HostJRawConstructor;
-import net.thevpc.jeep.core.types.DefaultJField;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 public interface JTypesSPI {
@@ -43,11 +38,9 @@ public interface JTypesSPI {
 
     JType createArrayType0(JType root, int dim);
 
+    JType createHostType0(Class hostType);
     JType createNullType0();
 
-    JMethod createHostMethod(Method declaredField);
-
-    JField createHostField(Field declaredField);
 
     JType createHostType0(String name);
 
@@ -56,8 +49,6 @@ public interface JTypesSPI {
     JType createVarType0(String name, JType[] lowerBounds, JType[] upperBounds, JDeclaration declaration);
 
     JParameterizedType createParameterizedType0(JType rootRaw, JType[] parameters, JType declaringType);
-
-    HostJRawConstructor createHostConstructor(Constructor declaredField);
 
     JType forHostType(Type ctype, JDeclaration declaration);
 
@@ -77,13 +68,14 @@ public interface JTypesSPI {
 
     boolean isStaticType(JType c);
 
-    boolean isInterfaceType(JType c);
-
     boolean isStaticMethod(JMethod c);
 
     boolean isStaticField(JField c);
 
+    boolean isInterfaceType(JType c);
+
     boolean isAbstractMethod(JMethod c);
 
-    boolean isFinalField(DefaultJField c);
+    boolean isFinalField(JField c);
+
 }

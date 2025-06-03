@@ -4,16 +4,14 @@ import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.functions.JSignature;
 import net.thevpc.jeep.impl.types.host.AbstractJRawType;
 import net.thevpc.jeep.util.JTypeUtils;
-import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.types.DefaultJField;
 import net.thevpc.jeep.core.types.DefaultJObject;
 import net.thevpc.jeep.core.types.DefaultJStaticObject;
 import net.thevpc.jeep.core.JStaticObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.function.Function;
 
 public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     private String name;
@@ -23,6 +21,7 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     private JType superclass;
     private JConstructor defaultConstructor;
     private List<JType> interfaces = new ArrayList<>();
+    private LinkedHashMap<String, JAnnotationField> annotationFields = new LinkedHashMap<>();
     private LinkedHashMap<String, JField> fields = new LinkedHashMap<>();
     private LinkedHashMap<String, JType> innerTypes = new LinkedHashMap<>();
     private LinkedHashMap<JSignature, JMethod> methods = new LinkedHashMap<>();
@@ -32,6 +31,7 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     private JInvoke staticInitializer;
     private JStaticObject staticObject = new DefaultJStaticObject(this);
     private Object defaultValue;
+    private JType declaringType;
     private JDeclaration declaration;
     private String sourceName;
 
@@ -40,6 +40,8 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     private JAnnotationInstanceList annotations = new DefaultJAnnotationInstanceList();
     private JModifierList modifiers = new DefaultJModifierList();
     private JTypeKind kind;
+    private Type hostType;
+    List<Runnable> onPostRegisterList = new ArrayList<>();
 
     public DefaultJType(String name, JTypeKind kind, JTypes types) {
         super(types);
@@ -48,7 +50,7 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         }
         this.kind = kind;
         this.name = name;
-        this.superclass = JTypeUtils.forObject(types);
+        //this.superclass = JTypeUtils.forObject(types);
         int r = name.lastIndexOf('.');
         if (r < 0) {
             simpleName = name;
@@ -64,8 +66,63 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         }
     }
 
+
+    public JAnnotationField[] getAnnotationFields() {
+        return annotationFields.values().toArray(new JAnnotationField[0]);
+    }
+
+    @Override
+    public JAnnotationField getAnnotationField(String name) {
+        for (JAnnotationField annotationField : getAnnotationFields()) {
+            if (annotationField.getName().equals(name)) {
+                return annotationField;
+            }
+        }
+        throw new NoSuchElementException("no annotation field named " + name);
+    }
+
+    public void addAnnotationField(JAnnotationField f){
+        annotationFields.put(f.getName(),f);
+    }
+
+    public Type getHostType() {
+        return hostType;
+    }
+
+    public DefaultJType setHostType(Type hostType) {
+        this.hostType = hostType;
+        return this;
+    }
+
+    public DefaultJType setPackageName(String packageName) {
+        this.packageName = packageName;
+        return this;
+    }
+
+    public void addOnPostRegisterList(Runnable r ) {
+        onPostRegisterList.add(r);
+    }
+
+    public List<Runnable> getOnPostRegisterList() {
+        return onPostRegisterList;
+    }
+
+    @Override
+    public void onPostRegister() {
+        super.onPostRegister();
+        for (Iterator<Runnable> iterator = onPostRegisterList.iterator(); iterator.hasNext(); ) {
+            Runnable runnable = iterator.next();
+            runnable.run();
+            iterator.remove();
+        }
+    }
+
     public JTypeKind getKind() {
         return kind;
+    }
+
+    public void addAnnotation(JAnnotationInstance jAnnotationInstance){
+        ((DefaultJAnnotationInstanceList)annotations).add(jAnnotationInstance);
     }
 
     @Override
@@ -243,7 +300,15 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         return staticObject;
     }
 
+    public DefaultJType setStaticObject(JStaticObject staticObject) {
+        this.staticObject = staticObject;
+        return this;
+    }
+
     @Override
+    public String getRawName() {
+        return name;
+    }
     public String getName() {
         StringBuilder sb = new StringBuilder(name);
         JType[] jTypeVariables = getTypeParameters();
@@ -276,10 +341,6 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         return simpleName;
     }
 
-    @Override
-    public boolean isNullable() {
-        return false;
-    }
 
     @Override
     public JType getSuperType() {
@@ -295,6 +356,7 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     public void setSuperType(JType superclass) {
         this.superclass = superclass;
     }
+
     public void addInterfaces(JType[] interfaces) {
         this.interfaces.addAll(Arrays.asList(interfaces));
     }
@@ -332,6 +394,12 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     }
 
     //    @Override
+
+    public void addField(JField field) {
+        ((DefaultJField)field).setDeclaringType(this);
+        fields.put(field.name(), field);
+    }
+
     public JField addField(String name, JType type, JModifier[] modifiers, JAnnotationInstance[] annotations, boolean redefine) {
         JField old = findDeclaredFieldOrNull(name);
         if (old != null) {
@@ -413,7 +481,12 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 
     @Override
     public JType getDeclaringType() {
-        return null;
+        return declaringType;
+    }
+
+    public DefaultJType setDeclaringType(JType declaringType) {
+        this.declaringType = declaringType;
+        return this;
     }
 
     @Override
@@ -424,6 +497,10 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     @Override
     public String[] getExports() {
         return exports.toArray(new String[0]);
+    }
+
+    public void addExports(String... exports) {
+        this.exports.addAll(Arrays.asList(exports));
     }
 
     public DefaultJType setDeclaration(JDeclaration declaration) {
@@ -452,5 +529,14 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     public DefaultJType setSourceName(String sourceName) {
         this.sourceName = sourceName;
         return this;
+    }
+
+    public void addInnerType(JRawType innerType) {
+        innerTypes.put(innerType.simpleName(), innerType);
+    }
+
+    public void addModifiers(JModifier... jModifiers) {
+        DefaultJModifierList mm = (DefaultJModifierList) modifiers;
+        mm.addAll(jModifiers);
     }
 }

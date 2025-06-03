@@ -11,7 +11,7 @@ import net.thevpc.jeep.impl.JTypesSPI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class JParameterizedTypeImpl extends AbstractJType implements JParameterizedType{
+public class JParameterizedTypeImpl extends AbstractJType implements JParameterizedType {
     private JType rootRaw;
     private JType superType;
     private JType[] actualTypeArguments;
@@ -20,17 +20,19 @@ public class JParameterizedTypeImpl extends AbstractJType implements JParameteri
     private LinkedHashMap<JSignature, JMethod> _methods;
     private LinkedHashMap<JSignature, JConstructor> _constructors;
     private String name;
+    private String rawName;
     private String sname;
     private JType[] _interfaces;
     private JType declaringType;
     private LinkedHashMap<String, JType> innerTypes;
+
     public JParameterizedTypeImpl(JType rootRaw, JType[] actualTypeArguments, JType declaringType, JTypes types) {
         super(types);
-        this.rootRaw=rootRaw;
-        this.declaringType=declaringType;
+        this.rootRaw = rootRaw;
+        this.declaringType = declaringType;
         setActualTypeArguments(actualTypeArguments);
         JType sType = rootRaw.getSuperType();
-        this.superType= sType ==null?null: JTypeUtils.buildParentType(sType,this);
+        this.superType = sType == null ? null : JTypeUtils.buildParentType(sType, this);
     }
 
     @Override
@@ -40,27 +42,33 @@ public class JParameterizedTypeImpl extends AbstractJType implements JParameteri
 
     public void setActualTypeArguments(JType[] actualTypeArguments) {
         this.actualTypeArguments = actualTypeArguments;
-        
-        StringBuilder pn=new StringBuilder();
+
+        StringBuilder pn = new StringBuilder();
         for (int i = 0; i < actualTypeArguments.length; i++) {
-            if(i==0){
+            if (i == 0) {
                 pn.append("<");
-            }else{
+            } else {
                 pn.append(",");
             }
             pn.append(actualTypeArguments[i].getName());
-            if(i==actualTypeArguments.length-1){
+            if (i == actualTypeArguments.length - 1) {
                 pn.append(">");
             }
         }
-        if(declaringType==null) {
-            this.name = rootRaw.getName() + pn.toString();
-        }else{
-            this.name=declaringType.getName()+"."+rootRaw.simpleName()+pn;
+        if (declaringType == null) {
+            this.name = rootRaw.getRawName() + pn.toString();
+            this.rawName = rootRaw.getRawName();
+        } else {
+            this.name = declaringType.getName() + "." + rootRaw.simpleName() + pn;
+            this.rawName = declaringType.getName() + "." + rootRaw.simpleName();
         }
-        this.sname=rootRaw.simpleName()+pn;
+        this.sname = rootRaw.simpleName() + pn;
     }
-    
+
+    @Override
+    public String getRawName() {
+        return rawName;
+    }
 
     @Override
     public JStaticObject getStaticObject() {
@@ -88,7 +96,7 @@ public class JParameterizedTypeImpl extends AbstractJType implements JParameteri
             modified |= (!y[i].getName().equals(jTypes[i].getName()));
         }
         if (modified) {
-            return types2().createParameterizedType0(getRawType(),y,this);
+            return types2().createParameterizedType0(getRawType(), y, this);
         } else {
             return this;
         }
@@ -155,18 +163,19 @@ public class JParameterizedTypeImpl extends AbstractJType implements JParameteri
 
     @Override
     public JType[] getInterfaces() {
-        if(_interfaces==null){
-            _interfaces= JTypeUtils.buildParentType(getRawType().getInterfaces(),this);
+        if (_interfaces == null) {
+            _interfaces = JTypeUtils.buildParentType(getRawType().getInterfaces(), this);
         }
         return _interfaces;
     }
+
     private synchronized Map<String, JType> _innerTypes() {
         if (innerTypes == null) {
             innerTypes = new LinkedHashMap<>();
             for (JType item : rootRaw.getDeclaredInnerTypes()) {
-                if(item.isStatic()){
+                if (item.isStatic()) {
                     innerTypes.put(item.simpleName(), item);
-                }else {
+                } else {
                     JParameterizedType f = types2().createParameterizedType0(item,
                             new JType[0],
                             this);
@@ -179,26 +188,26 @@ public class JParameterizedTypeImpl extends AbstractJType implements JParameteri
 
     @Override
     public JMethod[] getDeclaredMethods() {
-        if(_methods==null){
-            LinkedHashMap<JSignature, JMethod> _methods=new LinkedHashMap<>();
+        if (_methods == null) {
+            LinkedHashMap<JSignature, JMethod> _methods = new LinkedHashMap<>();
             for (JMethod jMethod : getRawType().getDeclaredMethods()) {
-                JParameterizedMethodImpl m=new JParameterizedMethodImpl(jMethod,new JType[0], this);
-                _methods.put(m.getSignature(),m);
+                JParameterizedMethodImpl m = new JParameterizedMethodImpl(jMethod, new JType[0], this);
+                _methods.put(m.getSignature(), m);
             }
-            this._methods=_methods;
+            this._methods = _methods;
         }
         return this._methods.values().toArray(new JMethod[0]);
     }
 
     @Override
     public JConstructor[] getDeclaredConstructors() {
-        if(_constructors==null){
-            LinkedHashMap<JSignature, JConstructor> _constructors=new LinkedHashMap<>();
+        if (_constructors == null) {
+            LinkedHashMap<JSignature, JConstructor> _constructors = new LinkedHashMap<>();
             for (JConstructor i : getRawType().getDeclaredConstructors()) {
-                JParameterizedConstructorImpl m=new JParameterizedConstructorImpl(i,new JType[0], this);
-                _constructors.put(m.getSignature(),m);
+                JParameterizedConstructorImpl m = new JParameterizedConstructorImpl(i, new JType[0], this);
+                _constructors.put(m.getSignature(), m);
             }
-            this._constructors=_constructors;
+            this._constructors = _constructors;
         }
         return this._constructors.values().toArray(new JConstructor[0]);
     }
@@ -206,13 +215,13 @@ public class JParameterizedTypeImpl extends AbstractJType implements JParameteri
 
     @Override
     public JField[] getDeclaredFields() {
-        if(_fields==null){
-            LinkedHashMap<String, JField> _fields=new LinkedHashMap<>();
+        if (_fields == null) {
+            LinkedHashMap<String, JField> _fields = new LinkedHashMap<>();
             for (JField i : getRawType().getDeclaredFields()) {
-                JParameterizedFieldImpl m=new JParameterizedFieldImpl((JRawField) i,this);
-                _fields.put(m.name(),m);
+                JParameterizedFieldImpl m = new JParameterizedFieldImpl((JRawField) i, this);
+                _fields.put(m.name(), m);
             }
-            this._fields=_fields;
+            this._fields = _fields;
         }
         return this._fields.values().toArray(new JField[0]);
     }
@@ -245,7 +254,7 @@ public class JParameterizedTypeImpl extends AbstractJType implements JParameteri
     @Override
     public JType toArray(int count) {
         return JTypesSPI.getRegisteredOrRegister(
-                types2().createArrayType0(this,count), getTypes()
+                types2().createArrayType0(this, count), getTypes()
         );
     }
 

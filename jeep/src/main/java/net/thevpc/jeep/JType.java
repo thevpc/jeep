@@ -11,10 +11,15 @@ public interface JType extends JDeclaration, JTypeOrVariable {
 
     JType getRawType();
 
+    JAnnotationField[] getAnnotationFields();
+
+    JAnnotationField getAnnotationField(String name);
+
 //    JAnnotationInstance annotations();
 
     JStaticObject getStaticObject();
 
+    String getRawName();
     String getName();
 
     JTypeName typeName();
