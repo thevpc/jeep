@@ -127,7 +127,7 @@ public class JInvokeUtils {
                 }
             }
             if (ok) {
-                JArrayType availableType = (JArrayType) availableTypes[availableTypes.length - 1];
+                JType availableType = availableTypes[availableTypes.length - 1];
                 JType c3 = availableType.componentType();
                 double y = 0;
                 int count = 0;
