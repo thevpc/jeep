@@ -4,8 +4,9 @@ import net.thevpc.jeep.*;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.eval.JEvaluableValue;
 import net.thevpc.jeep.impl.types.AbstractJConstructor;
-import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.JModifierList;
+
+import java.util.List;
 
 public class JConstructorWithVarArg extends AbstractJConstructor {
     private final JConstructor ctr;
@@ -49,7 +50,7 @@ public class JConstructorWithVarArg extends AbstractJConstructor {
     }
 
     @Override
-    public JModifierList getModifiers() {
+    public List<JModifier> getModifiers() {
         return ctr.getModifiers();
     }
 
@@ -80,9 +81,9 @@ public class JConstructorWithVarArg extends AbstractJConstructor {
 
             @Override
             public Object evaluate(JInvokeContext context) {
-                JArrayType jType = (JArrayType) ((JArrayType)last).componentType();
+                JType jType = last.componentType();
                 Object anArray0 = jType.newArray(varArgCount);
-                JArray anArray = ((JArrayType)jType.toArray(varArgCount)).asArray(anArray0);
+                JArray anArray = jType.toArray(varArgCount).asArray(anArray0);
                 anArray.value();
                 for (int i = 0; i < varArgCount; i++) {
                     JEvaluable aaa = args[all.length - 1 + i];
@@ -124,7 +125,7 @@ public class JConstructorWithVarArg extends AbstractJConstructor {
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return ctr.getAnnotations();
     }
 }
