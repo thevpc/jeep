@@ -4,8 +4,32 @@ import net.thevpc.jeep.core.JStaticObject;
 import net.thevpc.jeep.impl.functions.JSignature;
 
 public interface JType extends JDeclaration, JTypeOrVariable {
-    JDeclaration getDeclaration();
+    JType[] getActualTypeArguments();
+    /**
+     * name with generic variables
+     *
+     * @return name with generic variables
+     */
+    String gname();
 
+    boolean isRaw();
+
+    JType parametrize(JType... parameters);
+
+    void addAnnotation(JAnnotationInstance jAnnotationInstance);
+
+    void setInterfaces(JType[] array);
+
+    void setSuperType(JType tt);
+
+    void addMethod(JMethod m);
+
+    void addInterface(JType interfaceType);
+
+    JConstructor addConstructor(JConstructor constructor, boolean redefine);
+
+
+    JDeclaration getDeclaration();
 
     JTypeVariable[] getTypeParameters();
 
@@ -15,20 +39,22 @@ public interface JType extends JDeclaration, JTypeOrVariable {
 
     JAnnotationField getAnnotationField(String name);
 
-//    JAnnotationInstance annotations();
-
     JStaticObject getStaticObject();
 
     String getRawName();
+    String getSimpleRawName();
+
     String getName();
+
+    String getVersion();
 
     JTypeName typeName();
 
     JTypes getTypes();
 
-    String dname();
+    String getSimpleName2();
 
-    String simpleName();
+    String getSimpleName();
 
     Object cast(Object o);
 
@@ -194,9 +220,17 @@ public interface JType extends JDeclaration, JTypeOrVariable {
      */
     String[] getExports();
 
+    JTypeKind getKind();
     boolean isRawType();
 
     JType replaceParameter(String name, JType param);
 
     boolean isInterface();
+
+    int arrayDimension();
+    JType rootComponentType();
+    JType componentType();
+    JArray asArray(Object o);
+    Object newArray(int... len);
+    boolean isParametrizedType();
 }
