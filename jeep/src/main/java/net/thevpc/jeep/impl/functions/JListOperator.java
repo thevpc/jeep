@@ -6,7 +6,6 @@
 package net.thevpc.jeep.impl.functions;
 
 import net.thevpc.jeep.*;
-import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.JFunctionBase;
 
 /**
@@ -16,13 +15,13 @@ import net.thevpc.jeep.core.JFunctionBase;
 public class JListOperator extends JFunctionBase {
     
     private JInvoke operator;
-    private JArrayType operandTypeArr;
+    private JType operandTypeArr;
 
     public JListOperator(JInvoke operator, String name, JType resultType, JType operandType) {
         //            super(name, resultType, true, toArrayClass(operandType));
         super(name, resultType, new JType[]{operandType.toArray(1)}, true,"<unknown-source>");
         this.operator = operator;
-        this.operandTypeArr = (JArrayType) operandType.toArray(1);
+        this.operandTypeArr = operandType.toArray(1);
     } //            super(name, resultType, true, toArrayClass(operandType));
 
     @Override
@@ -38,7 +37,7 @@ public class JListOperator extends JFunctionBase {
             n = "<IMPLICIT>";
         }
         sb.append(n).append("(");
-        sb.append(operandTypeArr.componentType().simpleName()).append("...");
+        sb.append(operandTypeArr.componentType().getSimpleName()).append("...");
         sb.append(")");
         return "ExpressionListOperator{" + "operator=" + operator + ", resultType=" + getReturnType() + ", operandTypeArr=" + operandTypeArr + '}';
     }
