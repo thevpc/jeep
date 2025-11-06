@@ -1,7 +1,7 @@
 package net.thevpc.jeep;
 
 public interface JEnumField {
-    JRawType getEnumType();
+    JType getEnumType();
     String getName();
     Object getValue();
 }
