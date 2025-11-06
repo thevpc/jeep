@@ -15,11 +15,11 @@ import java.util.*;
 public class DefaultJTypes implements JTypes, JTypesSPI {
     private final ClassLoader hostClassLoader;
     private final JTypes parent;
-    private final Map<String, JType> typesMap = new HashMap<>();
+    private final JTypeMap typesMap = new JTypeMap();
     private final Map<String, JType> aliases = new HashMap<>();
     private final List<JTypesLoader> loaders = new ArrayList<>();
     private final List<JTypesResolver> resolvers = new ArrayList<>();
-
+    private Map<Type, JType> pending=new HashMap<>();
     public DefaultJTypes() {
         this((JTypes) null, null);
     }
@@ -275,7 +275,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
                 throw new JParseException("Type " + fullName + " declared Twice");
             }
         }
-        JMutableRawType jt = createMutableType0(fullName, kind);
+        JType jt = createMutableType0(fullName, kind);
         registerType(jt);
         return jt;
     }
@@ -351,7 +351,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
             if (found != null) {
                 JTypeNameOrVariable[] vars = tn.vars();
                 if (vars.length > 0) {
-                    return ((JRawType) found).parametrize(forNameOrNull(vars, found));
+                    return found.parametrize(forNameOrNull(vars, found));
                 }
                 return found;
             }
@@ -374,7 +374,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
                     registerType(jType);
                     JTypeNameOrVariable[] vars = tn.vars();
                     if (vars.length > 0) {
-                        return ((JRawType) jType).parametrize(forNameOrNull(vars, jType));
+                        return jType.parametrize(forNameOrNull(vars, jType));
                     }
                     return jType;
                 }
@@ -388,7 +388,7 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
                 if (ptype != null) {
                     JType[] dit = ptype.getDeclaredInnerTypes();
                     for (JType cc : dit) {
-                        if (cc.simpleName().equals(sn)) {
+                        if (cc.getSimpleName().equals(sn)) {
                             return cc;
                         }
                     }
@@ -446,37 +446,17 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
             ((JTypesSPI) p).registerType(jt);
             return;
         }
-        JTypeName jTypeName = jt.typeName();
-        String fn0 = jt.getName();
-//        String implClassName = jt.getClass().getSimpleName();
-//        while (implClassName.length() < 14) {
-//            implClassName += " ";
-//        }
-        boolean reg = false;
-        if (!typesMap.containsKey(fn0)) {
-            typesMap.put(fn0, jt);
-            reg = true;
-//            System.err.println(System.identityHashCode(this) + " : register type " + implClassName + " " + fn0);
-        }
-        String fn = jTypeName.fullName();
-        if (!fn.equals(fn0)) {
-            if (typesMap.containsKey(fn)) {
-//                System.err.println(System.identityHashCode(this) + " : register (again) type " + implClassName + " " + fn);
-            } else {
-                reg = true;
-                typesMap.put(fn, jt);
-//                System.err.println(System.identityHashCode(this) + " : register type " + implClassName + " " + fn);
-            }
-        }
-        if (reg) {
+        //if (!typesMap.contains(jt)) {
+        if (typesMap.add(jt)) {
             ((AbstractJType) jt).onPostRegister();
         }
+        //}
     }
 
 
     @Override
     public JType createArrayType0(JType root, int dim) {
-        return new DefaultJArrayType(root, dim);
+        return new DefaultJType(root, dim, this);
     }
 
     @Override
@@ -563,8 +543,8 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
     }
 
     @Override
-    public JMutableRawType createMutableType0(String name, JTypeKind kind) {
-        return new DefaultJType(name, kind, this);
+    public JType createMutableType0(String name, JTypeKind kind) {
+        return new DefaultJType(name, kind, null, this);
     }
 
     @Override
@@ -572,31 +552,56 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
         return new DefaultJTypeVariable(name, lowerBounds, upperBounds, declaration, this);
     }
 
-    @Override
-    public JParameterizedType createParameterizedType0(JType rootRaw, JType[] parameters, JType declaringType) {
-        return new JParameterizedTypeImpl(rootRaw, parameters, declaringType, this);
+    public JType findOrRegisterParameterizedType(JType rootRaw, JType[] parameters, JType declaringType) {
+
+        StringBuilder pn = new StringBuilder();
+        pn.append(rootRaw.getRawName());
+        for (int i = 0; i < parameters.length; i++) {
+            if (i == 0) {
+                pn.append("<");
+            } else {
+                pn.append(",");
+            }
+            pn.append(parameters[i].getName());
+            if (i == parameters.length - 1) {
+                pn.append(">");
+            }
+        }
+        String goodName = pn.toString();
+        JType o = typesMap.get(goodName);
+        if (o == null) {
+            o = createParameterizedType0(rootRaw, parameters, declaringType);
+            registerType(o);
+        }
+        return o;
     }
+
+    protected JType createParameterizedType0(JType rootRaw, JType[] parameters, JType declaringType) {
+        return new DefaultJType(rootRaw, parameters, declaringType, this);
+    }
+
 
     @Override
     public JType forHostType(Type ctype, JDeclaration declaration) {
-        return forHostType(ctype, declaration, null);
-    }
-
-    public JType forHostType(Type ctype, JDeclaration declaration, Map<Type, JType> pending) {
-        if (pending == null) {
-            pending = new HashMap<>();
-        }
         final JType v = pending.get(ctype);
         if (v != null) {
             return v;
         }
         if (ctype instanceof Class) {
             Class clazz = (Class) ctype;
-            if (clazz.isArray()) {
-                return forHostType(clazz.getComponentType(), declaration, pending).toArray();
+            Class<?> s = clazz.getSuperclass();
+            if(s!=null){
+                forHostType(s, declaration);
             }
-            JType found = getRegisteredOrAlias(getCanonicalTypeName(ctype));
+            for (Class a : clazz.getInterfaces()) {
+                forHostType(a, declaration);
+            }
+            if (clazz.isArray()) {
+                return forHostType(clazz.getComponentType(), declaration).toArray();
+            }
+            JType found = getRegisteredOrAlias(((Class<?>) ctype).getName());
             if (found != null) {
+                pending.put(ctype, found);
                 return found;
             }
             //each context should have its proper types repository...
@@ -609,46 +614,48 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
 //            }
             found = createHostType0((Class) ctype);
             registerType(found);
+            pending.put(ctype, found);
             return found;
         } else if (ctype instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) ctype;
             Type rawType = pt.getRawType();
-            JType rootRaw = forHostType(rawType, declaration, pending);
-
+            JType rootRaw = forHostType(rawType, declaration);
             //need to handle loopback in parameters
             // examples: interface OfField<F extends OfField<F>> extends TypeDescriptor;
-            final JParameterizedType found = createParameterizedType0(
+            final JType found = findOrRegisterParameterizedType(
                     rootRaw,
-                    new JType[0],//forHostType(pt.getActualTypeArguments(), declaration,pending)
+                    forHostType(pt.getActualTypeArguments(), declaration),//forHostType(pt.getActualTypeArguments(), declaration,pending)
                     rootRaw.getDeclaringType()
             );
             pending.put(ctype, found);
-            ((JParameterizedTypeImpl) found).setActualTypeArguments(forHostType(pt.getActualTypeArguments(), declaration, pending));
             registerType(found);
             return found;
         } else if (ctype instanceof TypeVariable) {
             TypeVariable tv = (TypeVariable) ctype;
-            final JType found = createVarType0(
+            final DefaultJTypeVariable found = (DefaultJTypeVariable) createVarType0(
                     tv.getName(),
                     new JType[0],
-                    forHostType(tv.getBounds(), declaration, pending),
+                    new JType[0],
                     declaration
             );
+            pending.put(ctype, found);
 //            registerType(found);
+            found.setUpperBounds(forHostType(tv.getBounds(), declaration));
             return found;
         } else if (ctype instanceof WildcardType) {
             WildcardType tv = (WildcardType) ctype;
             final JType found = createVarType0(
                     "?",
-                    forHostType(tv.getLowerBounds(), declaration, pending),
-                    forHostType(tv.getUpperBounds(), declaration, pending),
+                    forHostType(tv.getLowerBounds(), declaration),
+                    forHostType(tv.getUpperBounds(), declaration),
                     declaration
             );
 //            registerType(found);
+            pending.put(ctype, found);
             return found;
         } else if (ctype instanceof GenericArrayType) {
             Type c = ((GenericArrayType) ctype).getGenericComponentType();
-            return forHostType(c, declaration, pending).toArray();
+            return forHostType(c, declaration).toArray();
         } else {
             throw new IllegalArgumentException("Unsupported");
         }
@@ -667,13 +674,6 @@ public class DefaultJTypes implements JTypes, JTypesSPI {
         return jTypes;
     }
 
-    public JType[] forHostType(Type[] names, JDeclaration declaration, Map<Type, JType> pending) {
-        JType[] jTypes = new JType[names.length];
-        for (int i = 0; i < jTypes.length; i++) {
-            jTypes[i] = forHostType(names[i], declaration, pending);
-        }
-        return jTypes;
-    }
 
     public String getCanonicalTypeName(Type ctype) {
         if (ctype instanceof Class) {
