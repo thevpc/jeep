@@ -9,6 +9,27 @@ import java.util.Arrays;
 public class TestTypes {
 
     @Test
+    public void test00() {
+        Jeep j = new DefaultJeep();
+        JType a = j.types().forName("java.lang.Object");
+        for (JMethod declaredMethod : a.getDeclaredMethods()) {
+            System.out.println(declaredMethod);
+        }
+    }
+
+    @Test
+    public void test01() {
+        Jeep j = new DefaultJeep();
+        JType a = j.types().forName("java.lang.String");
+        for (JMethod declaredMethod : a.getDeclaredMethods()) {
+            System.out.println(declaredMethod);
+        }
+        for (JType parent : a.getParents()) {
+            System.out.println(parent);
+        }
+    }
+
+    @Test
     public void test1() {
         Jeep j = new DefaultJeep();
         JType a = j.types().forName("java.util.Map<String,Integer>");
@@ -23,29 +44,36 @@ public class TestTypes {
     public void test2() {
         Jeep j = new DefaultJeep();
 
-        JType a = j.types().forName("java.util.HashMap<String,Integer>");
-        String name = a.getName();
+        JType a;
+        String name;
+        JType[] parents;
+
+        a = j.types().forName("java.util.HashMap<String,Integer>");
+        name = a.getName();
         Assertions.assertEquals("java.util.HashMap<java.lang.String,java.lang.Integer>", name);
+        parents = a.getParents();
         Assertions.assertArrayEquals(
                 new String[]{
                         "java.util.AbstractMap<java.lang.String,java.lang.Integer>",
                         "java.util.Map<java.lang.String,java.lang.Integer>",
                         "java.lang.Cloneable",
                         "java.io.Serializable"},
-                Arrays.stream(a.getParents()).map(JType::getName).toArray(String[]::new)
+                Arrays.stream(parents).map(JType::getName).toArray(String[]::new)
         );
 
 
         a = j.types().forName("java.util.HashMap");
+        String ss = a.toString();
         name = a.getName();
         Assertions.assertEquals("java.util.HashMap", name);
+        parents = a.getParents();
         Assertions.assertArrayEquals(
                 new String[]{
                         "java.util.AbstractMap",
                         "java.util.Map",
                         "java.lang.Cloneable",
                         "java.io.Serializable"},
-                Arrays.stream(a.getParents()).map(JType::getName).toArray(String[]::new)
+                Arrays.stream(parents).map(JType::getName).toArray(String[]::new)
         );
 
 
