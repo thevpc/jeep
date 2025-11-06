@@ -48,7 +48,7 @@ public interface JTypesSPI {
 
     JType createVarType0(String name, JType[] lowerBounds, JType[] upperBounds, JDeclaration declaration);
 
-    JParameterizedType createParameterizedType0(JType rootRaw, JType[] parameters, JType declaringType);
+    JType findOrRegisterParameterizedType(JType rootRaw, JType[] parameters, JType declaringType);
 
     JType forHostType(Type ctype, JDeclaration declaration);
 
