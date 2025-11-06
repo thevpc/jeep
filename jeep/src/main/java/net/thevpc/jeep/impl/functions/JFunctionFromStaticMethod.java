@@ -2,8 +2,9 @@ package net.thevpc.jeep.impl.functions;
 
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.*;
-import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.JModifierList;
+
+import java.util.List;
 
 public class JFunctionFromStaticMethod implements JFunction {
     private JMethod method;
@@ -51,12 +52,12 @@ public class JFunctionFromStaticMethod implements JFunction {
     }
 
     @Override
-    public JModifierList getModifiers() {
+    public List<JModifier> getModifiers() {
         return method.getModifiers();
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return method.getAnnotations();
     }
     @Override
