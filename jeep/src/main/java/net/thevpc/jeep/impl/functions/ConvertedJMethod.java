@@ -5,10 +5,10 @@ import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.eval.JEvaluableConverter;
 import net.thevpc.jeep.impl.types.AbstractJMethod;
-import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.JModifierList;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class ConvertedJMethod extends AbstractJMethod {
@@ -113,7 +113,7 @@ public class ConvertedJMethod extends AbstractJMethod {
     }
 
     @Override
-    public JModifierList getModifiers() {
+    public List<JModifier> getModifiers() {
         return other.getModifiers();
     }
 
@@ -183,7 +183,7 @@ public class ConvertedJMethod extends AbstractJMethod {
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return other.getAnnotations();
     }
 
