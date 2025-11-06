@@ -1,7 +1,5 @@
 package net.thevpc.jeep;
 
-import net.thevpc.jeep.impl.types.JModifierList;
-
 import java.util.List;
 
 public interface JField {
@@ -22,7 +20,7 @@ public interface JField {
     JType getDeclaringType();
     List<JAnnotationInstance> getAnnotations() ;
 
-    JModifierList getModifiers();
+    List<JModifier> getModifiers();
 
     JTypes getTypes();
 
