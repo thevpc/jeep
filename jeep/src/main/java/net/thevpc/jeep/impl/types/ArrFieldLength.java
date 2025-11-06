@@ -1,10 +1,8 @@
 package net.thevpc.jeep.impl.types;
 
-import net.thevpc.jeep.JAnnotationInstance;
+import net.thevpc.jeep.*;
+import net.thevpc.jeep.util.ImplicitValue;
 import net.thevpc.jeep.util.JTypeUtils;
-import net.thevpc.jeep.JArray;
-import net.thevpc.jeep.JType;
-import net.thevpc.jeep.JTypes;
 import net.thevpc.jeep.core.types.AbstractJField;
 
 import java.lang.reflect.Array;
@@ -14,8 +12,8 @@ import java.util.List;
 public class ArrFieldLength extends AbstractJField {
     private JType arrayType;
     private JTypes types;
-    private List<JAnnotationInstance> annotations = new ArrayList<>();
-    private JModifierList modifiers = new DefaultJModifierList();
+    public ImplicitValue.MapForListImplicitValue<String, JAnnotationInstance> annotations = new ImplicitValue.MapForListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.MapForListImplicitValue<String, JModifier> modifiers = new ImplicitValue.MapForListImplicitValue<>(x -> x.name());
 
     public ArrFieldLength(JType arrayType, JTypes types) {
         this.arrayType = arrayType;
@@ -67,13 +65,13 @@ public class ArrFieldLength extends AbstractJField {
 
     @Override
     public List<JAnnotationInstance> getAnnotations() {
-        return annotations;
+        return annotations.values();
     }
 
-    @Override
-    public JModifierList getModifiers() {
-        return modifiers;
+    public List<JModifier> getModifiers() {
+        return modifiers.values();
     }
+
 
     @Override
     public JTypes getTypes() {
