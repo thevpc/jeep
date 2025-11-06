@@ -69,22 +69,21 @@ public class JTypeUtils {
             return null;
         }
         JTypesSPI typesSPI = (JTypesSPI) type.getTypes();
-        if (type instanceof JParameterizedType) {
-            JParameterizedType jpt = (JParameterizedType) type;
-            JType[] jTypes = jpt.getActualTypeArguments();
+        if (type.isParametrizedType()) {
+            JType[] jTypes = type.getActualTypeArguments();
             if (jTypes.length > 0) {
                 JType[] jTypes2 = buildRawType(jTypes, declaration);
                 for (int i = 0; i < jTypes2.length; i++) {
                     if (jTypes2[i] != jTypes[i]) {
-                        return JTypesSPI.getRegisteredOrRegister(typesSPI.createParameterizedType0(
-                                jpt.getRawType(),
+                        return JTypesSPI.getRegisteredOrRegister(typesSPI.findOrRegisterParameterizedType(
+                                type.getRawType(),
                                 jTypes2,
-                                jpt.getDeclaringType()), type.getTypes());
+                                type.getDeclaringType()), type.getTypes());
                     }
                 }
             }
             return type;
-        } else if (type instanceof JRawType) {
+        } else if (type.isRaw()) {
             return type;
         } else if (type instanceof JTypeVariable) {
             JDeclaration d = declaration;
@@ -125,11 +124,10 @@ public class JTypeUtils {
                 d = d.getDeclaration();
             }
             return type;
-        } else if (type instanceof JArrayType) {
-            JArrayType ta = (JArrayType) type;
-            JType c = buildRawType(ta.rootComponentType(), declaration);
+        } else if (type.isArray()) {
+            JType c = buildRawType(type.rootComponentType(), declaration);
             return JTypesSPI.getRegisteredOrRegister(
-                    typesSPI.createArrayType0(c, ta.arrayDimension())
+                    typesSPI.createArrayType0(c, type.arrayDimension())
                     , c.getTypes());
         } else {
             return type;
@@ -146,23 +144,22 @@ public class JTypeUtils {
     public static JType buildActualType(JType type, JDeclaration declaration) {
         JTypes types = type.getTypes();
         JTypesSPI typesSPI = (JTypesSPI) types;
-        if (type instanceof JParameterizedType) {
-            JParameterizedType jpt = (JParameterizedType) type;
-            JType[] jTypes = jpt.getActualTypeArguments();
+        if (type.isParametrizedType()) {
+            JType[] jTypes = type.getActualTypeArguments();
             if (jTypes.length > 0) {
                 JType[] jTypes2 = buildActualType(jTypes, declaration);
                 for (int i = 0; i < jTypes2.length; i++) {
                     if (jTypes2[i] != jTypes[i]) {
                         return JTypesSPI.getRegisteredOrRegister(
-                                ((JTypesSPI) type.getTypes()).createParameterizedType0(
-                                        jpt.getRawType(),
-                                        jTypes2, jpt.getDeclaringType()), type.getTypes())
+                                ((JTypesSPI) type.getTypes()).findOrRegisterParameterizedType(
+                                        type.getRawType(),
+                                        jTypes2, type.getDeclaringType()), type.getTypes())
                                 ;
                     }
                 }
             }
             return type;
-        } else if (type instanceof JRawType) {
+        } else if (type.isRaw()) {
             return type;
         } else if (type instanceof JTypeVariable) {
             JDeclaration d = declaration;
@@ -201,8 +198,8 @@ public class JTypeUtils {
                         }
                     }
                 } else if (d instanceof JType) {
-                    if (d instanceof JParameterizedType) {
-                        JParameterizedType tt = (JParameterizedType) d;
+                    if (((JType) d).isParametrizedType()) {
+                        JType tt = (JType) d;
                         JType rawType = tt.getRawType();
                         JTypeVariable[] jTypeVariables = rawType.getTypeParameters();
                         for (int i = 0; i < jTypeVariables.length; i++) {
@@ -218,11 +215,10 @@ public class JTypeUtils {
                 d = d.getDeclaration();
             }
             return type;
-        } else if (type instanceof JArrayType) {
-            JArrayType ta = (JArrayType) type;
-            JType c = buildRawType(ta.rootComponentType(), declaration);
+        } else if (type.isArray()) {
+            JType c = buildRawType(type.rootComponentType(), declaration);
             return JTypesSPI.getRegisteredOrRegister(
-                    typesSPI.createArrayType0(c, ta.arrayDimension()), types);
+                    typesSPI.createArrayType0(c, type.arrayDimension()), types);
         } else {
             return type;
         }
@@ -231,41 +227,40 @@ public class JTypeUtils {
     public static JType buildParentType(JType type, JDeclaration declaration) {
         JTypes types = type.getTypes();
         JTypesSPI typesSPI = (JTypesSPI) types;
-        if (type instanceof JParameterizedType) {
-            JParameterizedType jpt = (JParameterizedType) type;
-            JType[] jTypes = jpt.getActualTypeArguments();
+        if (type.isParametrizedType()) {
+            JType[] jTypes = type.getActualTypeArguments();
             if (jTypes.length > 0) {
                 JType[] jTypes2 = buildParentType(jTypes, declaration);
                 for (int i = 0; i < jTypes2.length; i++) {
                     if (jTypes2[i] != jTypes[i]) {
                         return JTypesSPI.getRegisteredOrRegister(
-                                typesSPI.createParameterizedType0(
-                                        jpt.getRawType(),
-                                        jTypes2, jpt.getDeclaringType()), types);
+                                typesSPI.findOrRegisterParameterizedType(
+                                        type.getRawType(),
+                                        jTypes2, type.getDeclaringType()), types);
                     }
                 }
             }
             return type;
-        } else if (type instanceof JRawType) {
+        } else if (type.isRaw()) {
             //example : List<X>
             JTypeVariable[] jTypeVariables = type.getTypeParameters();
             if(jTypeVariables.length>0) {
                 //example ArrayList<Y>
-                if (declaration instanceof JParameterizedType) {
+                if (declaration instanceof JType && ((JType)declaration).isParametrizedType()) {
                     //example ArrayList<Y=int>
-                    JParameterizedType jpt =(JParameterizedType)declaration;
+                    JType jpt =(JType)declaration;
                     JType[] jTypes = jpt.getActualTypeArguments();
                     if (jTypes.length > 0) {
                         JType[] jTypes2 = buildParentType(jTypes, declaration);
                         for (int i = 0; i < jTypes2.length; i++) {
                             if (jTypes2[i] != jTypes[i]) {
                                 return JTypesSPI.getRegisteredOrRegister(
-                                        typesSPI.createParameterizedType0(
+                                        typesSPI.findOrRegisterParameterizedType(
                                                 jpt.getRawType(),
                                                 jTypes2, jpt.getDeclaringType()), types);
                             }
                         }
-                        return typesSPI.createParameterizedType0(
+                        return typesSPI.findOrRegisterParameterizedType(
                                 type,
                                 jTypes2, jpt.getDeclaringType());
                     }
@@ -304,8 +299,8 @@ public class JTypeUtils {
                         }
                     }
                 } else if (d instanceof JType) {
-                    if (d instanceof JParameterizedType) {
-                        JParameterizedType tt = (JParameterizedType) d;
+                    if (((JType)d).isParametrizedType()) {
+                        JType tt = (JType) d;
                         JType rawType = tt.getRawType();
                         JTypeVariable[] jTypeVariables = rawType.getTypeParameters();
                         for (int i = 0; i < jTypeVariables.length; i++) {
@@ -321,11 +316,10 @@ public class JTypeUtils {
                 d = d.getDeclaration();
             }
             return type;
-        } else if (type instanceof JArrayType) {
-            JArrayType ta = (JArrayType) type;
-            JType c = buildRawType(ta.rootComponentType(), declaration);
+        } else if (type.isArray()) {
+            JType c = buildRawType(type.rootComponentType(), declaration);
             return JTypesSPI.getRegisteredOrRegister(
-                    typesSPI.createArrayType0(c, ta.arrayDimension())
+                    typesSPI.createArrayType0(c, type.arrayDimension())
                     , c.getTypes()
             );
         } else {
@@ -695,10 +689,9 @@ public class JTypeUtils {
 
     public static String getSimpleClassName(JType cls) {
         if (cls.isArray()) {
-            JArrayType ta = (JArrayType) cls;
-            return getSimpleClassName(ta.componentType()) + "[]";
+            return getSimpleClassName(cls.componentType()) + "[]";
         }
-        return cls.simpleName();
+        return cls.getSimpleName();
     }
 
     public static String getFullClassName(JType cls) {
@@ -706,8 +699,7 @@ public class JTypeUtils {
             return cls.getName();
         }
         if (cls.isArray()) {
-            JArrayType ta = (JArrayType) cls;
-            return getFullClassName(ta.componentType()) + "[]";
+            return getFullClassName(cls.componentType()) + "[]";
         }
         return cls.getName();
     }
@@ -804,11 +796,10 @@ public class JTypeUtils {
 //            all.add(new BoxConverter(cls));
 //        }
         if (cls.isArray()) {
-            JArrayType ta = (JArrayType) cls;
-            JType rct = ta.rootComponentType();
+            JType rct = cls.rootComponentType();
             if (!rct.isPrimitive() && !jobj.equals(rct)) {
                 all.add(new CastJConverter(typePattern,
-                        jobj.toArray(ta.arrayDimension())));
+                        jobj.toArray(cls.arrayDimension())));
             }
         }
         if (forBoolean(types).equals(cls)) {
@@ -938,7 +929,7 @@ public class JTypeUtils {
             JTypePattern ati = argTypes[i];
             if (ati.isType()) {
                 if (i == argTypes.length - 1 && varArgs) {
-                    JArrayType argType = (JArrayType) ati.getType();
+                    JType argType = ati.getType();
                     sb.append(getFullClassName(argType.componentType()));
                     sb.append("...");
                 } else {
@@ -963,7 +954,7 @@ public class JTypeUtils {
     }
 
     public static JType classOf(JType tv) {
-        JRawType raw = (JRawType) tv.getTypes().forName(Class.class.getName());
+        JType raw = tv.getTypes().forName(Class.class.getName());
         return raw.parametrize(tv);
     }
 
