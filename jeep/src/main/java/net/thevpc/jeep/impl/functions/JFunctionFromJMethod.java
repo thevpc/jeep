@@ -40,9 +40,9 @@ public class JFunctionFromJMethod extends JFunctionBase {
 
             @Override
             public Object evaluate(JInvokeContext context) {
-                JArrayType jType = (JArrayType) ((JArrayType)last).componentType();
+                JType jType = last.componentType();
                 Object anArray0 = jType.newArray(varArgCount);
-                JArray anArray = ((JArrayType)jType.toArray(varArgCount)).asArray(anArray0);
+                JArray anArray = jType.toArray(varArgCount).asArray(anArray0);
                 anArray.value();
                 for (int i = 0; i < varArgCount; i++) {
                     JEvaluable aaa = args[all.length - 1 + i];
