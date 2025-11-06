@@ -1,7 +1,6 @@
 package net.thevpc.jeep.impl;
 
 import net.thevpc.jeep.util.JTypeUtils;
-import net.thevpc.jeep.JArrayType;
 import net.thevpc.jeep.JType;
 
 import java.util.ArrayList;
@@ -105,7 +104,7 @@ public class JArgumentTypes {
                 sb.append(",");
             }
             if (i == argTypes.length - 1 && varArgs) {
-                JArrayType argType = (JArrayType) argTypes[i];
+                JType argType = argTypes[i];
                 sb.append(JTypeUtils.getFullClassName(argType.componentType()));
                 sb.append("...");
             } else {
@@ -130,7 +129,7 @@ public class JArgumentTypes {
                     t2.add(expectedArgTypes[i]);
                 }
                 int r= actualArgTypes.length-(expectedArgTypes.length - 1);
-                JArrayType lastArgType = (JArrayType) expectedArgTypes[expectedArgTypes.length - 1];
+                JType lastArgType = expectedArgTypes[expectedArgTypes.length - 1];
                 JType componentType = lastArgType.componentType();
                 if(r==0) {
                     //ok
