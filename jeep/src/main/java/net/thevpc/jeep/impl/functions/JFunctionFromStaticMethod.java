@@ -2,7 +2,6 @@ package net.thevpc.jeep.impl.functions;
 
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.*;
-import net.thevpc.jeep.impl.types.JModifierList;
 
 import java.util.List;
 
