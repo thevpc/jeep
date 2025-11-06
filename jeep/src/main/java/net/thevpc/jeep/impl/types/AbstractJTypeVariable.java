@@ -21,7 +21,7 @@ public abstract class AbstractJTypeVariable extends AbstractJType implements JTy
 
     @Override
     public JType getRawType() {
-        return this;
+        return null;
     }
 
     @Override
@@ -30,8 +30,94 @@ public abstract class AbstractJTypeVariable extends AbstractJType implements JTy
     }
 
     @Override
-    public String simpleName() {
+    public String getSimpleRawName() {
+        return null;
+    }
+
+    @Override
+    public String getRawName() {
+        return null;
+    }
+
+
+    @Override
+    public String getSimpleName() {
         return getName();
+    }
+
+    @Override
+    public boolean isInterface() {
+        return false;
+    }
+
+    @Override
+    public JConstructor addConstructor(JConstructor constructor, boolean redefine) {
+        throw new IllegalArgumentException("not allowed addConstructor");
+    }
+
+    @Override
+    public void addInterface(JType interfaceType) {
+        throw new IllegalArgumentException("not allowed addInterface");
+    }
+
+    @Override
+    public void setSuperType(JType tt) {
+        throw new IllegalArgumentException("not allowed setSuperType");
+    }
+
+    @Override
+    public void setInterfaces(JType[] array) {
+        throw new IllegalArgumentException("not allowed setInterfaces");
+    }
+
+    @Override
+    public boolean isRaw() {
+        return false;
+    }
+
+    @Override
+    public String gname() {
+        return getName();
+    }
+
+    @Override
+    public JType[] getActualTypeArguments() {
+        return new JType[0];
+    }
+
+    @Override
+    public JTypeKind getKind() {
+        return JTypeKind.CLASS;
+    }
+
+    @Override
+    public int arrayDimension() {
+        return 0;
+    }
+
+    @Override
+    public JType rootComponentType() {
+        return null;
+    }
+
+    @Override
+    public JType componentType() {
+        return null;
+    }
+
+    @Override
+    public JArray asArray(Object o) {
+        throw new UnsupportedOperationException("Not supported array from TypeVariable.");
+    }
+
+    @Override
+    public Object newArray(int... len) {
+        throw new UnsupportedOperationException("Not supported array from TypeVariable.");
+    }
+
+    @Override
+    public boolean isParametrizedType() {
+        return false;
     }
 
     @Override
