@@ -4,8 +4,9 @@ import net.thevpc.jeep.*;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.eval.JEvaluableValue;
 import net.thevpc.jeep.impl.types.AbstractJMethod;
-import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.JModifierList;
+
+import java.util.List;
 
 public class ConvertedJMethod2 extends AbstractJMethod {
     private JArgumentConverter[] argConverters;
@@ -53,12 +54,12 @@ public class ConvertedJMethod2 extends AbstractJMethod {
     }
 
     @Override
-    public JModifierList getModifiers() {
+    public List<JModifier> getModifiers() {
         return other.getModifiers();
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return other.getAnnotations();
     }
 
