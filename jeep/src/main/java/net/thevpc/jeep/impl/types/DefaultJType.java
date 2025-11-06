@@ -1,31 +1,40 @@
 package net.thevpc.jeep.impl.types;
 
 import net.thevpc.jeep.*;
+import net.thevpc.jeep.impl.JTypesSPI;
 import net.thevpc.jeep.impl.functions.JSignature;
-import net.thevpc.jeep.impl.types.host.AbstractJRawType;
-import net.thevpc.jeep.util.JTypeUtils;
+import net.thevpc.jeep.impl.types.host.AbstractJType;
 import net.thevpc.jeep.core.types.DefaultJField;
 import net.thevpc.jeep.core.types.DefaultJObject;
 import net.thevpc.jeep.core.types.DefaultJStaticObject;
 import net.thevpc.jeep.core.JStaticObject;
+import net.thevpc.jeep.impl.types.host.HostJArray;
+import net.thevpc.jeep.util.ImplicitValue;
+import net.thevpc.jeep.util.JTypeUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
-public class DefaultJType extends AbstractJRawType implements JMutableRawType {
+public class DefaultJType extends AbstractJType {
+    private String rawName;
+    private String simpleRawName;
     private String name;
     //    private int arrayDimension;
     private String simpleName;
     private String packageName;
-    private JType superclass;
+    private JType superType;
     private JConstructor defaultConstructor;
-    private List<JType> interfaces = new ArrayList<>();
-    private LinkedHashMap<String, JAnnotationField> annotationFields = new LinkedHashMap<>();
-    private LinkedHashMap<String, JField> fields = new LinkedHashMap<>();
-    private LinkedHashMap<String, JType> innerTypes = new LinkedHashMap<>();
-    private LinkedHashMap<JSignature, JMethod> methods = new LinkedHashMap<>();
-    private LinkedHashMap<JSignature, JConstructor> constructors = new LinkedHashMap<>();
+    public ImplicitValue.MapForListImplicitValue<String, JAnnotationField> annotationFields = new ImplicitValue.MapForListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.UniqueListImplicitValue<String, JType> interfaces = new ImplicitValue.UniqueListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.MapForListImplicitValue<String, JField> fields = new ImplicitValue.MapForListImplicitValue<>(JField::name);
+    public ImplicitValue.MapForListImplicitValue<JSignature, JMethod> methods = new ImplicitValue.MapForListImplicitValue<>(x -> x.getSignature().toNoVarArgs());
+    public ImplicitValue.MapForListImplicitValue<JSignature, JConstructor> constructors = new ImplicitValue.MapForListImplicitValue<>(x -> x.getSignature().toNoVarArgs());
+    public ImplicitValue.MapForListImplicitValue<String, JType> innerTypes = new ImplicitValue.MapForListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.MapForListImplicitValue<String, JAnnotationInstance> annotations = new ImplicitValue.MapForListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.MapForListImplicitValue<String, JModifier> modifiers = new ImplicitValue.MapForListImplicitValue<>(x -> x.name());
+
     private List<String> exports = new ArrayList<>();
     private JInvoke instanceInitializer;
     private JInvoke staticInitializer;
@@ -37,35 +46,243 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 
     private JType rawType;
     private JTypeVariable[] typeParameters = new JTypeVariable[0];
-    private JAnnotationInstanceList annotations = new DefaultJAnnotationInstanceList();
-    private JModifierList modifiers = new DefaultJModifierList();
     private JTypeKind kind;
     private Type hostType;
-    List<Runnable> onPostRegisterList = new ArrayList<>();
+    private List<Runnable> onPostRegisterList = new ArrayList<>();
+    private JType[] actualTypeArguments = new JType[0];
+    private int arrayDimension;
+    private JType arrayRootType;
+    private JType arrayComponentType;
+    private boolean parametrized;
 
-    public DefaultJType(String name, JTypeKind kind, JTypes types) {
+    public DefaultJType(JType arrayRootType,int arrayDimension,JTypes types) {
+        this(null,JTypeKind.CLASS, null, new JType[0],null,arrayRootType,arrayDimension,types);
+    }
+
+    public DefaultJType(JType rootRaw, JType[] actualTypeArguments,JType declaringType,JTypes types) {
+        this(null,JTypeKind.CLASS, rootRaw, actualTypeArguments,declaringType,null,0,types);
+    }
+
+    public DefaultJType(String name, JTypeKind kind,JType declaringType,JTypes types) {
+        this(name,kind, null, new JType[0],declaringType,null,0,types);
+    }
+
+    public DefaultJType(String name, JTypeKind kind, JType rootRaw, JType[] actualTypeArguments,JType declaringType, JType arrayRootType,int arrayDimension,JTypes types) {
         super(types);
-        if (name.endsWith("[]")) {
-            throw new IllegalStateException();
+        if(rootRaw!=null){
+            this.parametrized=true;
         }
-        this.kind = kind;
-        this.name = name;
-        //this.superclass = JTypeUtils.forObject(types);
-        int r = name.lastIndexOf('.');
-        if (r < 0) {
-            simpleName = name;
-            packageName = "";
-        } else {
-            packageName = name.substring(0, r);
-            name = name.substring(r + 1);
-            simpleName = name;
+        this.declaringType = declaringType;
+        if(arrayDimension==0) {
+            if(parametrized) {
+                this.name=rootRaw.getRawName()+TypeNameBuilder.actualTypeArguments(actualTypeArguments);
+                this.rawName=rootRaw.getRawName();
+                this.simpleRawName=rootRaw.getSimpleRawName();
+                this.simpleName=rootRaw.getRawName()+TypeNameBuilder.actualTypeArguments(actualTypeArguments);
+                this.packageName=rootRaw.getPackageName();
+                this.kind=rootRaw.getKind();
+                this.rawType = rootRaw;
+                this.rawName =  rootRaw.getRawName();
+            }else{
+                this.kind = kind;
+                this.name = name;
+                int r = name.lastIndexOf('.');
+                if (r < 0) {
+                    simpleName = name;
+                    simpleRawName = name;
+                    packageName = "";
+                } else {
+                    packageName = name.substring(0, r);
+                    simpleName = name.substring(r + 1);
+                    simpleRawName = simpleName;
+                }
+                if(simpleName.contains(">")){
+                    throw new IllegalArgumentException("Error");
+                }
+                this.rawType = this;
+                this.rawName =  name;
+            }
+            if (parametrized) {
+                this.actualTypeArguments = actualTypeArguments==null?new JType[0]:actualTypeArguments;
+            }else if(this.actualTypeArguments!=null && this.actualTypeArguments.length>0){
+                throw new IllegalArgumentException("invalid actualTypeArguments "+Arrays.toString(actualTypeArguments));
+            }
+            addOnPostRegister(()->{
+                if (isParametrizedType()) {
+                    JType sType = this.rawType.getSuperType();
+                    setSuperType(sType == null ? null : JTypeUtils.buildParentType(sType, this));
+                }
+            });
+        }else{
+            this.arrayRootType = arrayRootType;
+            this.arrayDimension = arrayDimension;
+            if (arrayRootType.isArray()) {
+                throw new IllegalStateException("Invalid Array with dimension ==0");
+            }
+            StringBuilder fb = new StringBuilder(arrayRootType.getName().length() + 2 * arrayDimension);
+            StringBuilder sb = new StringBuilder(arrayRootType.getSimpleName().length() + 2 * arrayDimension);
+            fb.append(arrayRootType.getName());
+            sb.append(arrayRootType.getSimpleName());
+            for (int i = 0; i < arrayDimension; i++) {
+                fb.append("[]");
+                sb.append("[]");
+            }
+            this.name = fb.toString();
+            this.simpleName = sb.toString();
+            this.simpleRawName = arrayRootType.getSimpleRawName();
+            this.rawName = arrayRootType.getRawName();
+            this.rawType=arrayRootType.isRawType() ? this : arrayRootType.getRawType().toArray(arrayDimension);
+            this.fields.addSupplier(new Supplier<List<JField>>() {
+                @Override
+                public List<JField> get() {
+                    List<JField> m = new ArrayList<>();
+                    m.add(new ArrFieldLength(DefaultJType.this, getTypes()));
+                    return m;
+                }
+            });
+            this.arrayComponentType = arrayDimension == 1 ? arrayRootType :
+                    JTypesSPI.getRegisteredOrRegister(types2().createArrayType0(arrayRootType, arrayDimension - 1),
+                            getTypes()
+                    );
+            addOnPostRegister(()-> {
+                setSuperType(JTypeUtils.forObject(getTypes()));
+            });
         }
-        rawType = this;
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("Type name cannot be empty");
+        if(rootRaw != null){
+            fields.addSupplier(new Supplier<List<JField>>() {
+                @Override
+                public List< JField> get() {
+                    List<JField> _fields = new ArrayList<>();
+                    for (JField i : getRawType().getDeclaredFields()) {
+                        JParameterizedFieldImpl m = new JParameterizedFieldImpl((JRawField) i, DefaultJType.this);
+                        _fields.add(m);
+                    }
+                    return  _fields;
+                }
+            });
+            methods.addSupplier(new Supplier<List<JMethod>>() {
+                @Override
+                public List<JMethod> get() {
+                    List<JMethod> _methods = new ArrayList<>();
+                    for (JMethod jMethod : getRawType().getDeclaredMethods()) {
+                        JParameterizedMethodImpl m = new JParameterizedMethodImpl(jMethod, new JType[0], DefaultJType.this);
+                        _methods.add(m);
+                    }
+                    return  _methods;
+                }
+            });
+            constructors.addSupplier(new Supplier<List<JConstructor>>() {
+                @Override
+                public List<JConstructor> get() {
+                    List<JConstructor> _constructors = new ArrayList<>();
+                    for (JConstructor i : getRawType().getDeclaredConstructors()) {
+                        JParameterizedConstructorImpl m = new JParameterizedConstructorImpl(i, new JType[0], DefaultJType.this);
+                        _constructors.add(m);
+                    }
+                    return  _constructors;
+                }
+            });
+            innerTypes.addSupplier(new Supplier<List<JType>>() {
+                @Override
+                public List<JType> get() {
+                    List<JType> _innerTypes = new ArrayList<>();
+                    for (JType item : rootRaw.getDeclaredInnerTypes()) {
+                        if (item.isStatic()) {
+                            _innerTypes.add(item);
+                        } else {
+                            JType f = types2().findOrRegisterParameterizedType(item,
+                                    new JType[0],
+                                    DefaultJType.this);
+                            _innerTypes.add(f);
+                        }
+                    }
+                    return _innerTypes;
+                }
+            });
+            interfaces.addSupplier(new Supplier<List<JType>>() {
+                @Override
+                public List<JType> get() {
+                    return Arrays.asList(JTypeUtils.buildParentType(getRawType().getInterfaces(), DefaultJType.this));
+                }
+            });
         }
     }
 
+    @Override
+    public String getSimpleRawName() {
+        return simpleRawName;
+    }
+
+    @Override
+    public boolean isParametrizedType() {
+        return parametrized;
+    }
+
+    @Override
+    public boolean isArray() {
+        return arrayComponentType!=null;
+    }
+
+    public boolean isAssignableFrom(JType other) {
+        if(isArray()) {
+            if(other.isArray()){
+                if(arrayDimension()==other.arrayDimension()){
+                    return rootComponentType().isAssignableFrom(other.rootComponentType());
+                }
+            }
+        }
+        return super.isAssignableFrom(other);
+    }
+
+    @Override
+    public JType componentType() {
+        return arrayComponentType;
+    }
+
+    public int arrayDimension() {
+        return arrayDimension;
+    }
+
+    @Override
+    public JType rootComponentType() {
+        return arrayRootType;
+    }
+
+
+
+    @Override
+    public boolean isRaw() {
+        return getRawType() == this;
+    }
+
+    @Override
+    public Object newArray(int... len) {
+        JType rootComp = rootComponentType();
+        if (rootComp instanceof DefaultJType && ((DefaultJType)rootComp).getHostType()!=null) {
+            Type ht =((DefaultJType)rootComp).getHostType();
+            return Array.newInstance((Class<?>) ht, len);
+        } else {
+            int len0 = len[0];
+            JType jType = componentType();
+            DefaultJArray aa = new DefaultJArray(new Object[len0], jType);
+            if (len.length > 1) {
+                JType jTypea = jType;
+                int[] len2 = Arrays.copyOfRange(len, 0, len.length - 1);
+                for (int i = 0; i < len0; i++) {
+                    aa.set(i, jTypea.newArray(len2));
+                }
+            }
+            return aa;
+        }
+    }
+
+    @Override
+    public JArray asArray(Object o) {
+        if (o instanceof JArray) {
+            return (JArray) o;
+        }
+        return new HostJArray(o, componentType());
+    }
 
     public JAnnotationField[] getAnnotationFields() {
         return annotationFields.values().toArray(new JAnnotationField[0]);
@@ -81,8 +298,8 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         throw new NoSuchElementException("no annotation field named " + name);
     }
 
-    public void addAnnotationField(JAnnotationField f){
-        annotationFields.put(f.getName(),f);
+    public void addAnnotationField(JAnnotationField f) {
+        annotationFields.add(f);
     }
 
     public Type getHostType() {
@@ -99,7 +316,7 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         return this;
     }
 
-    public void addOnPostRegisterList(Runnable r ) {
+    public void addOnPostRegister(Runnable r) {
         onPostRegisterList.add(r);
     }
 
@@ -109,25 +326,22 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 
     @Override
     public void onPostRegister() {
+//        System.out.println("start onPostRegister "+getName());
         super.onPostRegister();
         for (Iterator<Runnable> iterator = onPostRegisterList.iterator(); iterator.hasNext(); ) {
             Runnable runnable = iterator.next();
             runnable.run();
             iterator.remove();
         }
+//        System.out.println("end   onPostRegister "+getName());
     }
 
     public JTypeKind getKind() {
         return kind;
     }
 
-    public void addAnnotation(JAnnotationInstance jAnnotationInstance){
-        ((DefaultJAnnotationInstanceList)annotations).add(jAnnotationInstance);
-    }
-
-    @Override
-    public JAnnotationInstanceList getAnnotations() {
-        return annotations;
+    public void addAnnotation(JAnnotationInstance jAnnotationInstance) {
+        annotations.add(jAnnotationInstance);
     }
 
     @Override
@@ -227,6 +441,9 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     }
 
     public JDeclaration getDeclaration() {
+        if (isParametrizedType()) {
+            return rawType.getDeclaration();
+        }
         return declaration;
     }
 
@@ -287,6 +504,9 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 //    }
     @Override
     public JTypeVariable[] getTypeParameters() {
+        if (isParametrizedType()) {
+            return new JTypeVariable[0];
+        }
         return typeParameters;
     }
 
@@ -297,6 +517,9 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 
     @Override
     public JStaticObject getStaticObject() {
+        if (isParametrizedType()) {
+            return rawType.getStaticObject();
+        }
         return staticObject;
     }
 
@@ -307,44 +530,35 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 
     @Override
     public String getRawName() {
-        return name;
+        return rawName;
     }
+
     public String getName() {
-        StringBuilder sb = new StringBuilder(name);
-        JType[] jTypeVariables = getTypeParameters();
-        if (jTypeVariables.length > 0) {
-            sb.append("<");
-            for (int i = 0; i < jTypeVariables.length; i++) {
-                if (i > 0) {
-                    sb.append(",");
-                }
-                sb.append(jTypeVariables[i].getName());
-            }
-            sb.append(">");
-        }
-//        jTypeVariables = actualTypeArguments();
-//        if(jTypeVariables.length>0){
+        return String.valueOf(name);
+//        StringBuilder sb = new StringBuilder(name);
+//        JType[] jTypeVariables = getTypeParameters();
+//        if (jTypeVariables.length > 0) {
 //            sb.append("<");
 //            for (int i = 0; i < jTypeVariables.length; i++) {
-//                if(i>0){
+//                if (i > 0) {
 //                    sb.append(",");
 //                }
-//                sb.append(jTypeVariables[i].name());
+//                sb.append(jTypeVariables[i].getName());
 //            }
 //            sb.append(">");
 //        }
-        return sb.toString();
+//        return sb.toString();
     }
 
     @Override
-    public String simpleName() {
+    public String getSimpleName() {
         return simpleName;
     }
 
 
     @Override
     public JType getSuperType() {
-        return superclass;
+        return superType;
     }
 
 
@@ -353,8 +567,32 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         this.interfaces.addAll(Arrays.asList(interfaces));
     }
 
+    @Override
+    public boolean isNullable() {
+        if (isParametrizedType()) {
+            return getRawType().isNullable();
+        }
+        return super.isNullable();
+    }
+
+    @Override
+    public boolean isPublic() {
+        if (isParametrizedType()) {
+            return getRawType().isPublic();
+        }
+        return super.isPublic();
+    }
+
+    @Override
+    public boolean isStatic() {
+        if (isParametrizedType()) {
+            return getRawType().isStatic();
+        }
+        return super.isStatic();
+    }
+
     public void setSuperType(JType superclass) {
-        this.superclass = superclass;
+        this.superType = superclass;
     }
 
     public void addInterfaces(JType[] interfaces) {
@@ -373,7 +611,9 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         m.setDeclaringType(this);
         ((DefaultJModifierList) m.getModifiers()).addAll(modifiers);
         m.setArgNames(Arrays.copyOf(argNames, argNames.length));
-        ((DefaultJAnnotationInstanceList) m.getAnnotations()).addAll(annotations);
+        if(annotations!=null){
+            m.getAnnotations().addAll(Arrays.asList(annotations));
+        }
         m.setHandler(handler);
         m.setGenericSignature(signature);
         return m;
@@ -389,15 +629,15 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
                 throw new IllegalArgumentException("Constructor already registered " + getName() + "." + signature);
             }
         }
-        constructors.put(signature, constructor);
+        constructors.add(constructor);
         return constructor;
     }
 
     //    @Override
 
     public void addField(JField field) {
-        ((DefaultJField)field).setDeclaringType(this);
-        fields.put(field.name(), field);
+        ((DefaultJField) field).setDeclaringType(this);
+        fields.add(field);
     }
 
     public JField addField(String name, JType type, JModifier[] modifiers, JAnnotationInstance[] annotations, boolean redefine) {
@@ -417,12 +657,14 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         f.setName(name);
         f.setGenericType(type);
         ((DefaultJModifierList) f.getModifiers()).addAll(modifiers);
-        ((DefaultJAnnotationInstanceList) f.getAnnotations()).addAll(annotations);
-        fields.put(name, f);
+        if(annotations!=null) {
+            f.getAnnotations().addAll(Arrays.asList(annotations));
+        }
+        fields.add(f);
         return f;
     }
 
-//    @Override
+    //    @Override
 
 
 //    public JMethod addMethod(JSignature signature, String[] argNames, JType returnType, JInvoke handler, JModifier[] modifiers, JAnnotationInstance[] annotations, boolean redefine) {
@@ -440,7 +682,7 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 //    }
 
     public void addMethod(JMethod m) {
-        methods.put(m.getSignature().toNoVarArgs(), m);
+        methods.add(m);
     }
 
     public void addInterface(JType interfaceType) {
@@ -449,7 +691,7 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 
     @Override
     public JType[] getInterfaces() {
-        return interfaces.toArray(new JType[0]);
+        return interfaces.value().toArray(new JType[0]);
     }
 
     @Override
@@ -476,6 +718,9 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
     }
 
     public Object getDefaultValue() {
+        if (isParametrizedType()) {
+            return getRawType().getDefaultValue();
+        }
         return defaultValue;
     }
 
@@ -491,6 +736,9 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
 
     @Override
     public String getPackageName() {
+        if (isParametrizedType()) {
+            return getRawType().getPackageName();
+        }
         return packageName;
     }
 
@@ -512,18 +760,11 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         this.typeParameters = typeParameters;
     }
 
-    public JModifierList getModifiers() {
-        return modifiers;
-    }
-
-    @Override
-    public boolean isInterface() {
-        return false;
-    }
-
-    @Override
-    public String getSourceName() {
-        return sourceName;
+    public List<JModifier> getModifiers() {
+        if (isParametrizedType()) {
+            return rawType.getModifiers();
+        }
+        return modifiers.values();
     }
 
     public DefaultJType setSourceName(String sourceName) {
@@ -531,12 +772,77 @@ public class DefaultJType extends AbstractJRawType implements JMutableRawType {
         return this;
     }
 
-    public void addInnerType(JRawType innerType) {
-        innerTypes.put(innerType.simpleName(), innerType);
+    public void addInnerType(JType innerType) {
+        innerTypes.add(innerType);
     }
 
     public void addModifiers(JModifier... jModifiers) {
-        DefaultJModifierList mm = (DefaultJModifierList) modifiers;
-        mm.addAll(jModifiers);
+        modifiers.addAll(Arrays.asList(jModifiers));
+    }
+
+    public void setActualTypeArguments(JType[] actualTypeArguments) {
+        if (actualTypeArguments.length == 0) {
+            return;
+        }
+        this.actualTypeArguments = actualTypeArguments;
+
+        StringBuilder pn = new StringBuilder();
+        for (int i = 0; i < actualTypeArguments.length; i++) {
+            if (i == 0) {
+                pn.append("<");
+            } else {
+                pn.append(",");
+            }
+            pn.append(actualTypeArguments[i].getName());
+            if (i == actualTypeArguments.length - 1) {
+                pn.append(">");
+            }
+        }
+        if (declaringType == null) {
+            this.name = getRawType().getRawName() + pn.toString();
+            this.rawName = getRawType().getRawName();
+        } else {
+            this.name = declaringType.getName() + "." + getRawType().getSimpleName() + pn;
+            this.rawName = declaringType.getName() + "." + getRawType().getSimpleName();
+        }
+        this.simpleName = getRawType().getSimpleName() + pn;
+        if(simpleName.contains(">")){
+            throw new IllegalArgumentException("Error");
+        }
+    }
+
+    @Override
+    public JType toArray(int count) {
+        return super.toArray(count);
+    }
+
+    @Override
+    public boolean isInterface() {
+        if (isParametrizedType()) {
+            return rawType.isInterface();
+        }
+        return super.isInterface();
+    }
+
+    @Override
+    public String getSourceName() {
+        if (isParametrizedType()) {
+            return rawType.getSourceName();
+        }
+        return sourceName;
+    }
+
+    @Override
+    public List<JAnnotationInstance> getAnnotations() {
+        if (isParametrizedType()) {
+            return rawType.getAnnotations();
+        }
+        return annotations.values();
+    }
+
+
+    @Override
+    public JType[] getActualTypeArguments() {
+        return actualTypeArguments==null?new JType[0] :actualTypeArguments ;
     }
 }
