@@ -63,7 +63,7 @@ public class JParameterizedFieldImpl extends AbstractJField implements JParamete
     }
 
     @Override
-    public JModifierList getModifiers() {
+    public List<JModifier> getModifiers() {
         return rawField.getModifiers();
     }
 
