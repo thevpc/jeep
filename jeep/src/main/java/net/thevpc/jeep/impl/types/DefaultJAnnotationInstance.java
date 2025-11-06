@@ -7,7 +7,7 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 
 public class DefaultJAnnotationInstance implements JAnnotationInstance {
-    private JRawType annotationType;
+    private JType annotationType;
     private Map<String, JAnnotationInstanceField> fieldsMap = new HashMap<>();
     private Annotation hostAnnotation;
     private String name;
@@ -19,11 +19,11 @@ public class DefaultJAnnotationInstance implements JAnnotationInstance {
     }
 
 
-    public JRawType getAnnotationType() {
+    public JType getAnnotationType() {
         return annotationType;
     }
 
-    public DefaultJAnnotationInstance setAnnotationType(JRawType annotationType) {
+    public DefaultJAnnotationInstance setAnnotationType(JType annotationType) {
         this.annotationType = annotationType;
         return this;
     }
