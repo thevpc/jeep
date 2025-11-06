@@ -5,7 +5,6 @@ import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.eval.JEvaluableConverter;
 import net.thevpc.jeep.impl.types.AbstractJMethod;
-import net.thevpc.jeep.impl.types.JModifierList;
 
 import java.util.Arrays;
 import java.util.List;
