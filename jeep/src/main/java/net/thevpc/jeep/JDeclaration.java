@@ -1,15 +1,14 @@
 package net.thevpc.jeep;
 
-import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
-import net.thevpc.jeep.impl.types.JModifierList;
+import java.util.List;
 
 public interface JDeclaration {
     //parent declaration
     JDeclaration getDeclaration();
 
-    JModifierList getModifiers();
+    List<JModifier> getModifiers();
 
-    JAnnotationInstanceList getAnnotations();
+    List<JAnnotationInstance> getAnnotations();
     JTypes getTypes();
 
     String getSourceName();
