@@ -3,15 +3,16 @@ package net.thevpc.jeep.impl.types;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.functions.JSignature;
 import net.thevpc.jeep.util.JTypeUtils;
-import net.thevpc.jeep.*;
+
+import java.util.List;
 
 public class JParameterizedConstructorImpl extends AbstractJConstructor implements JParameterizedConstructor {
     private JConstructor rawConstructor;
-    private JParameterizedType declaringType;
+    private JType declaringType;
     private JType[] actualTypes;
     private JSignature sig;
 
-    public JParameterizedConstructorImpl(JConstructor rawConstructor, JType[] actualTypes, JParameterizedType declaringType) {
+    public JParameterizedConstructorImpl(JConstructor rawConstructor, JType[] actualTypes, JType declaringType) {
         this.rawConstructor = rawConstructor;
         this.declaringType = declaringType;
         this.actualTypes = actualTypes;
@@ -60,12 +61,12 @@ public class JParameterizedConstructorImpl extends AbstractJConstructor implemen
     }
 
     @Override
-    public JModifierList getModifiers() {
+    public List<JModifier> getModifiers() {
         return rawConstructor.getModifiers();
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return rawConstructor.getAnnotations();
     }
 
@@ -91,7 +92,7 @@ public class JParameterizedConstructorImpl extends AbstractJConstructor implemen
 
     @Override
     public String getName() {
-        return declaringType.getRawType().simpleName();
+        return declaringType.getRawType().getSimpleName();
     }
 
     @Override
