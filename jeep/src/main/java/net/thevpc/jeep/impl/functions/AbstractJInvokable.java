@@ -1,15 +1,16 @@
 package net.thevpc.jeep.impl.functions;
 
+import net.thevpc.jeep.JAnnotationInstance;
 import net.thevpc.jeep.JDeclaration;
 import net.thevpc.jeep.JInvokable;
-import net.thevpc.jeep.impl.types.DefaultJAnnotationInstanceList;
-import net.thevpc.jeep.impl.types.DefaultJModifierList;
-import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
-import net.thevpc.jeep.impl.types.JModifierList;
+import net.thevpc.jeep.JModifier;
+import net.thevpc.jeep.util.ImplicitValue;
+
+import java.util.List;
 
 public abstract class AbstractJInvokable implements JInvokable {
-    private JModifierList modifiers = new DefaultJModifierList();
-    private JAnnotationInstanceList annotations = new DefaultJAnnotationInstanceList();
+    public ImplicitValue.MapForListImplicitValue<String, JAnnotationInstance> annotations = new ImplicitValue.MapForListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.MapForListImplicitValue<String, JModifier> modifiers = new ImplicitValue.MapForListImplicitValue<>(x -> x.name());
 
     @Override
     public boolean isPublic() {
@@ -22,13 +23,13 @@ public abstract class AbstractJInvokable implements JInvokable {
     }
 
     @Override
-    public JModifierList getModifiers() {
-        return modifiers;
+    public List<JModifier> getModifiers() {
+        return modifiers.values();
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
-        return annotations;
+    public List<JAnnotationInstance> getAnnotations() {
+        return annotations.values();
     }
 
     public String getName() {
