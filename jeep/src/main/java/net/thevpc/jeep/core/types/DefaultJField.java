@@ -2,13 +2,12 @@ package net.thevpc.jeep.core.types;
 
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.JTypesSPI;
-import net.thevpc.jeep.impl.types.DefaultJModifierList;
-import net.thevpc.jeep.impl.types.JModifierList;
+import net.thevpc.jeep.util.ImplicitValue;
 import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.util.JeepReflectUtils;
 import net.thevpc.jeep.core.JObject;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DefaultJField extends AbstractJField implements JRawField {
@@ -16,8 +15,8 @@ public class DefaultJField extends AbstractJField implements JRawField {
     private JType declaringType;
     private JType genericType;
     private JType type;
-    private List<JAnnotationInstance> annotations = new ArrayList<>();
-    private JModifierList modifiers = new DefaultJModifierList();
+    public ImplicitValue.MapForListImplicitValue<String, JAnnotationInstance> annotations = new ImplicitValue.MapForListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.MapForListImplicitValue<String, JModifier> modifiers = new ImplicitValue.MapForListImplicitValue<>(x -> x.name());
     private Getter getter = new Getter() {
         @Override
         public Object get(JRawField field, Object instance) {
@@ -46,8 +45,8 @@ public class DefaultJField extends AbstractJField implements JRawField {
     public DefaultJField() {
     }
 
-    public JModifierList getModifiers() {
-        return modifiers;
+    public List<JModifier> getModifiers() {
+        return modifiers.values();
     }
 
     private JTypesSPI typesSpi() {
@@ -147,7 +146,7 @@ public class DefaultJField extends AbstractJField implements JRawField {
 
     @Override
     public List<JAnnotationInstance> getAnnotations() {
-        return annotations;
+        return annotations.values();
     }
 
     @Override
@@ -156,7 +155,6 @@ public class DefaultJField extends AbstractJField implements JRawField {
     }
 
     public void addModifiers(JModifier... jModifiers) {
-        DefaultJModifierList mm = (DefaultJModifierList) modifiers;
-        mm.addAll(jModifiers);
+        modifiers.addAll(Arrays.asList(jModifiers));
     }
 }
