@@ -12,7 +12,7 @@ public class TestGenerics {
     @Test
     public void test1_Lists() {
         JTypes types = new DefaultJTypes();
-        JRawType tList = (JRawType) types.forName(List.class.getName());
+        JType tList = types.forName(List.class.getName());
         System.out.println("===============================");
         System.out.println(tList);
         for (JMethod jMethod : Arrays.stream(tList.getDeclaredMethods())
@@ -37,7 +37,7 @@ public class TestGenerics {
     @Test
     public void test2_parents() {
         JTypes types = new DefaultJTypes();
-        JType I2ofString = ((JRawType) types.forName(I2.class.getName())).parametrize(types.forName(String.class.getName()));
+        JType I2ofString = types.forName(I2.class.getName()).parametrize(types.forName(String.class.getName()));
         System.out.println(I2ofString.getName());
         System.out.println(Arrays.asList(I2ofString.getInterfaces()));
     }
@@ -45,10 +45,10 @@ public class TestGenerics {
     @Test
     public void test3_fields_method_constructors() {
         JTypes types = new DefaultJTypes();
-        JRawType _A2 = (JRawType) types.forName(A2.class.getName());
+        JType _A2 = types.forName(A2.class.getName());
         JType _AofString = _A2.parametrize(types.forName(String.class.getName()), JTypeUtils.forInt(types));
         System.out.println("===============================");
-        System.out.println(((JRawType) _A2).gname());
+        System.out.println(_A2.gname());
         for (JField i : _A2.getDeclaredFields()) {
             System.out.println("\t" + i);
         }
@@ -88,7 +88,7 @@ public class TestGenerics {
 
         JTypes types = new DefaultJTypes();
         System.out.println("===============================");
-        JRawType _A = (JRawType) types.forName(A.class.getName());
+        JType _A = types.forName(A.class.getName());
         JType _AOfStrings = _A.parametrize(types.forName(String.class.getName()), JTypeUtils.forInt(types));
         System.out.println(_AOfStrings);
         System.out.println(_A.getDeclaredInnerType("B"));
