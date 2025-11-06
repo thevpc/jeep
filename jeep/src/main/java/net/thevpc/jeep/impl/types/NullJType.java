@@ -6,21 +6,100 @@ import net.thevpc.jeep.impl.types.host.AbstractJType;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.JStaticObject;
 import net.thevpc.jeep.impl.JTypesSPI;
+import net.thevpc.jeep.util.ImplicitValue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NullJType extends AbstractJType {
     private String name;
-    private JAnnotationInstanceList annotations = new DefaultJAnnotationInstanceList();
-    private JModifierList modifiers = new DefaultJModifierList();
+    public ImplicitValue.MapForListImplicitValue<String, JAnnotationInstance> annotations = new ImplicitValue.MapForListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.MapForListImplicitValue<String, JModifier> modifiers = new ImplicitValue.MapForListImplicitValue<>(x -> x.name());
     public NullJType(JTypes types) {
         super(types);
         name="null";
-        ((DefaultJModifierList)modifiers).add(DefaultJModifierList.PUBLIC);
+        modifiers.add(DefaultJModifierList.PUBLIC);
     }
 
-//    @Override
-//    public JType[] actualTypeArguments() {
-//        return new JType[0];
-//    }
+    @Override
+    public JType[] getActualTypeArguments() {
+        return new JType[0];
+    }
+
+    @Override
+    public String getRawName() {
+        return getName();
+    }
+
+    @Override
+    public String getSimpleRawName() {
+        return getName();
+    }
+
+    @Override
+    public String gname() {
+        return name;
+    }
+
+    @Override
+    public boolean isRaw() {
+        return true;
+    }
+
+    @Override
+    public void setInterfaces(JType[] array) {
+
+    }
+
+    @Override
+    public void setSuperType(JType tt) {
+
+    }
+
+    @Override
+    public void addInterface(JType interfaceType) {
+
+    }
+
+    @Override
+    public JConstructor addConstructor(JConstructor constructor, boolean redefine) {
+        return constructor;
+    }
+
+    @Override
+    public JTypeKind getKind() {
+        return JTypeKind.CLASS;
+    }
+
+    @Override
+    public int arrayDimension() {
+        return 0;
+    }
+
+    @Override
+    public JType rootComponentType() {
+        return null;
+    }
+
+    @Override
+    public JType componentType() {
+        return null;
+    }
+
+    @Override
+    public JArray asArray(Object o) {
+        throw new UnsupportedOperationException("not an array.");
+    }
+
+    @Override
+    public Object newArray(int... len) {
+        throw new UnsupportedOperationException("not an array.");
+    }
+
+    @Override
+    public boolean isParametrizedType() {
+        return false;
+    }
 
     @Override
     public JType getRawType() {
@@ -43,26 +122,9 @@ public class NullJType extends AbstractJType {
     }
 
     @Override
-    public String simpleName() {
+    public String getSimpleName() {
         return getName();
     }
-
-//    @Override
-//    public JType toArray(int count) {
-//        return getRegisteredOrRegister(new NullJType(dim+count, types()));
-//    }
-
-//    @Override
-//    public Object newArray(int... len) {
-//        if (len.length == 0) {
-//            throw new IllegalArgumentException("zero len");
-//        }
-//        int len0 = len[0];
-//        JType jType = componentType();
-//        return Array.newInstance(Object.class,len);
-//    }
-
-
 
     @Override
     public JType getSuperType() {
@@ -187,17 +249,22 @@ public class NullJType extends AbstractJType {
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
-        return annotations;
+    public List<JAnnotationInstance> getAnnotations() {
+        return annotations.values();
     }
 
     @Override
-    public JModifierList getModifiers() {
-        return modifiers;
+    public List<JModifier> getModifiers() {
+        return modifiers.values();
     }
 
     @Override
     public String getSourceName() {
         return "<runtime>";
+    }
+
+    @Override
+    public void addAnnotation(JAnnotationInstance jAnnotationInstance) {
+        annotations.add(jAnnotationInstance);
     }
 }
