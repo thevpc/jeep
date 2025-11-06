@@ -4,7 +4,6 @@ import net.thevpc.jeep.*;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.eval.JEvaluableValue;
 import net.thevpc.jeep.impl.types.AbstractJConstructor;
-import net.thevpc.jeep.impl.types.JModifierList;
 
 import java.util.List;
 
