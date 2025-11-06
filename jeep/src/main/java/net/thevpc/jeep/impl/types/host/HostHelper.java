@@ -12,7 +12,7 @@ import net.thevpc.jeep.util.JeepPlatformUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,7 +54,7 @@ public class HostHelper {
         } else if (Throwable.class.isAssignableFrom(hostType)) {
             kind = JTypeKind.EXCEPTION;
         }
-        DefaultJType jt = new DefaultJType(hostType.getName(), kind, types);
+        DefaultJType jt = new DefaultJType(hostType.getName(), kind, null, types);
         jt.setHostType(hostType);
         Package p = hostType.getPackage();
         jt.setPackageName(p == null ? null : p.getName());
@@ -62,9 +62,21 @@ public class HostHelper {
 
         jt.setPrimitiveType(hostType.isPrimitive());
         StringBuilder gname = new StringBuilder(hostType.getName());
-        jt.addOnPostRegisterList(new Runnable() {
+        jt.addOnPostRegister(new Runnable() {
             @Override
             public void run() {
+                if (hostType instanceof Class) {
+                    //TODO FIX ME
+//            Type s = ((Class) hostType).getGenericSuperclass();
+//            return s == null ? null : htypes().forName(s, this);
+                    Class s = hostType.getSuperclass();
+                    jt.setSuperType(s == null ? null : ((JTypesSPI) types).forHostType(s, jt));
+                } else {
+                    //TODO fix me
+                    JType rc = jt.getRawType();
+                    JType superclass = rc.getSuperType();
+                    jt.setSuperType(superclass);
+                }
                 TypeVariable[] tp = hostType.getTypeParameters();
                 JTypeVariable[] r = new JTypeVariable[tp.length];
                 for (int i = 0; i < r.length; i++) {
@@ -91,66 +103,91 @@ public class HostHelper {
                     }
                 }
                 jt.addExports(exportsList.toArray(new String[0]));
+                jt.fields.addSupplier(new Supplier<List<JField>>() {
+                    @Override
+                    public List<JField> get() {
+                        List<JField> m = new ArrayList<>();
+                        for (Field declaredField : hostType.getDeclaredFields()) {
+                            JField f = createHostField(declaredField, jt);
+                            m.add(f);
+                        }
+                        return m;
+                    }
+                });
 
-                for (Field declaredField : hostType.getDeclaredFields()) {
-                    JField f = createHostField(declaredField, jt);
-                    jt.addField(f);
-                }
+                jt.methods.addSupplier(new Supplier<List<JMethod>>() {
+                    @Override
+                    public List<JMethod> get() {
+                        List<JMethod> m = new ArrayList<>();
+                        for (Method item : hostType.getDeclaredMethods()) {
+                            JRawMethod mm = createHostMethod(item, jt);
+                            m.add(mm);
+                        }
+                        return m;
 
-                for (Method item : hostType.getDeclaredMethods()) {
-                    jt.addMethod(createHostMethod(item, jt));
-                }
+                    }
+                });
 
-                for (Class item : hostType.getDeclaredClasses()) {
-                    JRawType f = (JRawType) ((JTypesSPI) types).forHostType(item, jt);
-                    jt.addInnerType(f);
-                }
-                for (Constructor item : hostType.getDeclaredConstructors()) {
-                    JConstructor f = createHostConstructor(item, jt);
-                    jt.addConstructor(f, true);
-                }
+                jt.innerTypes.addSupplier(new Supplier<List<JType>>() {
+                    @Override
+                    public List<JType> get() {
+                        List<JType> m = new ArrayList<>();
+                        for (Class item : hostType.getDeclaredClasses()) {
+                            JType f = ((JTypesSPI) types).forHostType(item, jt);
+                            m.add(f);
+                        }
+                        return m;
+                    }
+                });
+                jt.constructors.addSupplier(new Supplier<List<JConstructor>>() {
+                    @Override
+                    public List<JConstructor> get() {
+                        List<JConstructor> m = new ArrayList<>();
+                        for (Constructor item : hostType.getDeclaredConstructors()) {
+                            JConstructor f = createHostConstructor(item, jt);
+                            m.add(f);
+                        }
+                        return m;
+                    }
+                });
+
 
                 if (jt.isPrimitive()) {
-                    jt.setBoxedType(
-                            ((JTypesSPI) types).forHostType(JeepPlatformUtils.toBoxingType(hostType), jt)
-                    );
+                    jt.setBoxedType(((JTypesSPI) types).forHostType(JeepPlatformUtils.toBoxingType(hostType), jt));
                 } else {
                     Class p = JeepPlatformUtils.REF_TO_PRIMITIVE_TYPES.get((Class) hostType);
                     jt.setUnboxedType(p == null ? null : ((JTypesSPI) types).forHostType(p, jt));
                 }
 
-                if (hostType instanceof Class) {
-                    //TODO FIX ME
-//            Type s = ((Class) hostType).getGenericSuperclass();
-//            return s == null ? null : htypes().forName(s, this);
-                    Class s = hostType.getSuperclass();
-                    jt.setSuperType(s == null ? null : ((JTypesSPI) types).forHostType(s, jt));
-                } else {
-                    //TODO fix me
-                    JType rc = jt.getRawType();
-                    JType superclass = rc.getSuperType();
-                    jt.setSuperType(superclass);
-                }
 
                 if (hostType instanceof Class) {
-//            Type[] interfaces = ((Class) hostType).getGenericInterfaces();
-//            JType[] ii = new JType[interfaces.length];
-//            for (int i = 0; i < ii.length; i++) {
-//                ii[i] = htypes().forName(interfaces[i], this);
-//            }
-//            return ii;
-                    Class[] interfaces = hostType.getInterfaces();
-                    JType[] ii = new JType[interfaces.length];
-                    for (int i = 0; i < ii.length; i++) {
-                        jt.addInterface(((JTypesSPI) types).forHostType(interfaces[i], jt));
-                    }
-                } else {
-                    JType rc = jt.getRawType();
-                    JType[] superInterfaces = rc.getInterfaces();
-                    for (JType si : superInterfaces) {
-                        jt.addInterface(si);
+                    jt.interfaces.addSupplier(new Supplier<List<JType>>() {
+                        @Override
+                        public List<JType> get() {
+                            List<JType> m = new ArrayList<>();
+                            Class[] interfaces = hostType.getInterfaces();
+                            for (int i = 0; i < interfaces.length; i++) {
+                                JType t = ((JTypesSPI) types).forHostType(interfaces[i], jt);
+                                m.add(t);
+                            }
+                            return m;
+                        }
+                    });
 
-                    }
+                } else {
+
+                    jt.interfaces.addSupplier(new Supplier<List<JType>>() {
+                        @Override
+                        public List<JType> get() {
+                            List<JType> m = new ArrayList<>();
+                            JType rc = jt.getRawType();
+                            JType[] superInterfaces = rc.getInterfaces();
+                            for (JType si : superInterfaces) {
+                                m.add(si);
+                            }
+                            return m;
+                        }
+                    });
                 }
                 switch (jt.getName()) {
                     case "char":
@@ -215,39 +252,46 @@ public class HostHelper {
                 });
 
                 if (hostType.isAnnotation()) {
-                    Method[] declaredMethods = hostType.getDeclaredMethods();
-                    for (Method declaredMethod : declaredMethods) {
-                        if (
-                                Modifier.isPublic(declaredMethod.getModifiers())
-                                        && declaredMethod.getParameterCount() == 0
-                                        && !declaredMethod.getName().equals("hashCode")
-                                        && !declaredMethod.getName().equals("toString")
-                                        && !declaredMethod.getName().equals("annotationType")
-                        ) {
-                            DefaultJAnnotationField f = new DefaultJAnnotationField(
-                                    declaredMethod.getName(),
-                                    declaredMethod.getDefaultValue(),
-                                    jt
-                            );
-                            jt.addAnnotationField(f);
+                    jt.annotationFields.addSupplier(new Supplier<List<JAnnotationField>>() {
+                        @Override
+                        public List<JAnnotationField> get() {
+                            List<JAnnotationField> m = new ArrayList<>();
+                            Method[] declaredMethods = hostType.getDeclaredMethods();
+                            for (Method declaredMethod : declaredMethods) {
+                                if (
+                                        Modifier.isPublic(declaredMethod.getModifiers())
+                                                && declaredMethod.getParameterCount() == 0
+                                                && !declaredMethod.getName().equals("hashCode")
+                                                && !declaredMethod.getName().equals("toString")
+                                                && !declaredMethod.getName().equals("annotationType")
+                                ) {
+                                    DefaultJAnnotationField f = new DefaultJAnnotationField(
+                                            declaredMethod.getName(),
+                                            declaredMethod.getDefaultValue(),
+                                            jt
+                                    );
+                                    m.add(f);
+                                }
+                            }
+                            return m;
                         }
-                    }
+                    });
                 }
                 for (Annotation annotation : hostType.getAnnotations()) {
                     JType jType = types.forName(annotation.getClass().getName());
-                    jt.addAnnotation(createAnnotationInstance(annotation, (JRawType) jType));
+                    jt.addAnnotation(createAnnotationInstance(annotation, jType));
                 }
             }
         });
         return jt;
     }
 
-    private static JAnnotationInstance createAnnotationInstance(Annotation annotation, JRawType jType) {
-        DefaultJAnnotationInstance i=new DefaultJAnnotationInstance();
+    private static JAnnotationInstance createAnnotationInstance(Annotation annotation, JType jType) {
+        DefaultJAnnotationInstance i = new DefaultJAnnotationInstance();
         i.setName(annotation.annotationType().getName());
         i.setAnnotationType(jType);
         //i.setHostAnnotation(annotation);
-        JType annType = ((JTypesSPI) jType.getTypes()).forHostType(annotation.annotationType(),null);
+        JType annType = ((JTypesSPI) jType.getTypes()).forHostType(annotation.annotationType(), null);
         Method[] declaredMethods = annotation.annotationType().getDeclaredMethods();
         for (Method declaredMethod : declaredMethods) {
             if (
@@ -279,7 +323,7 @@ public class HostHelper {
         m.setHostConstructor(constructor);
         for (Annotation annotation : constructor.getAnnotations()) {
             JType jType = declaringType.getTypes().forName(annotation.getClass().getName());
-            m.addAnnotation(createAnnotationInstance(annotation, (JRawType) jType));
+            m.addAnnotation(createAnnotationInstance(annotation, jType));
         }
         m.addModifiers(toJModifiers(constructor.getModifiers()));
         JSignature genericSig = null;
@@ -371,10 +415,11 @@ public class HostHelper {
 
     private static JRawMethod createHostMethod(Method declaredMethod, DefaultJType declaringType) {
         DefaultJRawMethod m = new DefaultJRawMethod();
+        m.setDeclaringType(declaringType);
         m.setHostMethod(declaredMethod);
         for (Annotation annotation : declaredMethod.getAnnotations()) {
             JType jType = declaringType.getTypes().forName(annotation.getClass().getName());
-            m.addAnnotation(createAnnotationInstance(annotation, (JRawType) jType));
+            m.addAnnotation(createAnnotationInstance(annotation, jType));
         }
         m.addModifiers(toJModifiers(declaredMethod.getModifiers()));
         m.setDefaultMethod(declaredMethod.isDefault());
@@ -470,7 +515,7 @@ public class HostHelper {
         djf.setGenericType(((JTypesSPI) jt.getTypes()).forHostType(declaredField.getGenericType(), jt));
         for (Annotation annotation : declaredField.getAnnotations()) {
             JType jType = jt.getTypes().forName(annotation.getClass().getName());
-            djf.addAnnotation(createAnnotationInstance(annotation, (JRawType) jType));
+            djf.addAnnotation(createAnnotationInstance(annotation, jType));
         }
         djf.addModifiers(toJModifiers(declaredField.getModifiers()));
         djf.setSetter(new JRawField.Setter() {
