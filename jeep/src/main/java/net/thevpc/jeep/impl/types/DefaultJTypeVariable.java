@@ -4,14 +4,18 @@ import net.thevpc.jeep.JDeclaration;
 import net.thevpc.jeep.JType;
 import net.thevpc.jeep.JTypes;
 import net.thevpc.jeep.*;
+import net.thevpc.jeep.util.ImplicitValue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultJTypeVariable extends AbstractJTypeVariable {
     private String name;
     private JType[] lowerBounds;
     private JType[] upperBounds;
     private JDeclaration declaration;
-    private JAnnotationInstanceList annotations=new DefaultJAnnotationInstanceList();
-    private JModifierList modifiers=new DefaultJModifierList();
+    public ImplicitValue.MapForListImplicitValue<String, JAnnotationInstance> annotations = new ImplicitValue.MapForListImplicitValue<>(x -> x.getName());
+    public ImplicitValue.MapForListImplicitValue<String, JModifier> modifiers = new ImplicitValue.MapForListImplicitValue<>(x -> x.name());
 
     public DefaultJTypeVariable(String name, JType[] lowerBounds, JType[] upperBounds, JDeclaration declaration, JTypes types) {
         super(types);
@@ -19,6 +23,16 @@ public class DefaultJTypeVariable extends AbstractJTypeVariable {
         this.lowerBounds = lowerBounds;
         this.upperBounds = upperBounds;
         this.declaration = declaration;
+    }
+
+    public DefaultJTypeVariable setLowerBounds(JType[] lowerBounds) {
+        this.lowerBounds = lowerBounds;
+        return this;
+    }
+
+    public DefaultJTypeVariable setUpperBounds(JType[] upperBounds) {
+        this.upperBounds = upperBounds;
+        return this;
     }
 
     @Override
@@ -49,23 +63,24 @@ public class DefaultJTypeVariable extends AbstractJTypeVariable {
         return this;
     }
 
+
     @Override
-    public boolean isInterface() {
-        return false;
+    public List<JAnnotationInstance> getAnnotations() {
+        return annotations.values();
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
-        return annotations;
-    }
-
-    @Override
-    public JModifierList getModifiers() {
-        return modifiers;
+    public List<JModifier> getModifiers() {
+        return modifiers.values();
     }
 
     @Override
     public String getSourceName() {
         return null;
+    }
+
+    @Override
+    public void addAnnotation(JAnnotationInstance jAnnotationInstance) {
+        annotations.add(jAnnotationInstance);
     }
 }
