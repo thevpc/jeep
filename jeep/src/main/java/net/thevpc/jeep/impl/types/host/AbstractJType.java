@@ -2,7 +2,6 @@ package net.thevpc.jeep.impl.types.host;
 
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.functions.JSignature;
-import net.thevpc.jeep.impl.types.DefaultJAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.DefaultJModifierList;
 import net.thevpc.jeep.impl.types.DefaultJRawMethod;
 import net.thevpc.jeep.util.JTypeUtils;
@@ -12,6 +11,7 @@ import java.util.*;
 
 public abstract class AbstractJType extends JTypeBase implements JType {
     protected boolean primitiveType;
+    protected String version;
     private JTypes types;
     private JType boxedType = null;
     private JType unboxedType = null;
@@ -25,9 +25,27 @@ public abstract class AbstractJType extends JTypeBase implements JType {
         return unboxedType;
     }
 
+
+    @Override
+    public String getVersion() {
+        return version;
+    }
+    public boolean isInterface() {
+        return ((JTypesSPI)getTypes()).isInterfaceType(this);
+    }
+
     public AbstractJType setUnboxedType(JType unboxedType) {
         this.unboxedType = unboxedType;
         return this;
+    }
+    @Override
+    public boolean isPublic() {
+        return ((JTypesSPI)getTypes()).isPublicType(this);
+    }
+
+    @Override
+    public boolean isStatic() {
+        return ((JTypesSPI)getTypes()).isStaticType(this);
     }
 
     public JType getBoxedType() {
@@ -42,11 +60,6 @@ public abstract class AbstractJType extends JTypeBase implements JType {
     public AbstractJType setPrimitiveType(boolean primitiveType) {
         this.primitiveType = primitiveType;
         return this;
-    }
-
-    @Override
-    public String getRawName() {
-        return getName();
     }
 
     @Override
@@ -70,12 +83,12 @@ public abstract class AbstractJType extends JTypeBase implements JType {
      * @return simple name including declaring type
      */
     @Override
-    public String dname() {
+    public String getSimpleName2() {
         JType d = getDeclaringType();
         if (d == null) {
             return getName();
         } else {
-            return d.dname() + '.' + getName();
+            return d.getSimpleName2() + '.' + getName();
         }
     }
 
@@ -147,9 +160,9 @@ public abstract class AbstractJType extends JTypeBase implements JType {
         if (getRawType().getName().equals(other.getRawType().getName())) {
             if (isRawType() || other.isRawType()) {
                 return true;
-            } else if (this instanceof JParameterizedType && other instanceof JParameterizedType) {
-                JParameterizedType t1 = (JParameterizedType) this;
-                JParameterizedType t2 = (JParameterizedType) other;
+            } else if (this.isParametrizedType() && other.isParametrizedType()) {
+                JType t1 = this;
+                JType t2 = other;
                 JType[] actualTypeArguments1 = t1.getActualTypeArguments();
                 JType[] actualTypeArguments2 = t2.getActualTypeArguments();
                 for (int i = 0; i < actualTypeArguments1.length; i++) {
@@ -262,7 +275,11 @@ public abstract class AbstractJType extends JTypeBase implements JType {
         if (isPrimitive()) {
             return getName();
         }
-        return "class " + getName();
+        JTypeKind k = getKind();
+        if(k==null){
+            k=JTypeKind.CLASS;
+        }
+        return k.getName().toLowerCase()+" " + getName();
     }
 
     @Override
@@ -305,37 +322,26 @@ public abstract class AbstractJType extends JTypeBase implements JType {
         return null;
     }
 
-
     @Override
     public JType replaceParameter(String name, JType param) {
-//        JType[] jTypes = actualTypeArguments();
-//        JType[] y = new JType[jTypes.length];
-//        boolean modified = false;
-//        for (int i = 0; i < y.length; i++) {
-//            y[i] = jTypes[i].replaceParameter(name, param);
-//            modified |= (!y[i].name().equals(jTypes[i].name()));
-//        }
-//        if (modified) {
-//            return new JParameterizedTypeImpl(rawType(),y,types());
-//        } else {
-        return this;
-//        }
+        JType[] jTypes = getActualTypeArguments();
+        JType[] y = new JType[jTypes.length];
+        boolean modified = false;
+        for (int i = 0; i < y.length; i++) {
+            y[i] = jTypes[i].replaceParameter(name, param);
+            modified |= (!y[i].getName().equals(jTypes[i].getName()));
+        }
+        if (modified) {
+            return types2().findOrRegisterParameterizedType(getRawType(), y, this);
+        } else {
+            return this;
+        }
     }
-
-//    @Override
-//    public JType[] actualTypeArguments() {
-//        return new JType[0];
-//    }
-
 
     @Override
     public JDeclaration getDeclaration() {
         return getDeclaringType();
     }
-
-
-
-
 
     @Override
     public JType findDeclaredInnerTypeOrNull(String name) {
@@ -374,7 +380,9 @@ public abstract class AbstractJType extends JTypeBase implements JType {
         m.setArgNames(argNames);
         m.setDeclaringType(this);
         ((DefaultJModifierList) m.getModifiers()).addAll(modifiers);
-        ((DefaultJAnnotationInstanceList) m.getAnnotations()).addAll(annotations);
+        if(annotations!=null){
+            m.getAnnotations().addAll(Arrays.asList(annotations));
+        }
         m.setGenericReturnType(returnType);
         m.setHandler(handler);
         m.setGenericSignature(signature);
@@ -396,4 +404,29 @@ public abstract class AbstractJType extends JTypeBase implements JType {
         return !isPrimitive();
     }
 
+
+    @Override
+    public JType toArray(int count) {
+        JType r = rootComponentType();
+        if(r==null){
+            r=this;
+        }
+        return JTypesSPI.getRegisteredOrRegister(
+                types2().createArrayType0(r,count)
+                , getTypes());
+    }
+
+    @Override
+    public JType parametrize(JType... parameters) {
+        if (parameters.length == 0) {
+            throw new IllegalArgumentException("Invalid zero parameters count");
+        }
+        JTypeVariable[] vars = getTypeParameters();
+        if (vars.length != parameters.length) {
+            throw new IllegalArgumentException("Invalid parameters count. expected "+vars.length+" but got "+parameters.length);
+        }
+        return JTypesSPI.getRegisteredOrRegister(
+                types2().findOrRegisterParameterizedType(this, parameters,
+                        getDeclaringType()), getTypes());
+    }
 }
