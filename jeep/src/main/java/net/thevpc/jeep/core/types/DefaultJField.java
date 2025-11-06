@@ -2,20 +2,21 @@ package net.thevpc.jeep.core.types;
 
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.impl.JTypesSPI;
-import net.thevpc.jeep.impl.types.DefaultJAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.DefaultJModifierList;
-import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.JModifierList;
 import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.util.JeepReflectUtils;
 import net.thevpc.jeep.core.JObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultJField extends AbstractJField implements JRawField {
     private String name;
     private JType declaringType;
     private JType genericType;
     private JType type;
-    private JAnnotationInstanceList annotations = new DefaultJAnnotationInstanceList();
+    private List<JAnnotationInstance> annotations = new ArrayList<>();
     private JModifierList modifiers = new DefaultJModifierList();
     private Getter getter = new Getter() {
         @Override
@@ -115,7 +116,7 @@ public class DefaultJField extends AbstractJField implements JRawField {
         }
     }
     public void addAnnotation(JAnnotationInstance jAnnotationInstance){
-        ((DefaultJAnnotationInstanceList)annotations).add(jAnnotationInstance);
+        annotations.add(jAnnotationInstance);
     }
 
     @Override
@@ -145,7 +146,7 @@ public class DefaultJField extends AbstractJField implements JRawField {
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return annotations;
     }
 
