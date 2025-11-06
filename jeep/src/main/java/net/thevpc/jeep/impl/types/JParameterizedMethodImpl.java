@@ -5,6 +5,8 @@ import net.thevpc.jeep.impl.functions.JSignature;
 import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.*;
 
+import java.util.List;
+
 public class JParameterizedMethodImpl extends AbstractJMethod implements JParameterizedMethod {
     private JMethod rawMethod;
     private JType declaringType;
@@ -69,7 +71,7 @@ public class JParameterizedMethodImpl extends AbstractJMethod implements JParame
     }
 
     @Override
-    public JModifierList getModifiers() {
+    public List<JModifier> getModifiers() {
         return rawMethod.getModifiers();
     }
 
@@ -79,7 +81,7 @@ public class JParameterizedMethodImpl extends AbstractJMethod implements JParame
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return rawMethod.getAnnotations();
     }
 
