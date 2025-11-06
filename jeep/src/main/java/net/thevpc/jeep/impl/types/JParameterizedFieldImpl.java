@@ -5,11 +5,13 @@ import net.thevpc.jeep.util.JTypeUtils;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.types.AbstractJField;
 
+import java.util.List;
+
 public class JParameterizedFieldImpl extends AbstractJField implements JParameterizedField {
     private JField rawField;
-    private JParameterizedType declaringType;
+    private JType declaringType;
     private JType fieldType;
-    public JParameterizedFieldImpl(JRawField rawField, JParameterizedType declaringType) {
+    public JParameterizedFieldImpl(JRawField rawField, JType declaringType) {
         this.rawField=rawField;
         this.declaringType=declaringType;
         this.fieldType= JTypeUtils.buildActualType(rawField.genericType(),declaringType);
@@ -56,7 +58,7 @@ public class JParameterizedFieldImpl extends AbstractJField implements JParamete
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return rawField.getAnnotations();
     }
 
