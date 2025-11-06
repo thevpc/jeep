@@ -3,9 +3,9 @@ package net.thevpc.jeep.impl.functions;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.*;
 import net.thevpc.jeep.core.eval.JEvaluableValue;
-import net.thevpc.jeep.impl.types.JAnnotationInstanceList;
 import net.thevpc.jeep.impl.types.JModifierList;
 
+import java.util.List;
 import java.util.Objects;
 
 public class JMethodWithVarArg implements JMethod {
@@ -51,12 +51,12 @@ public class JMethodWithVarArg implements JMethod {
     }
 
     @Override
-    public JModifierList getModifiers() {
+    public List<JModifier> getModifiers() {
         return method.getModifiers();
     }
 
     @Override
-    public JAnnotationInstanceList getAnnotations() {
+    public List<JAnnotationInstance> getAnnotations() {
         return method.getAnnotations();
     }
 
@@ -96,9 +96,9 @@ public class JMethodWithVarArg implements JMethod {
 
             @Override
             public Object evaluate(JInvokeContext context) {
-                JArrayType jType = (JArrayType) ((JArrayType)last).componentType();
+                JType jType = last.componentType();
                 Object anArray0 = jType.newArray(varArgCount);
-                JArray anArray = ((JArrayType)jType.toArray(varArgCount)).asArray(anArray0);
+                JArray anArray = jType.toArray(varArgCount).asArray(anArray0);
                 anArray.value();
                 for (int i = 0; i < varArgCount; i++) {
                     JEvaluable aaa = args[all.length - 1 + i];
