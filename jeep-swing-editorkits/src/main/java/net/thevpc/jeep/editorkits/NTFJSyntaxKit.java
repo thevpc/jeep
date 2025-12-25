@@ -320,7 +320,9 @@ public class NTFJSyntaxKit extends JSyntaxKit {
                 case "date": {
                     return STYLE_TEMPORALS;
                 }
-                case "keyword": {
+                case "kw":
+                case "keyword":
+                {
                     return STYLE_KEYWORDS;
                 }
                 case "option": {
